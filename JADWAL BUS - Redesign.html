@@ -143,13 +143,25 @@
   .topbar-btn:hover { background: rgba(255,255,255,0.16); }
   .topbar-btn.primary { background: var(--gold-500); color: var(--navy-900); border-color: var(--gold-500); }
   .topbar-btn.primary:hover { background: var(--gold-400); }
+  .topbar-bell { position: relative; padding: 6px 10px; }
+  .topbar-bell .bell-dot {
+    position: absolute; top: 4px; right: 6px;
+    width: 8px; height: 8px; border-radius: 50%;
+    background: var(--bad-600); border: 1.5px solid var(--navy-900);
+  }
   .user-chip {
     display: flex; align-items: center; gap: 8px;
     padding: 4px 12px 4px 4px;
     background: rgba(255,255,255,0.06);
     border-radius: 100px;
     border: 1px solid rgba(255,255,255,0.12);
+    color: var(--white);
+    font-family: inherit;
+    text-align: left;
+    cursor: pointer;
+    transition: background 0.15s;
   }
+  .user-chip:hover { background: rgba(255,255,255,0.14); }
   .user-avatar {
     width: 26px; height: 26px; border-radius: 50%;
     background: var(--navy-600);
@@ -1088,6 +1100,280 @@
     to { opacity: 1; transform: translateY(0); }
   }
 
+  /* ─── Command Palette (Ctrl+K) ─── */
+  .cmdk-overlay {
+    position: fixed; inset: 0;
+    background: rgba(10, 22, 40, 0.55);
+    backdrop-filter: blur(2px);
+    z-index: 9000;
+    display: none;
+    align-items: flex-start; justify-content: center;
+    padding-top: 12vh;
+    animation: fadeIn 0.12s ease-out both;
+  }
+  .cmdk-overlay.open { display: flex; }
+  .cmdk-modal {
+    width: min(640px, 92vw);
+    background: var(--white);
+    border-radius: 10px;
+    box-shadow: 0 24px 64px rgba(10,22,40,0.35);
+    overflow: hidden;
+    border-top: 3px solid var(--gold-500);
+  }
+  .cmdk-input-wrap {
+    display: flex; align-items: center; gap: 10px;
+    padding: 14px 18px;
+    border-bottom: 1px solid var(--ink-200);
+  }
+  .cmdk-input {
+    flex: 1; border: none; outline: none;
+    font-size: 16px; font-family: inherit;
+    color: var(--ink-900); background: transparent;
+  }
+  .cmdk-kbd {
+    font-family: var(--font-mono); font-size: 10px;
+    background: var(--ink-100); color: var(--ink-600);
+    padding: 3px 7px; border-radius: 4px;
+    border: 1px solid var(--ink-200);
+  }
+  .cmdk-list { max-height: 56vh; overflow-y: auto; padding: 6px 0; }
+  .cmdk-section { font-size: 10px; font-weight: 700; letter-spacing: 0.1em; text-transform: uppercase; color: var(--ink-500); padding: 10px 18px 4px; }
+  .cmdk-item {
+    display: flex; align-items: center; gap: 12px;
+    padding: 9px 18px; cursor: pointer;
+    font-size: 13px; color: var(--ink-800);
+    border-left: 3px solid transparent;
+  }
+  .cmdk-item .ic { width: 16px; height: 16px; color: var(--ink-500); }
+  .cmdk-item:hover, .cmdk-item.selected {
+    background: var(--info-50);
+    border-left-color: var(--navy-700);
+    color: var(--navy-900);
+  }
+  .cmdk-item .meta { margin-left: auto; font-size: 11px; color: var(--ink-500); }
+  .cmdk-empty { padding: 28px; text-align: center; font-size: 13px; color: var(--ink-500); }
+
+  /* ─── Login overlay ─── */
+  .login-overlay {
+    position: fixed; inset: 0;
+    background: linear-gradient(135deg, var(--navy-900), var(--navy-700));
+    z-index: 9500;
+    display: none;
+    align-items: center; justify-content: center;
+    padding: 24px;
+  }
+  .login-overlay.open { display: flex; }
+  .login-card {
+    width: min(420px, 96vw);
+    background: var(--white);
+    border-radius: 10px;
+    box-shadow: 0 32px 80px rgba(0,0,0,0.5);
+    overflow: hidden;
+    border-top: 4px solid var(--gold-500);
+  }
+  .login-head {
+    padding: 28px 28px 18px;
+    background: var(--navy-900);
+    color: var(--white);
+    display: flex; gap: 14px; align-items: center;
+  }
+  .login-head .crest {
+    width: 44px; height: 44px;
+    background: var(--gold-500); color: var(--navy-900);
+    border-radius: 50%;
+    display: flex; align-items: center; justify-content: center;
+    font-weight: 800;
+  }
+  .login-head h2 {
+    margin: 0;
+    font-family: var(--font-serif);
+    font-size: 17px; font-weight: 700;
+    letter-spacing: 0.02em;
+  }
+  .login-head .sub { font-size: 11px; color: var(--ink-300); margin-top: 2px; letter-spacing: 0.06em; text-transform: uppercase; }
+  .login-body { padding: 24px 28px 28px; }
+  .login-body label {
+    display: block;
+    font-size: 11px; font-weight: 700;
+    letter-spacing: 0.08em; text-transform: uppercase;
+    color: var(--ink-600);
+    margin-bottom: 6px;
+  }
+  .login-body input {
+    width: 100%; padding: 10px 12px;
+    border: 1px solid var(--ink-300);
+    border-radius: 5px; font-size: 14px;
+    font-family: inherit; outline: none;
+    margin-bottom: 14px;
+  }
+  .login-body input:focus { border-color: var(--navy-700); box-shadow: 0 0 0 3px var(--info-100); }
+  .login-body .err {
+    background: var(--bad-50); color: var(--bad-700);
+    border: 1px solid var(--bad-100); border-radius: 5px;
+    padding: 8px 10px; font-size: 12px;
+    margin-bottom: 12px;
+    display: none;
+  }
+  .login-body .err.show { display: block; }
+  .login-body button {
+    width: 100%; padding: 11px;
+    background: var(--navy-700); color: var(--white);
+    border: none; border-radius: 5px; font-weight: 700;
+    font-size: 14px; cursor: pointer;
+    transition: background 0.15s;
+  }
+  .login-body button:hover:not(:disabled) { background: var(--navy-800); }
+  .login-body button:disabled { opacity: 0.6; cursor: not-allowed; }
+  .login-hint {
+    margin-top: 14px;
+    padding: 10px 12px;
+    background: var(--info-50);
+    border: 1px solid var(--info-100);
+    border-radius: 5px;
+    font-size: 11px; color: var(--info-700); line-height: 1.5;
+  }
+  .login-hint code { font-family: var(--font-mono); background: var(--white); padding: 1px 4px; border-radius: 3px; }
+  .api-loading { color: var(--ink-500); font-style: italic; padding: 14px; text-align: center; }
+
+  /* ─── Toast notifications ─── */
+  .toast-stack {
+    position: fixed; top: 90px; right: 24px;
+    display: flex; flex-direction: column; gap: 10px;
+    z-index: 9100;
+    pointer-events: none;
+  }  .toast {
+    background: var(--white);
+    border: 1px solid var(--ink-200);
+    border-left: 4px solid var(--info-600);
+    border-radius: 6px;
+    box-shadow: 0 6px 18px rgba(10,22,40,0.12);
+    padding: 10px 14px;
+    min-width: 260px; max-width: 380px;
+    font-size: 13px;
+    color: var(--ink-800);
+    pointer-events: auto;
+    animation: toastIn 0.22s ease-out both;
+  }
+  .toast.ok    { border-left-color: var(--ok-600); }
+  .toast.warn  { border-left-color: var(--warn-600); }
+  .toast.bad   { border-left-color: var(--bad-600); }
+  .toast.fade  { animation: toastOut 0.25s ease-in forwards; }
+  .toast .t-title { font-weight: 700; color: var(--navy-900); margin-bottom: 2px; }
+  .toast .t-body  { font-size: 12px; color: var(--ink-700); line-height: 1.4; }
+  @keyframes toastIn  { from { opacity: 0; transform: translateX(20px); } to { opacity: 1; transform: translateX(0); } }
+  @keyframes toastOut { to   { opacity: 0; transform: translateX(20px); } }
+
+  /* ─── Clickable breadcrumb parent ─── */
+  .breadcrumb a.crumb {
+    color: var(--info-700);
+    text-decoration: none;
+    cursor: pointer;
+  }
+  .breadcrumb a.crumb:hover { text-decoration: underline; }
+
+  /* ─── Workbench (Jadwal advanced) ─── */
+  .wb-grid { display: grid; grid-template-columns: 320px 1fr; gap: 18px; align-items: start; }
+  @media (max-width: 1100px) { .wb-grid { grid-template-columns: 1fr; } }
+  .wb-control {
+    background: var(--white);
+    border: 1px solid var(--ink-200);
+    border-radius: 8px;
+    padding: 16px;
+    position: sticky; top: 14px;
+  }
+  .wb-control h4 {
+    margin: 0 0 10px;
+    font-size: 11px; font-weight: 800;
+    letter-spacing: 0.1em; text-transform: uppercase;
+    color: var(--ink-600);
+  }
+  .wb-row { display: grid; grid-template-columns: 1fr 70px; gap: 10px; align-items: center; padding: 8px 0; border-bottom: 1px dashed var(--ink-200); font-size: 12.5px; }
+  .wb-row:last-of-type { border-bottom: none; }
+  .wb-row label { color: var(--ink-700); }
+  .wb-row .v { font-family: var(--font-mono); font-weight: 700; color: var(--navy-900); text-align: right; }
+  .wb-slider { width: 100%; accent-color: var(--gold-600); }
+  .wb-impact {
+    margin-top: 12px;
+    padding: 10px 12px;
+    background: var(--info-50);
+    border: 1px solid var(--info-100);
+    border-radius: 6px;
+    font-size: 11.5px;
+    color: var(--info-700);
+    line-height: 1.5;
+  }
+  .wb-impact b { color: var(--navy-900); }
+  .wb-pattern {
+    display: grid; grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
+    gap: 10px;
+  }
+  .wb-pat {
+    background: var(--white);
+    border: 1px solid var(--ink-200);
+    border-radius: 6px;
+    padding: 12px;
+    cursor: pointer;
+    transition: all 0.15s;
+  }
+  .wb-pat:hover { border-color: var(--gold-500); }
+  .wb-pat.on { border-color: var(--gold-600); background: var(--gold-50); box-shadow: 0 0 0 2px var(--gold-100); }
+  .wb-pat .name { font-weight: 700; color: var(--navy-900); font-size: 13px; }
+  .wb-pat .stops { font-size: 11px; color: var(--ink-600); margin-top: 4px; font-family: var(--font-mono); }
+  .wb-pat .meta { margin-top: 8px; display: flex; gap: 8px; flex-wrap: wrap; font-size: 10px; }
+  .wb-block {
+    display: grid;
+    grid-template-columns: 80px repeat(17, 1fr);
+    border: 1px solid var(--ink-200);
+    background: var(--white);
+    border-radius: 6px;
+    overflow: hidden;
+    font-size: 10px;
+  }
+  .wb-block .h { background: var(--ink-50); padding: 6px 4px; text-align: center; font-weight: 700; color: var(--ink-600); border-bottom: 1px solid var(--ink-200); border-right: 1px solid var(--ink-100); }
+  .wb-block .b { background: var(--navy-700); color: var(--white); padding: 8px 6px; font-weight: 700; border-right: 1px solid var(--navy-800); border-bottom: 1px solid var(--navy-800); display:flex; align-items:center; }
+  .wb-block .c { padding: 6px 2px; border-right: 1px solid var(--ink-100); border-bottom: 1px solid var(--ink-100); min-height: 26px; position: relative; }
+  .wb-block .c.rev   { background: var(--ok-50); }
+  .wb-block .c.dh    { background: repeating-linear-gradient(45deg, var(--info-50), var(--info-50) 4px, var(--info-100) 4px, var(--info-100) 8px); }
+  .wb-block .c.lay   { background: var(--ink-100); }
+  .wb-block .c.brk   { background: var(--warn-50); }
+  .wb-block .c span  { font-family: var(--font-mono); font-weight: 700; color: var(--ink-700); font-size: 9px; }
+
+  /* ─── Validator panel ─── */
+  .val-list { display: flex; flex-direction: column; gap: 8px; }
+  .val-item {
+    display: grid; grid-template-columns: 28px 1fr auto;
+    gap: 12px; align-items: center;
+    padding: 12px 14px;
+    border: 1px solid var(--ink-200);
+    border-radius: 6px;
+    background: var(--white);
+    font-size: 13px;
+  }
+  .val-item.ok    { border-left: 4px solid var(--ok-600); }
+  .val-item.warn  { border-left: 4px solid var(--warn-600); background: var(--warn-50); }
+  .val-item.bad   { border-left: 4px solid var(--bad-600); background: var(--bad-50); }
+  .val-item .marker {
+    width: 22px; height: 22px; border-radius: 50%;
+    display: flex; align-items: center; justify-content: center;
+    color: var(--white); font-weight: 700; font-size: 12px;
+  }
+  .val-item.ok    .marker { background: var(--ok-600); }
+  .val-item.warn  .marker { background: var(--warn-600); }
+  .val-item.bad   .marker { background: var(--bad-600); }
+  .val-item .body  { line-height: 1.45; }
+  .val-item .body b { color: var(--navy-900); }
+  .val-item .body .desc { font-size: 11.5px; color: var(--ink-600); margin-top: 2px; }
+
+  .help-dot {
+    display: inline-flex; align-items: center; justify-content: center;
+    width: 14px; height: 14px; border-radius: 50%;
+    background: var(--ink-200); color: var(--ink-700);
+    font-size: 9px; font-weight: 700;
+    cursor: help;
+    margin-left: 4px;
+  }
+  .help-dot:hover { background: var(--info-100); color: var(--info-700); }
+
   /* responsive guard rails */
   @media (max-width: 1280px) {
     .kpi-grid { grid-template-columns: repeat(2, 1fr); }
@@ -1098,6 +1384,51 @@
 </style>
 </head>
 <body>
+
+<!-- ═══ Login Overlay ═══ -->
+<div class="login-overlay" id="loginOverlay" role="dialog" aria-modal="true" aria-label="Masuk ke Sistem">
+  <div class="login-card">
+    <div class="login-head">
+      <div class="crest">
+        <svg viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="currentColor" stroke-width="2"><rect x="4" y="6" width="16" height="11" rx="2"/><path d="M4 11h16"/><circle cx="8" cy="18" r="1.5"/><circle cx="16" cy="18" r="1.5"/></svg>
+      </div>
+      <div>
+        <h2>Sistem Penjadwalan Bus Massal</h2>
+        <div class="sub">JADWAL BUS · v2.1 · Buy The Service</div>
+      </div>
+    </div>
+    <div class="login-body">
+      <form id="loginForm" autocomplete="on">
+        <div class="err" id="loginErr"></div>
+        <label for="loginEmail">Email Dinas</label>
+        <input id="loginEmail" type="email" required placeholder="nama@dephub.go.id" autocomplete="email"/>
+        <label for="loginPassword">Password</label>
+        <input id="loginPassword" type="password" required placeholder="••••••••" autocomplete="current-password"/>
+        <button type="submit" id="loginBtn">Masuk</button>
+      </form>
+      <div class="login-hint">
+        <b>Demo:</b> <code>rizki@dephub.go.id</code> / <code>password123</code> · atau <code>admin@dephub.go.id</code> / <code>admin1234</code>.
+        Backend harus jalan di port 8000 — lihat <code>backend/README.md</code>.
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ═══ Command Palette (Ctrl+K) ═══ -->
+<div class="cmdk-overlay" id="cmdk" role="dialog" aria-modal="true" aria-label="Command palette">
+  <div class="cmdk-modal">
+    <div class="cmdk-input-wrap">
+      <svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="var(--ink-500)" stroke-width="2"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
+      <input class="cmdk-input" id="cmdkInput" placeholder="Cari halaman, perintah, atau bantuan…" autocomplete="off"/>
+      <span class="cmdk-kbd">ESC</span>
+    </div>
+    <div class="cmdk-list" id="cmdkList"></div>
+  </div>
+</div>
+
+<!-- ═══ Toast container ═══ -->
+<div class="toast-stack" id="toastStack" aria-live="polite" aria-atomic="true"></div>
+
 <div class="app">
 
   <!-- ═══ TOP BAR (formal government) ═══ -->
@@ -1110,8 +1441,8 @@
       </div>
       <div class="right">
         <span>Senin, 03 Mei 2026 · 09:42 WIB</span>
-        <a href="#">Bantuan</a>
-        <a href="#">Permenhub 27/2015</a>
+        <a href="#" data-page="bantuan">Bantuan</a>
+        <a href="#" data-page="wawasan">Permenhub 27/2015</a>
       </div>
     </div>
     <div class="topbar-main">
@@ -1140,10 +1471,14 @@
           <svg class="ic" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="20 6 9 17 4 12"/></svg>
           Sah &amp; Terbitkan
         </button>
-        <div class="user-chip">
+        <button class="topbar-btn topbar-bell" data-page="notifikasi" title="Notifikasi &amp; Peringatan">
+          <svg class="ic" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M18 8A6 6 0 006 8c0 7-3 9-3 9h18s-3-2-3-9"/><path d="M13.73 21a2 2 0 01-3.46 0"/></svg>
+          <span class="bell-dot"></span>
+        </button>
+        <button class="user-chip" data-page="profil" title="Profil Pengguna">
           <div class="user-avatar">RA</div>
           <div class="user-meta"><b>Ir. Rizki A.</b><div>Perencana Madya</div></div>
-        </div>
+        </button>
       </div>
     </div>
   </header>
@@ -1308,6 +1643,32 @@
         <button class="nav-item" data-page="pengaturan">
           <svg class="ic" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 00.33 1.82l.06.06a2 2 0 01-2.83 2.83l-.06-.06a1.65 1.65 0 00-1.82-.33 1.65 1.65 0 00-1 1.51V21a2 2 0 01-4 0v-.09a1.65 1.65 0 00-1-1.51 1.65 1.65 0 00-1.82.33l-.06.06a2 2 0 01-2.83-2.83l.06-.06a1.65 1.65 0 00.33-1.82 1.65 1.65 0 00-1.51-1H3a2 2 0 010-4h.09a1.65 1.65 0 001.51-1 1.65 1.65 0 00-.33-1.82l-.06-.06a2 2 0 012.83-2.83l.06.06a1.65 1.65 0 001.82.33H7a1.65 1.65 0 001-1.51V3a2 2 0 014 0v.09a1.65 1.65 0 001 1.51h0a1.65 1.65 0 001.82-.33l.06-.06a2 2 0 012.83 2.83l-.06.06a1.65 1.65 0 00-.33 1.82V9a1.65 1.65 0 001.51 1H21a2 2 0 010 4h-.09a1.65 1.65 0 00-1.51 1z"/></svg>
           Pengaturan Sistem
+        </button>
+      </div>
+
+      <div class="nav-section">
+        <div class="nav-section-title">Akun &amp; Sistem</div>
+        <button class="nav-item" data-page="notifikasi">
+          <svg class="ic" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M18 8A6 6 0 006 8c0 7-3 9-3 9h18s-3-2-3-9"/><path d="M13.73 21a2 2 0 01-3.46 0"/></svg>
+          Notifikasi &amp; Peringatan
+          <span class="badge">5</span>
+        </button>
+        <button class="nav-item" data-page="insiden">
+          <svg class="ic" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg>
+          Manajemen Insiden
+          <span class="badge">2</span>
+        </button>
+        <button class="nav-item" data-page="riwayat">
+          <svg class="ic" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 12a9 9 0 109-9"/><polyline points="3 4 3 12 11 12"/><line x1="12" y1="7" x2="12" y2="12"/><line x1="12" y1="12" x2="15" y2="14"/></svg>
+          Riwayat Aktivitas
+        </button>
+        <button class="nav-item" data-page="profil">
+          <svg class="ic" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20 21v-2a4 4 0 00-4-4H8a4 4 0 00-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>
+          Profil Pengguna
+        </button>
+        <button class="nav-item" data-page="bantuan">
+          <svg class="ic" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><path d="M9.09 9a3 3 0 015.83 1c0 2-3 3-3 3"/><line x1="12" y1="17" x2="12.01" y2="17"/></svg>
+          Bantuan &amp; Dokumentasi
         </button>
       </div>
 
@@ -2009,6 +2370,9 @@
           <button class="subtab" data-tab="matrix">Matrix Halte × Waktu</button>
           <button class="subtab" data-tab="rit">RIT Detail</button>
           <button class="subtab" data-tab="perbus">Per Bus</button>
+          <button class="subtab" data-tab="workbench">⚙ Workbench Rekayasa</button>
+          <button class="subtab" data-tab="block">Block &amp; Pattern</button>
+          <button class="subtab" data-tab="validator">Validator <span class="badge" style="margin-left:6px;background:var(--warn-100);color:var(--warn-700);font-size:9px;padding:1px 5px;border-radius:8px">3</span></button>
         </div>
 
         <!-- TAB: GANTT -->
@@ -2468,7 +2832,317 @@
               </table>
             </div>
           </div>
-        </div>
+        </div><!-- /perbus pane -->
+
+        <!-- ═══ TAB: WORKBENCH REKAYASA ═══ -->
+        <div class="tab-pane" data-pane="workbench" style="display:none">
+          <div style="display:flex;align-items:center;gap:10px;flex-wrap:wrap;margin-bottom:14px;padding:12px 14px;background:var(--gold-50);border:1px solid var(--gold-100);border-radius:6px">
+            <svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="var(--gold-700)" stroke-width="2"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 00.33 1.82l.06.06a2 2 0 01-2.83 2.83l-.06-.06a1.65 1.65 0 00-1.82-.33 1.65 1.65 0 00-1 1.51V21a2 2 0 01-4 0v-.09a1.65 1.65 0 00-1-1.51 1.65 1.65 0 00-1.82.33l-.06.06a2 2 0 01-2.83-2.83l.06-.06a1.65 1.65 0 00.33-1.82 1.65 1.65 0 00-1.51-1H3a2 2 0 010-4h.09a1.65 1.65 0 001.51-1 1.65 1.65 0 00-.33-1.82l-.06-.06a2 2 0 012.83-2.83l.06.06a1.65 1.65 0 001.82.33h0a1.65 1.65 0 001-1.51V3a2 2 0 014 0v.09a1.65 1.65 0 001 1.51h0a1.65 1.65 0 001.82-.33l.06-.06a2 2 0 012.83 2.83l-.06.06a1.65 1.65 0 00-.33 1.82v0a1.65 1.65 0 001.51 1H21a2 2 0 010 4h-.09a1.65 1.65 0 00-1.51 1z"/></svg>
+            <div style="flex:1;font-size:12.5px;color:var(--gold-700)"><b>Workbench Rekayasa Jadwal.</b> Geser parameter di kiri — dampak ke headway, biaya, dan SPM dihitung instan. Klik <b>Terapkan</b> untuk mengubah jadwal aktif.</div>
+            <button class="btn">Reset</button>
+            <button class="btn primary" id="wbApply">Terapkan ke Jadwal</button>
+          </div>
+
+          <div class="wb-grid">
+            <!-- KIRI: Control Panel -->
+            <div class="wb-control" id="wbPanel">
+              <h4>Cycle Time Decomposition</h4>
+              <div class="wb-row"><label>Running time (menit)<span class="help-dot" title="Waktu murni bus bergerak antar terminal">?</span></label><span class="v" id="wbRun">25</span></div>
+              <input type="range" class="wb-slider" id="sRun" min="20" max="35" value="25"/>
+              <div class="wb-row"><label>Layover terminal (menit)<span class="help-dot" title="Istirahat sopir + buffer keterlambatan">?</span></label><span class="v" id="wbLay">10</span></div>
+              <input type="range" class="wb-slider" id="sLay" min="3" max="20" value="10"/>
+              <div class="wb-row"><label>Recovery buffer (menit)<span class="help-dot" title="Bantalan untuk variasi waktu tempuh">?</span></label><span class="v" id="wbRec">10</span></div>
+              <input type="range" class="wb-slider" id="sRec" min="0" max="15" value="10"/>
+
+              <h4 style="margin-top:18px">Armada &amp; Headway</h4>
+              <div class="wb-row"><label>Jumlah armada aktif</label><span class="v" id="wbBus">3</span></div>
+              <input type="range" class="wb-slider" id="sBus" min="1" max="12" value="3"/>
+              <div class="wb-row"><label>Layover-bias (% dari cycle)</label><span class="v" id="wbLB">22%</span></div>
+              <input type="range" class="wb-slider" id="sLB" min="10" max="40" value="22"/>
+
+              <h4 style="margin-top:18px">Strategi</h4>
+              <div class="wb-row" style="grid-template-columns:1fr auto"><label>Even-Headway Mode</label><span class="toggle"><input type="checkbox" id="cEven" checked/><span class="slider"></span></span></div>
+              <div class="wb-row" style="grid-template-columns:1fr auto"><label>Auto Sisipan Peak</label><span class="toggle"><input type="checkbox" id="cAuto" checked/><span class="slider"></span></span></div>
+              <div class="wb-row" style="grid-template-columns:1fr auto"><label>Short-turn Halte 4</label><span class="toggle"><input type="checkbox" id="cShort"/><span class="slider"></span></span></div>
+              <div class="wb-row" style="grid-template-columns:1fr auto;border-bottom:none"><label>Deadhead Otomatis</label><span class="toggle"><input type="checkbox" id="cDH" checked/><span class="slider"></span></span></div>
+
+              <div class="wb-impact" id="wbImpact">
+                Cycle Time <b>45 m</b> · Headway <b>15,0 m</b> · Trip/Hari <b>~66</b> · SPM <b style="color:var(--ok-700)">Memenuhi peak</b>
+              </div>
+            </div>
+
+            <!-- KANAN: Output / Charts -->
+            <div>
+              <div class="kpi-grid" style="grid-template-columns:repeat(4,1fr);gap:10px;margin-bottom:14px">
+                <div class="card"><div class="card-body" style="padding:12px"><div style="font-size:10px;color:var(--ink-600);text-transform:uppercase;letter-spacing:.06em">Cycle Time</div><div class="num" style="font-size:22px;font-weight:700;color:var(--navy-900)" id="kpiCycle">45 m</div><div style="font-size:10px;color:var(--ink-600)">running + layover + recovery</div></div></div>
+                <div class="card"><div class="card-body" style="padding:12px"><div style="font-size:10px;color:var(--ink-600);text-transform:uppercase;letter-spacing:.06em">Headway</div><div class="num" style="font-size:22px;font-weight:700;color:var(--gold-700)" id="kpiHead">15,0 m</div><div style="font-size:10px;color:var(--ink-600)">cycle ÷ armada</div></div></div>
+                <div class="card"><div class="card-body" style="padding:12px"><div style="font-size:10px;color:var(--ink-600);text-transform:uppercase;letter-spacing:.06em">Trip/Hari</div><div class="num" style="font-size:22px;font-weight:700;color:var(--navy-900)" id="kpiTrip">66</div><div style="font-size:10px;color:var(--ink-600)">17 jam operasi</div></div></div>
+                <div class="card"><div class="card-body" style="padding:12px"><div style="font-size:10px;color:var(--ink-600);text-transform:uppercase;letter-spacing:.06em">Biaya/Hari</div><div class="num" style="font-size:22px;font-weight:700;color:var(--navy-900)" id="kpiCost">Rp 4,96 Jt</div><div style="font-size:10px;color:var(--ink-600)">+sisipan opsional</div></div></div>
+              </div>
+
+              <div class="card" style="margin-bottom:14px">
+                <div class="card-head"><h3><span class="num">A</span> Headway Profile per Periode (real-time)</h3></div>
+                <div class="card-body">
+                  <div id="wbHeadProfile" style="display:flex;flex-direction:column;gap:6px"></div>
+                  <div style="margin-top:10px;font-size:11px;color:var(--ink-600);display:flex;gap:14px;flex-wrap:wrap">
+                    <span>● <span style="color:var(--ok-700)">Memenuhi SPM ≤ 10 m peak / ≤ 15 m off-peak</span></span>
+                    <span>● <span style="color:var(--warn-700)">Marjinal</span></span>
+                    <span>● <span style="color:var(--bad-700)">Pelanggaran</span></span>
+                  </div>
+                </div>
+              </div>
+
+              <div class="card">
+                <div class="card-head"><h3><span class="num">B</span> Pengaruh terhadap Indikator Kunci</h3></div>
+                <div class="card-body" style="padding:0">
+                  <table class="table">
+                    <thead><tr><th>Indikator</th><th class="num">Saat ini</th><th class="num">Skenario Baru</th><th class="num">Δ</th><th>Status</th></tr></thead>
+                    <tbody id="wbCompareBody">
+                      <tr><td><b>Headway peak</b></td><td class="num mono">15,0 m</td><td class="num mono" id="wbcHead">15,0 m</td><td class="num mono" id="wbcHeadD">0</td><td><span class="stamp warn" id="wbcHeadS">Marjinal</span></td></tr>
+                      <tr><td><b>Trip/hari</b></td><td class="num mono">66</td><td class="num mono" id="wbcTrip">66</td><td class="num mono" id="wbcTripD">0</td><td><span class="stamp" id="wbcTripS">Setara</span></td></tr>
+                      <tr><td><b>Biaya operasi</b></td><td class="num mono">Rp 4,96 Jt</td><td class="num mono" id="wbcCost">Rp 4,96 Jt</td><td class="num mono" id="wbcCostD">Rp 0</td><td><span class="stamp" id="wbcCostS">Setara</span></td></tr>
+                      <tr><td><b>Recovery (%)</b></td><td class="num mono">22%</td><td class="num mono" id="wbcRec">22%</td><td class="num mono" id="wbcRecD">0%</td><td><span class="stamp" id="wbcRecS">Sehat</span></td></tr>
+                      <tr><td><b>SPM Compliance</b></td><td><span class="stamp warn">Belum Penuh</span></td><td><span class="stamp" id="wbcSPM">Marjinal</span></td><td class="num mono">—</td><td><span class="stamp" id="wbcSPMS">Tinjau</span></td></tr>
+                    </tbody>
+                  </table>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div><!-- /workbench pane -->
+
+        <!-- ═══ TAB: BLOCK & PATTERN ═══ -->
+        <div class="tab-pane" data-pane="block" style="display:none">
+          <div style="display:flex;align-items:center;gap:10px;flex-wrap:wrap;margin-bottom:14px;padding:12px 14px;background:var(--info-50);border:1px solid var(--info-100);border-radius:6px;font-size:12.5px;color:var(--info-700)">
+            <b>Trip Pattern &amp; Block Scheduling.</b> Definisikan variasi pola pelayanan (full route, short-turn, express, deadhead) dan tetapkan ke block fisik bus. Mendukung rekayasa lanjutan a la GTFS <i>block_id</i>.
+          </div>
+
+          <div class="card" style="margin-bottom:14px">
+            <div class="card-head"><h3><span class="num">A</span> Pola Trip (Trip Patterns)</h3>
+              <div style="margin-left:auto;display:flex;gap:8px"><button class="btn">Impor GTFS</button><button class="btn primary">+ Pola Baru</button></div>
+            </div>
+            <div class="card-body">
+              <div class="wb-pattern">
+                <div class="wb-pat on">
+                  <div class="name">P1 — Full Route (Reguler)</div>
+                  <div class="stops">SCB · KMG · BSD · ALS · SRP · GDG · TKB</div>
+                  <div class="meta"><span class="stamp">7 halte</span><span class="stamp">25 m</span><span class="stamp ok">Default · 76% trip</span></div>
+                </div>
+                <div class="wb-pat">
+                  <div class="name">P2 — Short-turn @ Halte 4</div>
+                  <div class="stops">SCB · KMG · BSD · ALS · BSD · KMG · SCB</div>
+                  <div class="meta"><span class="stamp warn">Short-turn</span><span class="stamp">14 m</span><span class="stamp">Peak only · 12%</span></div>
+                </div>
+                <div class="wb-pat">
+                  <div class="name">P3 — Express (Skip Stop)</div>
+                  <div class="stops">SCB · BSD · SRP · TKB</div>
+                  <div class="meta"><span class="stamp" style="background:var(--info-100);color:var(--info-700);border-color:var(--info-700)">Express</span><span class="stamp">17 m</span><span class="stamp">8% trip</span></div>
+                </div>
+                <div class="wb-pat">
+                  <div class="name">P4 — Deadhead Pool→TKB</div>
+                  <div class="stops">Pool · (non-revenue) · TKB</div>
+                  <div class="meta"><span class="stamp" style="background:var(--ink-100);color:var(--ink-700)">Deadhead</span><span class="stamp">12 m</span><span class="stamp">4% trip</span></div>
+                </div>
+                <div class="wb-pat" style="border-style:dashed;color:var(--ink-500)">
+                  <div class="name" style="color:var(--ink-500)">+ Tambah Pola</div>
+                  <div class="stops">Klik untuk membuat pattern baru</div>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <div class="card">
+            <div class="card-head"><h3><span class="num">B</span> Block Schedule (Penugasan Trip ke Bus Fisik)</h3>
+              <div style="margin-left:auto;display:flex;gap:8px;align-items:center;font-size:11px;color:var(--ink-600)">
+                <span>● Revenue</span>
+                <span>▣ Deadhead</span>
+                <span>○ Layover</span>
+                <span>◌ Break</span>
+              </div>
+            </div>
+            <div class="card-body">
+              <div class="wb-block">
+                <div class="h">BLOK</div>
+                <div class="h">05</div><div class="h">06</div><div class="h">07</div><div class="h">08</div><div class="h">09</div><div class="h">10</div><div class="h">11</div><div class="h">12</div><div class="h">13</div><div class="h">14</div><div class="h">15</div><div class="h">16</div><div class="h">17</div><div class="h">18</div><div class="h">19</div><div class="h">20</div><div class="h">21</div>
+
+                <div class="b">Block 01</div>
+                <div class="c dh"><span>DH</span></div>
+                <div class="c rev"><span>R1·R2</span></div><div class="c rev"><span>R3·R4</span></div><div class="c rev"><span>R5·R6</span></div>
+                <div class="c lay"><span>LO</span></div>
+                <div class="c rev"><span>R7</span></div><div class="c rev"><span>R8</span></div><div class="c rev"><span>R9</span></div><div class="c brk"><span>BRK</span></div>
+                <div class="c rev"><span>R10</span></div><div class="c rev"><span>R11·R12</span></div><div class="c rev"><span>R13·R14</span></div><div class="c rev"><span>R15·R16</span></div><div class="c rev"><span>R17</span></div><div class="c rev"><span>R18</span></div><div class="c lay"><span>LO</span></div>
+                <div class="c dh"><span>DH</span></div>
+
+                <div class="b">Block 02</div>
+                <div class="c dh"><span>DH</span></div>
+                <div class="c rev"><span>R1·R2</span></div><div class="c rev"><span>R3·R4</span></div><div class="c rev"><span>R5·R6</span></div>
+                <div class="c rev"><span>R7</span></div><div class="c rev"><span>R8</span></div><div class="c rev"><span>R9</span></div><div class="c brk"><span>BRK</span></div>
+                <div class="c rev"><span>R10·R11</span></div><div class="c rev"><span>R12·R13</span></div><div class="c lay"><span>LO</span></div>
+                <div class="c rev"><span>R14·R15</span></div><div class="c rev"><span>R16·R17</span></div><div class="c rev"><span>R18·R19</span></div><div class="c rev"><span>R20</span></div><div class="c rev"><span>R21</span></div><div class="c lay"><span>LO</span></div>
+                <div class="c dh"><span>DH</span></div>
+
+                <div class="b">Block 03</div>
+                <div class="c dh"><span>DH</span></div>
+                <div class="c rev"><span>R1</span></div><div class="c rev"><span>R2·R3</span></div><div class="c rev"><span>R4·R5</span></div>
+                <div class="c rev"><span>R6·R7</span></div><div class="c rev"><span>R8</span></div><div class="c brk"><span>BRK</span></div>
+                <div class="c rev"><span>R9·R10</span></div><div class="c rev"><span>R11·R12</span></div><div class="c rev"><span>R13</span></div>
+                <div class="c lay"><span>LO</span></div>
+                <div class="c rev"><span>R14</span></div><div class="c rev"><span>R15·R16</span></div><div class="c rev"><span>R17·R18</span></div><div class="c rev"><span>R19</span></div><div class="c lay"><span>LO</span></div>
+                <div class="c dh"><span>DH</span></div>
+
+                <div class="b" style="background:var(--gold-600)">Block 04 ✦</div>
+                <div class="c"></div><div class="c"></div>
+                <div class="c rev" style="background:var(--gold-50)"><span>R-S1·S2</span></div>
+                <div class="c rev" style="background:var(--gold-50)"><span>R-S3·S4</span></div>
+                <div class="c"></div><div class="c"></div><div class="c"></div><div class="c"></div><div class="c"></div><div class="c"></div>
+                <div class="c rev" style="background:var(--gold-50)"><span>R-S5·S6</span></div>
+                <div class="c rev" style="background:var(--gold-50)"><span>R-S7·S8</span></div>
+                <div class="c rev" style="background:var(--gold-50)"><span>R-S9·S10</span></div>
+                <div class="c rev" style="background:var(--gold-50)"><span>R-S11</span></div>
+                <div class="c"></div><div class="c"></div><div class="c"></div>
+              </div>
+              <div style="margin-top:14px;display:grid;grid-template-columns:repeat(4,1fr);gap:10px;font-size:11.5px">
+                <div style="padding:8px 10px;background:var(--ink-50);border-radius:5px"><b>Block 01</b><br><span class="mono" style="color:var(--ink-600)">22 trip · 2 deadhead · 1 break</span></div>
+                <div style="padding:8px 10px;background:var(--ink-50);border-radius:5px"><b>Block 02</b><br><span class="mono" style="color:var(--ink-600)">22 trip · 2 deadhead · 1 break</span></div>
+                <div style="padding:8px 10px;background:var(--ink-50);border-radius:5px"><b>Block 03</b><br><span class="mono" style="color:var(--ink-600)">22 trip · 2 deadhead · 1 break</span></div>
+                <div style="padding:8px 10px;background:var(--gold-50);border-radius:5px;border:1px solid var(--gold-100)"><b>Block 04 ✦ Sisipan</b><br><span class="mono" style="color:var(--gold-700)">11 trip peak only</span></div>
+              </div>
+            </div>
+          </div>
+
+          <div class="grid-2" style="margin-top:14px">
+            <div class="card">
+              <div class="card-head"><h3><span class="num">C</span> Interlining (lintas-rute)</h3></div>
+              <div class="card-body">
+                <div class="form-row"><label>Aktifkan interlining 1E ↔ 2</label><span class="toggle"><input type="checkbox"/><span class="slider"></span></span></div>
+                <div class="form-row"><label>Min. layover untuk handover</label><span class="mono">12 menit</span></div>
+                <div class="form-row" style="border-bottom:none"><label>Penghematan armada estimasi</label><span class="mono" style="color:var(--ok-700);font-weight:700">−1 bus</span></div>
+                <div style="font-size:11px;color:var(--ink-600);margin-top:8px;line-height:1.5">Memungkinkan satu bus melayani dua rute berurutan. Membutuhkan headway kompatibel dan terminal bersama.</div>
+              </div>
+            </div>
+            <div class="card">
+              <div class="card-head"><h3><span class="num">D</span> Strategi Pemulihan (Recovery)</h3></div>
+              <div class="card-body">
+                <div class="form-row"><label>Hold-and-release di terminal</label><span class="toggle"><input type="checkbox" checked/><span class="slider"></span></span></div>
+                <div class="form-row"><label>Skip-stop saat keterlambatan ≥</label><span class="mono">5 m</span></div>
+                <div class="form-row"><label>Short-turn auto saat bunching</label><span class="toggle"><input type="checkbox"/><span class="slider"></span></span></div>
+                <div class="form-row" style="border-bottom:none"><label>Deadhead reposition</label><span class="toggle"><input type="checkbox" checked/><span class="slider"></span></span></div>
+              </div>
+            </div>
+          </div>
+        </div><!-- /block pane -->
+
+        <!-- ═══ TAB: VALIDATOR ═══ -->
+        <div class="tab-pane" data-pane="validator" style="display:none">
+          <div style="display:flex;align-items:center;gap:10px;flex-wrap:wrap;margin-bottom:14px;padding:12px 14px;background:var(--info-50);border:1px solid var(--info-100);border-radius:6px;font-size:12.5px;color:var(--info-700)">
+            <b>Validator Real-Time.</b> Pemeriksaan otomatis terhadap regulasi (Permenhub 27/2015 &amp; 79/2013), konsistensi internal, dan praktik terbaik TCQSM. <b id="vCount">3</b> temuan ditemukan pada jadwal saat ini.
+          </div>
+
+          <div class="kpi-grid" style="grid-template-columns:repeat(4,1fr);gap:10px;margin-bottom:14px">
+            <div class="card"><div class="card-body" style="padding:12px"><div style="font-size:10px;color:var(--ink-600);text-transform:uppercase">Aturan Diperiksa</div><div class="num" style="font-size:22px;font-weight:700">28</div></div></div>
+            <div class="card"><div class="card-body" style="padding:12px"><div style="font-size:10px;color:var(--ok-700);text-transform:uppercase">Lulus</div><div class="num" style="font-size:22px;font-weight:700;color:var(--ok-700)">25</div></div></div>
+            <div class="card"><div class="card-body" style="padding:12px"><div style="font-size:10px;color:var(--warn-700);text-transform:uppercase">Peringatan</div><div class="num" style="font-size:22px;font-weight:700;color:var(--warn-700)">2</div></div></div>
+            <div class="card"><div class="card-body" style="padding:12px"><div style="font-size:10px;color:var(--bad-700);text-transform:uppercase">Pelanggaran</div><div class="num" style="font-size:22px;font-weight:700;color:var(--bad-700)">1</div></div></div>
+          </div>
+
+          <div class="card" style="margin-bottom:14px">
+            <div class="card-head"><h3><span class="num">A</span> Temuan Aktif</h3>
+              <div style="margin-left:auto;display:flex;gap:6px;font-size:11px">
+                <button class="btn">Hanya Pelanggaran</button>
+                <button class="btn">Semua</button>
+              </div>
+            </div>
+            <div class="card-body">
+              <div class="val-list">
+                <div class="val-item bad">
+                  <div class="marker">✕</div>
+                  <div class="body">
+                    <b>SPM Headway Peak Pagi (P05–P06)</b> melebihi ambang Permenhub 27/2015 §5
+                    <div class="desc">Headway aktual <b class="mono">12,4 m</b> &gt; ambang <b class="mono">10 m</b>. Rekomendasi: aktifkan sisipan armada (B-04) atau short-turn @ Halte 4 untuk periode 07:00–09:00.</div>
+                  </div>
+                  <button class="btn primary">Perbaiki Otomatis</button>
+                </div>
+                <div class="val-item warn">
+                  <div class="marker">!</div>
+                  <div class="body">
+                    <b>Sopir B-02 mendekati batas 8 jam</b> (Permenhub 79/2013)
+                    <div class="desc">Akumulasi jam: <b class="mono">7 j 32 m</b>. Sisa kapasitas <b class="mono">28 m</b>. Rekomendasi: rotasi sopir di pool atau extend break trip ke-7.</div>
+                  </div>
+                  <button class="btn">Tinjau</button>
+                </div>
+                <div class="val-item warn">
+                  <div class="marker">!</div>
+                  <div class="body">
+                    <b>Recovery time Block 03 di bawah ambang</b>
+                    <div class="desc">Recovery aktual <b class="mono">8,2%</b> &lt; ambang TCQSM <b class="mono">10–15%</b>. Risiko bunching meningkat saat keterlambatan kumulatif.</div>
+                  </div>
+                  <button class="btn">Tinjau</button>
+                </div>
+                <div class="val-item ok">
+                  <div class="marker">✓</div>
+                  <div class="body">
+                    <b>Frekuensi off-peak</b> sesuai SPM (≥ 4 trip/jam)
+                    <div class="desc">Frekuensi minimum tercapai di seluruh window non-peak.</div>
+                  </div>
+                </div>
+                <div class="val-item ok">
+                  <div class="marker">✓</div>
+                  <div class="body">
+                    <b>Layover terminal</b> sesuai standar
+                    <div class="desc">Rerata <b class="mono">10,2 m</b> per terminal — dalam rentang aman 8–15 m.</div>
+                  </div>
+                </div>
+                <div class="val-item ok">
+                  <div class="marker">✓</div>
+                  <div class="body">
+                    <b>Coefficient of Variation Headway</b> baik
+                    <div class="desc">CoV <b class="mono">0,11</b> &lt; ambang <b class="mono">0,2</b> — keseragaman headway terjaga.</div>
+                  </div>
+                </div>
+                <div class="val-item ok">
+                  <div class="marker">✓</div>
+                  <div class="body">
+                    <b>Tidak ada konflik trip</b> antar block
+                    <div class="desc">Tidak terdeteksi tumpang tindih waktu atau dwelling beyond capacity.</div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <div class="grid-2">
+            <div class="card">
+              <div class="card-head"><h3><span class="num">B</span> Cakupan Aturan</h3></div>
+              <div class="card-body" style="padding:0">
+                <table class="table">
+                  <thead><tr><th>Kategori</th><th class="num">Aturan</th><th>Status</th></tr></thead>
+                  <tbody>
+                    <tr><td>Permenhub 27/2015 (SPM)</td><td class="num">8</td><td><span class="stamp warn">1 pelanggaran</span></td></tr>
+                    <tr><td>Permenhub 79/2013 (Sopir)</td><td class="num">5</td><td><span class="stamp warn">1 peringatan</span></td></tr>
+                    <tr><td>TCQSM 3rd Ed.</td><td class="num">7</td><td><span class="stamp warn">1 peringatan</span></td></tr>
+                    <tr><td>Konsistensi Internal</td><td class="num">6</td><td><span class="stamp">Lulus</span></td></tr>
+                    <tr><td>Praktik Terbaik (BTS)</td><td class="num">2</td><td><span class="stamp">Lulus</span></td></tr>
+                  </tbody>
+                </table>
+              </div>
+            </div>
+            <div class="card">
+              <div class="card-head"><h3><span class="num">C</span> Riwayat Validasi (7 hari)</h3></div>
+              <div class="card-body">
+                <div style="display:flex;align-items:flex-end;gap:6px;height:120px">
+                  <div style="flex:1;display:flex;flex-direction:column;align-items:center;gap:4px"><div style="background:var(--ok-600);width:100%;height:78%;border-radius:3px 3px 0 0"></div><span style="font-size:10px;color:var(--ink-500)">27 Apr</span></div>
+                  <div style="flex:1;display:flex;flex-direction:column;align-items:center;gap:4px"><div style="background:var(--ok-600);width:100%;height:82%;border-radius:3px 3px 0 0"></div><span style="font-size:10px;color:var(--ink-500)">28</span></div>
+                  <div style="flex:1;display:flex;flex-direction:column;align-items:center;gap:4px"><div style="background:var(--warn-600);width:100%;height:60%;border-radius:3px 3px 0 0"></div><span style="font-size:10px;color:var(--ink-500)">29</span></div>
+                  <div style="flex:1;display:flex;flex-direction:column;align-items:center;gap:4px"><div style="background:var(--ok-600);width:100%;height:88%;border-radius:3px 3px 0 0"></div><span style="font-size:10px;color:var(--ink-500)">30</span></div>
+                  <div style="flex:1;display:flex;flex-direction:column;align-items:center;gap:4px"><div style="background:var(--ok-600);width:100%;height:90%;border-radius:3px 3px 0 0"></div><span style="font-size:10px;color:var(--ink-500)">01 Mei</span></div>
+                  <div style="flex:1;display:flex;flex-direction:column;align-items:center;gap:4px"><div style="background:var(--bad-600);width:100%;height:55%;border-radius:3px 3px 0 0"></div><span style="font-size:10px;color:var(--ink-500)">02</span></div>
+                  <div style="flex:1;display:flex;flex-direction:column;align-items:center;gap:4px;font-weight:700"><div style="background:var(--warn-600);width:100%;height:72%;border-radius:3px 3px 0 0"></div><span style="font-size:10px;color:var(--navy-900)">03 ◀</span></div>
+                </div>
+                <div style="font-size:11px;color:var(--ink-600);margin-top:10px;line-height:1.5"><b>Skor hari ini: 89/100</b> — dalam rentang sehat. Penurunan 02 Mei terkait jadwal eksperimental yang sudah dikoreksi.</div>
+              </div>
+            </div>
+          </div>
+        </div><!-- /validator pane -->
       </div>
 
       <!-- ═══════ UTILISASI PAGE ═══════ -->
@@ -4241,6 +4915,380 @@
         </div>
       </div>
 
+      <!-- ═══════ NOTIFIKASI & PERINGATAN PAGE ═══════ -->
+      <div class="page" id="page-notifikasi">
+        <div class="page-head">
+          <div>
+            <div class="breadcrumb">Akun &amp; Sistem · <b>Notifikasi &amp; Peringatan</b></div>
+            <h1 class="page-title">Pusat Notifikasi Operasi</h1>
+            <div class="page-subtitle"><b class="mono">5</b> baru · <b class="mono">12</b> minggu ini · Pemberitahuan SPM, kepatuhan, dan kejadian armada</div>
+          </div>
+          <div class="page-actions">
+            <button class="btn">Tandai Semua Dibaca</button>
+            <button class="btn primary">Pengaturan Saluran</button>
+          </div>
+        </div>
+
+        <div class="grid-2">
+          <div class="card">
+            <div class="card-head"><h3><span class="num">A</span> Notifikasi Aktif</h3></div>
+            <div class="card-body" style="padding:0">
+              <table class="table">
+                <thead><tr><th style="width:90px">Waktu</th><th style="width:90px">Tingkat</th><th>Pesan</th><th style="width:120px">Sumber</th><th style="width:80px">Aksi</th></tr></thead>
+                <tbody>
+                  <tr style="background:var(--bad-50)"><td class="mono">09:38</td><td><span class="stamp" style="background:var(--bad-100);color:var(--bad-700);border-color:var(--bad-700)">KRITIS</span></td><td><b>Bus B-02</b> menyimpang &gt; 5 menit dari jadwal trip ke-7. Headway peak terganggu.</td><td>Peta Live</td><td><button class="btn">Tinjau</button></td></tr>
+                  <tr style="background:var(--warn-50)"><td class="mono">09:24</td><td><span class="stamp warn">PERINGATAN</span></td><td>SPM headway peak pagi <b>12,4 m</b> &gt; ambang <b>10 m</b> (Permenhub 27/2015 §5).</td><td>Audit SPM</td><td><button class="btn">Tinjau</button></td></tr>
+                  <tr style="background:var(--warn-50)"><td class="mono">09:12</td><td><span class="stamp warn">PERINGATAN</span></td><td>Sopir <b>Hadi P.</b> mendekati batas 8 jam (sisa 28 menit). Permenhub 79/2013.</td><td>Roster Sopir</td><td><button class="btn">Tinjau</button></td></tr>
+                  <tr><td class="mono">08:45</td><td><span class="stamp info">INFO</span></td><td>Skenario <b>A — Sisipan Peak Pagi</b> berhasil diadopsi sebagai jadwal aktif.</td><td>Komparasi</td><td><button class="btn">Buka</button></td></tr>
+                  <tr><td class="mono">08:10</td><td><span class="stamp info">INFO</span></td><td>Pemeliharaan terjadwal <b>Bus B-04</b> akan jatuh dalam 3 hari (target KM tercapai).</td><td>Pemeliharaan</td><td><button class="btn">Buka</button></td></tr>
+                  <tr style="opacity:0.7"><td class="mono">07:55</td><td><span class="stamp">DIBACA</span></td><td>Faktor cuaca: hujan ringan terdeteksi di Halte 4–6, OTP perlu dipantau.</td><td>Faktor Eksternal</td><td><button class="btn">Buka</button></td></tr>
+                  <tr style="opacity:0.7"><td class="mono">07:30</td><td><span class="stamp">DIBACA</span></td><td>Laporan harian <b>02 Mei 2026</b> berhasil diunggah ke arsip resmi.</td><td>Laporan</td><td><button class="btn">Buka</button></td></tr>
+                </tbody>
+              </table>
+            </div>
+          </div>
+
+          <div class="card">
+            <div class="card-head"><h3><span class="num">B</span> Saluran &amp; Preferensi</h3></div>
+            <div class="card-body">
+              <div class="form-row"><label>Email Resmi (NIP)</label><span class="toggle"><input type="checkbox" checked/><span class="slider"></span></span></div>
+              <div class="form-row"><label>SMS / WhatsApp Operator</label><span class="toggle"><input type="checkbox" checked/><span class="slider"></span></span></div>
+              <div class="form-row"><label>Push Browser Dashboard</label><span class="toggle"><input type="checkbox" checked/><span class="slider"></span></span></div>
+              <div class="form-row"><label>Webhook ke ITS Pusat</label><span class="toggle"><input type="checkbox"/><span class="slider"></span></span></div>
+              <div class="form-row"><label>Eskalasi Kepala UPT (≥KRITIS)</label><span class="toggle"><input type="checkbox" checked/><span class="slider"></span></span></div>
+              <div class="form-row" style="border-bottom:none"><label>Ringkasan Harian (08:00 WIB)</label><span class="toggle"><input type="checkbox" checked/><span class="slider"></span></span></div>
+            </div>
+          </div>
+        </div>
+
+        <div class="card" style="margin-top:18px">
+          <div class="card-head"><h3><span class="num">C</span> Aturan Pemicu (Threshold)</h3></div>
+          <div class="card-body" style="padding:0">
+            <table class="table">
+              <thead><tr><th>Kategori</th><th>Pemicu</th><th>Ambang</th><th>Tingkat</th><th>Penerima</th><th>Status</th></tr></thead>
+              <tbody>
+                <tr><td>Headway</td><td>Headway peak &gt; ambang SPM</td><td class="mono">10 menit</td><td><span class="stamp warn">Peringatan</span></td><td>Operator, Perencana</td><td><span class="stamp">Aktif</span></td></tr>
+                <tr><td>Penyimpangan</td><td>Bus &gt; X menit dari jadwal</td><td class="mono">5 menit</td><td><span class="stamp" style="background:var(--bad-100);color:var(--bad-700);border-color:var(--bad-700)">Kritis</span></td><td>Pengawas Lapangan</td><td><span class="stamp">Aktif</span></td></tr>
+                <tr><td>Jam Sopir</td><td>Sopir mendekati batas Permenhub 79</td><td class="mono">7 jam 30 m</td><td><span class="stamp warn">Peringatan</span></td><td>Roster, Sopir</td><td><span class="stamp">Aktif</span></td></tr>
+                <tr><td>Pemeliharaan</td><td>KM bus mendekati interval servis</td><td class="mono">95% interval</td><td><span class="stamp info">Info</span></td><td>Bengkel, Perencana</td><td><span class="stamp">Aktif</span></td></tr>
+                <tr><td>Pendapatan</td><td>Margin harian rute &lt; ambang</td><td class="mono">−5%</td><td><span class="stamp warn">Peringatan</span></td><td>Manajemen Keuangan</td><td><span class="stamp">Aktif</span></td></tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
+      </div>
+
+      <!-- ═══════ MANAJEMEN INSIDEN PAGE ═══════ -->
+      <div class="page" id="page-insiden">
+        <div class="page-head">
+          <div>
+            <div class="breadcrumb">Akun &amp; Sistem · <b>Manajemen Insiden</b></div>
+            <h1 class="page-title">Catatan &amp; Tindak Lanjut Insiden Operasi</h1>
+            <div class="page-subtitle">Pelaporan insiden lapangan, penyebab, dampak, dan corrective action.</div>
+          </div>
+          <div class="page-actions">
+            <button class="btn">Ekspor Berita Acara</button>
+            <button class="btn primary">+ Lapor Insiden</button>
+          </div>
+        </div>
+
+        <div class="kpi-grid" style="margin-bottom:18px">
+          <div class="card"><div class="card-body"><div style="font-size:11px;color:var(--ink-600);text-transform:uppercase;letter-spacing:0.06em">Insiden Bulan Ini</div><div class="num" style="font-size:28px;font-weight:700;color:var(--navy-900);margin-top:4px">7</div><div style="font-size:11px;color:var(--ok-700)">▼ 30% vs bulan lalu</div></div></div>
+          <div class="card"><div class="card-body"><div style="font-size:11px;color:var(--ink-600);text-transform:uppercase;letter-spacing:0.06em">Terbuka</div><div class="num" style="font-size:28px;font-weight:700;color:var(--bad-700);margin-top:4px">2</div><div style="font-size:11px;color:var(--ink-600)">SLA &lt; 24 jam</div></div></div>
+          <div class="card"><div class="card-body"><div style="font-size:11px;color:var(--ink-600);text-transform:uppercase;letter-spacing:0.06em">Selesai</div><div class="num" style="font-size:28px;font-weight:700;color:var(--ok-700);margin-top:4px">5</div><div style="font-size:11px;color:var(--ink-600)">Rata-rata 6 jam</div></div></div>
+          <div class="card"><div class="card-body"><div style="font-size:11px;color:var(--ink-600);text-transform:uppercase;letter-spacing:0.06em">MTBF Armada</div><div class="num" style="font-size:28px;font-weight:700;color:var(--navy-900);margin-top:4px">12,4</div><div style="font-size:11px;color:var(--ink-600)">hari antar insiden</div></div></div>
+        </div>
+
+        <div class="card">
+          <div class="card-head"><h3><span class="num">A</span> Daftar Insiden Aktif &amp; Riwayat</h3></div>
+          <div class="card-body" style="padding:0">
+            <table class="table">
+              <thead><tr><th style="width:80px">Tiket</th><th style="width:90px">Tanggal</th><th>Insiden</th><th style="width:90px">Bus</th><th style="width:100px">Lokasi</th><th style="width:100px">Kategori</th><th style="width:90px">Dampak</th><th style="width:100px">Penanggung Jawab</th><th style="width:90px">Status</th></tr></thead>
+              <tbody>
+                <tr style="background:var(--bad-50)"><td class="mono"><b>INC-0247</b></td><td class="mono">03 Mei 09:38</td><td><b>Bus terlambat 12 menit</b> akibat penumpukan di Halte 4</td><td class="mono">B-02</td><td>H4 → H5</td><td><span class="stamp warn">Operasional</span></td><td><span class="stamp" style="background:var(--bad-100);color:var(--bad-700);border-color:var(--bad-700)">Tinggi</span></td><td>Sri Yulianti</td><td><span class="stamp warn">Investigasi</span></td></tr>
+                <tr style="background:var(--warn-50)"><td class="mono"><b>INC-0246</b></td><td class="mono">03 Mei 08:14</td><td>AC kabin penumpang tidak dingin (laporan penumpang)</td><td class="mono">B-04</td><td>H1</td><td><span class="stamp">Teknis</span></td><td><span class="stamp warn">Sedang</span></td><td>Bengkel</td><td><span class="stamp warn">Tindakan</span></td></tr>
+                <tr><td class="mono">INC-0245</td><td class="mono">02 Mei 17:32</td><td>Pintu otomatis macet, ditangani manual oleh kondektur</td><td class="mono">B-01</td><td>H6</td><td><span class="stamp">Teknis</span></td><td><span class="stamp">Rendah</span></td><td>Bengkel</td><td><span class="stamp">Selesai</span></td></tr>
+                <tr><td class="mono">INC-0244</td><td class="mono">02 Mei 14:08</td><td>Demonstrasi sementara di sekitar Halte 3, rute dibelokkan</td><td class="mono">Semua</td><td>H3</td><td><span class="stamp info">Eksternal</span></td><td><span class="stamp warn">Sedang</span></td><td>Pengawas Lapangan</td><td><span class="stamp">Selesai</span></td></tr>
+                <tr><td class="mono">INC-0243</td><td class="mono">01 Mei 19:55</td><td>Penumpang sakit, evakuasi ke RS terdekat (10 menit)</td><td class="mono">B-03</td><td>H5</td><td><span class="stamp info">Pelayanan</span></td><td><span class="stamp warn">Sedang</span></td><td>Sopir + Tim P3K</td><td><span class="stamp">Selesai</span></td></tr>
+                <tr><td class="mono">INC-0242</td><td class="mono">30 Apr 11:20</td><td>Tabrakan minor dengan motor, tidak ada korban</td><td class="mono">B-02</td><td>H2 → H3</td><td><span class="stamp warn">Keselamatan</span></td><td><span class="stamp" style="background:var(--bad-100);color:var(--bad-700);border-color:var(--bad-700)">Tinggi</span></td><td>Pengawas Lapangan</td><td><span class="stamp">Selesai</span></td></tr>
+                <tr><td class="mono">INC-0241</td><td class="mono">29 Apr 06:48</td><td>Bus tertunda berangkat 8 menit (sopir terlambat)</td><td class="mono">B-01</td><td>Pool</td><td><span class="stamp warn">SDM</span></td><td><span class="stamp">Rendah</span></td><td>Roster Sopir</td><td><span class="stamp">Selesai</span></td></tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
+
+        <div class="grid-2" style="margin-top:18px">
+          <div class="card">
+            <div class="card-head"><h3><span class="num">B</span> Distribusi Kategori (30 hari)</h3></div>
+            <div class="card-body">
+              <div style="display:flex;flex-direction:column;gap:10px">
+                <div style="display:flex;align-items:center;gap:10px"><span style="width:120px;font-size:12px">Operasional</span><div style="flex:1;background:var(--ink-100);height:18px;border-radius:3px"><div style="width:42%;height:100%;background:var(--warn-600);border-radius:3px"></div></div><span class="mono" style="width:40px;text-align:right">11</span></div>
+                <div style="display:flex;align-items:center;gap:10px"><span style="width:120px;font-size:12px">Teknis</span><div style="flex:1;background:var(--ink-100);height:18px;border-radius:3px"><div style="width:30%;height:100%;background:var(--info-600);border-radius:3px"></div></div><span class="mono" style="width:40px;text-align:right">8</span></div>
+                <div style="display:flex;align-items:center;gap:10px"><span style="width:120px;font-size:12px">Pelayanan</span><div style="flex:1;background:var(--ink-100);height:18px;border-radius:3px"><div style="width:18%;height:100%;background:var(--ok-600);border-radius:3px"></div></div><span class="mono" style="width:40px;text-align:right">5</span></div>
+                <div style="display:flex;align-items:center;gap:10px"><span style="width:120px;font-size:12px">Keselamatan</span><div style="flex:1;background:var(--ink-100);height:18px;border-radius:3px"><div style="width:8%;height:100%;background:var(--bad-600);border-radius:3px"></div></div><span class="mono" style="width:40px;text-align:right">2</span></div>
+                <div style="display:flex;align-items:center;gap:10px"><span style="width:120px;font-size:12px">Eksternal</span><div style="flex:1;background:var(--ink-100);height:18px;border-radius:3px"><div style="width:6%;height:100%;background:var(--ink-500);border-radius:3px"></div></div><span class="mono" style="width:40px;text-align:right">1</span></div>
+              </div>
+            </div>
+          </div>
+          <div class="card">
+            <div class="card-head"><h3><span class="num">C</span> Tindak Lanjut (Corrective Action)</h3></div>
+            <div class="card-body">
+              <ul style="margin:0;padding-left:18px;line-height:1.7;font-size:13px">
+                <li><b>INC-0247</b> — Tambah petugas penjaga di Halte 4 saat peak pagi (PIC: Sri Yulianti, target: 04 Mei).</li>
+                <li><b>INC-0246</b> — Penggantian kompresor AC B-04 dijadwal pada slot pemeliharaan 06 Mei.</li>
+                <li><b>INC-0242</b> — Refresher training defensive driving untuk seluruh sopir (PIC: HR, target: 15 Mei).</li>
+                <li><b>Pola berulang</b>: 4 dari 7 insiden bulan ini terjadi di periode peak pagi → naikkan supervisi.</li>
+              </ul>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- ═══════ RIWAYAT AKTIVITAS / AUDIT LOG PAGE ═══════ -->
+      <div class="page" id="page-riwayat">
+        <div class="page-head">
+          <div>
+            <div class="breadcrumb">Akun &amp; Sistem · <b>Riwayat Aktivitas</b></div>
+            <h1 class="page-title">Audit Trail Sistem (Tamper-evident)</h1>
+            <div class="page-subtitle">Setiap perubahan tercatat dengan NIP, IP, hash, dan timestamp WIB. Wajib retensi <b>5 tahun</b>.</div>
+          </div>
+          <div class="page-actions">
+            <button class="btn">Ekspor CSV</button>
+            <button class="btn">Verifikasi Hash</button>
+            <button class="btn primary">Filter Lanjutan</button>
+          </div>
+        </div>
+
+        <div class="card" style="margin-bottom:18px">
+          <div class="card-body" style="display:flex;gap:10px;flex-wrap:wrap;align-items:center">
+            <input class="input" placeholder="Cari NIP, nama pengguna, atau kata kunci..." style="flex:1;min-width:240px"/>
+            <select class="input" style="width:170px"><option>Semua aksi</option><option>Login / Logout</option><option>Edit jadwal</option><option>Setujui / Sah</option><option>Hapus data</option></select>
+            <select class="input" style="width:170px"><option>Semua pengguna</option><option>Perencana Madya</option><option>Kepala UPT</option><option>Operator Jadwal</option><option>Auditor</option></select>
+            <input type="date" class="input" style="width:160px"/>
+          </div>
+        </div>
+
+        <div class="card">
+          <div class="card-head"><h3><span class="num">A</span> Log Terbaru (50 entri)</h3></div>
+          <div class="card-body" style="padding:0">
+            <table class="table">
+              <thead><tr><th style="width:130px">Waktu</th><th style="width:160px">Pengguna</th><th style="width:90px">Aksi</th><th>Objek / Detail</th><th style="width:120px">IP</th><th style="width:90px">Hash</th></tr></thead>
+              <tbody>
+                <tr><td class="mono">03 Mei 09:42</td><td><b>Ir. Rizki A.</b><div style="font-size:10px;color:var(--ink-600)" class="mono">19850412...003</div></td><td><span class="stamp">View</span></td><td>Buka Dashboard Koridor 1E</td><td class="mono">10.10.4.21</td><td class="mono" style="font-size:10px">a3f2…d1c8</td></tr>
+                <tr style="background:var(--ok-50)"><td class="mono">03 Mei 09:38</td><td><b>Drs. Haryanto</b><div style="font-size:10px;color:var(--ink-600)" class="mono">19720718...002</div></td><td><span class="stamp">Setujui</span></td><td>Sah jadwal Skenario A — 76 trip · 4 bus aktif</td><td class="mono">10.10.4.05</td><td class="mono" style="font-size:10px">b7e1…9a04</td></tr>
+                <tr><td class="mono">03 Mei 09:24</td><td><b>Sri Yulianti</b><div style="font-size:10px;color:var(--ink-600)" class="mono">19900521...001</div></td><td><span class="stamp warn">Edit</span></td><td>Ubah headway peak pagi 15m → 12m (Periode Operasi)</td><td class="mono">10.10.4.18</td><td class="mono" style="font-size:10px">c5d8…3b21</td></tr>
+                <tr><td class="mono">03 Mei 09:12</td><td><b>Sri Yulianti</b><div style="font-size:10px;color:var(--ink-600)" class="mono">19900521...001</div></td><td><span class="stamp warn">Edit</span></td><td>Tambah Sisipan Bus B-04 pada periode 07–09</td><td class="mono">10.10.4.18</td><td class="mono" style="font-size:10px">d2c4…8e15</td></tr>
+                <tr><td class="mono">03 Mei 08:55</td><td><b>Sri Yulianti</b></td><td><span class="stamp info">Login</span></td><td>Otentikasi sukses (SSO Pemerintahan)</td><td class="mono">10.10.4.18</td><td class="mono" style="font-size:10px">e1a0…7c93</td></tr>
+                <tr><td class="mono">03 Mei 08:42</td><td><b>Ir. Rizki A.</b></td><td><span class="stamp">Generate</span></td><td>Cetak Laporan Resmi Harian 02 Mei 2026</td><td class="mono">10.10.4.21</td><td class="mono" style="font-size:10px">f6b9…2a47</td></tr>
+                <tr><td class="mono">03 Mei 08:10</td><td><b>System</b></td><td><span class="stamp">Otomatis</span></td><td>Sinkronisasi data GPS armada (4 bus, 9.412 ping)</td><td class="mono">127.0.0.1</td><td class="mono" style="font-size:10px">9c7f…be03</td></tr>
+                <tr style="background:var(--bad-50)"><td class="mono">02 Mei 22:08</td><td><b>Adi Suryana</b><div style="font-size:10px;color:var(--ink-600)" class="mono">19880304...005</div></td><td><span class="stamp" style="background:var(--bad-100);color:var(--bad-700);border-color:var(--bad-700)">Hapus</span></td><td>Tolak draft Skenario B (alasan: belum approve Kepala UPT)</td><td class="mono">10.10.4.31</td><td class="mono" style="font-size:10px">8a0d…4f56</td></tr>
+                <tr><td class="mono">02 Mei 16:18</td><td><b>Drs. Haryanto</b></td><td><span class="stamp info">Login</span></td><td>Otentikasi sukses (SSO Pemerintahan)</td><td class="mono">10.10.4.05</td><td class="mono" style="font-size:10px">7b2c…1f88</td></tr>
+                <tr><td class="mono">02 Mei 14:30</td><td><b>Adi Suryana</b></td><td><span class="stamp">View</span></td><td>Audit SPM Compliance — ekspor temuan</td><td class="mono">10.10.4.31</td><td class="mono" style="font-size:10px">6e4a…d077</td></tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
+
+        <div style="margin-top:14px;padding:12px 16px;background:var(--info-50);border:1px solid var(--info-100);border-radius:6px;font-size:12px;color:var(--info-700);line-height:1.6">
+          <b>Integritas Data:</b> Setiap entri di-hash dengan SHA-256 dan dirantai (Merkle chain). Verifikasi terakhir <b class="mono">03 Mei 09:00</b> — semua entri valid (0 anomali). Kebijakan retensi mengikuti <b>Permenpan-RB 53/2018</b>.
+        </div>
+      </div>
+
+      <!-- ═══════ PROFIL PENGGUNA PAGE ═══════ -->
+      <div class="page" id="page-profil">
+        <div class="page-head">
+          <div>
+            <div class="breadcrumb">Akun &amp; Sistem · <b>Profil Pengguna</b></div>
+            <h1 class="page-title">Profil &amp; Keamanan Akun</h1>
+            <div class="page-subtitle">Identitas resmi, hak akses, dan preferensi sesi.</div>
+          </div>
+          <div class="page-actions">
+            <button class="btn">Keluar (Logout)</button>
+            <button class="btn primary">Simpan Perubahan</button>
+          </div>
+        </div>
+
+        <div class="grid-2">
+          <div class="card">
+            <div class="card-head"><h3><span class="num">A</span> Identitas Resmi</h3></div>
+            <div class="card-body">
+              <div style="display:flex;align-items:center;gap:14px;margin-bottom:14px;padding-bottom:14px;border-bottom:1px solid var(--ink-200)">
+                <div style="width:64px;height:64px;border-radius:50%;background:var(--navy-700);color:var(--white);display:flex;align-items:center;justify-content:center;font-size:22px;font-weight:700">RA</div>
+                <div>
+                  <div style="font-size:16px;font-weight:700;color:var(--navy-900)">Ir. Rizki Aditama, M.T.</div>
+                  <div style="font-size:12px;color:var(--ink-600)">Perencana Madya · Direktorat Jenderal Perhubungan Darat</div>
+                  <div style="margin-top:4px"><span class="stamp">PNS Aktif</span> <span class="stamp info">Golongan IV/a</span></div>
+                </div>
+              </div>
+              <div class="form-row"><label>NIP</label><input class="input mono" value="19850412 200912 1 003" readonly/></div>
+              <div class="form-row"><label>Nama Lengkap</label><input class="input" value="Ir. Rizki Aditama, M.T."/></div>
+              <div class="form-row"><label>Email Dinas</label><input class="input" value="rizki.aditama@dephub.go.id"/></div>
+              <div class="form-row"><label>No. HP Dinas</label><input class="input mono" value="0812-3456-7890"/></div>
+              <div class="form-row" style="border-bottom:none"><label>Unit Kerja</label><input class="input" value="BPTJ — OIKN" readonly/></div>
+            </div>
+          </div>
+
+          <div class="card">
+            <div class="card-head"><h3><span class="num">B</span> Keamanan &amp; Sesi</h3></div>
+            <div class="card-body">
+              <div class="form-row"><label>Password</label><button class="btn">Ubah Password</button></div>
+              <div class="form-row"><label>Two-Factor (TOTP)</label><span class="stamp">Aktif · Google Authenticator</span></div>
+              <div class="form-row"><label>SSO Pemerintahan</label><span class="stamp">Tersinkron</span></div>
+              <div class="form-row"><label>Tanda Tangan Elektronik</label><span class="stamp">BSrE Aktif</span></div>
+              <div class="form-row"><label>Sesi Aktif</label><span class="mono">2 perangkat</span></div>
+              <div class="form-row" style="border-bottom:none"><label>Login Terakhir</label><span class="mono">03 Mei 2026 · 09:42 WIB · 10.10.4.21</span></div>
+            </div>
+          </div>
+        </div>
+
+        <div class="grid-2" style="margin-top:18px">
+          <div class="card">
+            <div class="card-head"><h3><span class="num">C</span> Hak Akses (Role)</h3></div>
+            <div class="card-body" style="padding:0">
+              <table class="table">
+                <thead><tr><th>Modul</th><th>Akses</th></tr></thead>
+                <tbody>
+                  <tr><td>Dashboard &amp; Ikhtisar</td><td><span class="stamp">View</span></td></tr>
+                  <tr><td>Perencanaan Jadwal</td><td><span class="stamp">Edit</span></td></tr>
+                  <tr><td>Sah &amp; Terbitkan Jadwal</td><td><span class="stamp warn">Approver</span></td></tr>
+                  <tr><td>Audit SPM</td><td><span class="stamp">View</span></td></tr>
+                  <tr><td>Biaya &amp; Kontrak</td><td><span class="stamp">Edit</span></td></tr>
+                  <tr><td>Pengaturan Sistem</td><td><span class="stamp warn">Admin</span></td></tr>
+                  <tr><td>Hapus Data Master</td><td><span class="stamp" style="background:var(--bad-100);color:var(--bad-700);border-color:var(--bad-700)">Tidak Diizinkan</span></td></tr>
+                </tbody>
+              </table>
+            </div>
+          </div>
+          <div class="card">
+            <div class="card-head"><h3><span class="num">D</span> Preferensi Tampilan</h3></div>
+            <div class="card-body">
+              <div class="form-row"><label>Bahasa</label><input class="input" value="Bahasa Indonesia"/></div>
+              <div class="form-row"><label>Zona Waktu</label><input class="input" value="WIB (UTC+7)"/></div>
+              <div class="form-row"><label>Format Tanggal</label><input class="input" value="DD MMM YYYY"/></div>
+              <div class="form-row"><label>Halaman Awal</label><input class="input" value="Dashboard"/></div>
+              <div class="form-row"><label>Mode Kontras Tinggi</label><span class="toggle"><input type="checkbox"/><span class="slider"></span></span></div>
+              <div class="form-row" style="border-bottom:none"><label>Notifikasi Suara</label><span class="toggle"><input type="checkbox" checked/><span class="slider"></span></span></div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- ═══════ BANTUAN & DOKUMENTASI PAGE ═══════ -->
+      <div class="page" id="page-bantuan">
+        <div class="page-head">
+          <div>
+            <div class="breadcrumb">Akun &amp; Sistem · <b>Bantuan &amp; Dokumentasi</b></div>
+            <h1 class="page-title">Pusat Bantuan Pengguna</h1>
+            <div class="page-subtitle">Panduan operasional, dasar regulasi, dan kontak dukungan teknis 24/7.</div>
+          </div>
+          <div class="page-actions">
+            <button class="btn">Unduh Manual (PDF)</button>
+            <button class="btn primary">Hubungi Helpdesk</button>
+          </div>
+        </div>
+
+        <div class="card" style="margin-bottom:18px">
+          <div class="card-body" style="display:flex;gap:10px;align-items:center">
+            <svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="var(--ink-500)" stroke-width="2"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
+            <input class="input" placeholder="Cari topik bantuan: 'cara membuat jadwal', 'audit SPM', 'sisipan armada'..." style="flex:1"/>
+            <button class="btn primary">Cari</button>
+          </div>
+        </div>
+
+        <div class="grid-3">
+          <div class="card">
+            <div class="card-head"><h3><span class="num">A</span> Mulai Cepat</h3></div>
+            <div class="card-body">
+              <ul style="margin:0;padding-left:18px;line-height:1.9;font-size:13px">
+                <li><a href="#" data-page="setup" style="color:var(--info-700);text-decoration:none">Mengatur Parameter Rute</a></li>
+                <li><a href="#" data-page="periode" style="color:var(--info-700);text-decoration:none">Menentukan Periode Operasi</a></li>
+                <li><a href="#" data-page="jadwal" style="color:var(--info-700);text-decoration:none">Membuat Matrix Jadwal Bus</a></li>
+                <li><a href="#" data-page="sisipan" style="color:var(--info-700);text-decoration:none">Menambah Sisipan Armada Peak</a></li>
+                <li><a href="#" data-page="audit" style="color:var(--info-700);text-decoration:none">Menjalankan Audit SPM</a></li>
+                <li><a href="#" data-page="laporan" style="color:var(--info-700);text-decoration:none">Mencetak Laporan Resmi</a></li>
+              </ul>
+            </div>
+          </div>
+
+          <div class="card">
+            <div class="card-head"><h3><span class="num">B</span> Dasar Regulasi</h3></div>
+            <div class="card-body">
+              <ul style="margin:0;padding-left:18px;line-height:1.9;font-size:13px">
+                <li><b>Permenhub 27/2015</b> — SPM Angkutan Massal</li>
+                <li><b>Permenhub 79/2013</b> — Jam Kerja Sopir</li>
+                <li><b>PM 9/2020</b> — Buy The Service (BTS)</li>
+                <li><b>Permenpan-RB 53/2018</b> — Arsip Elektronik</li>
+                <li><b>TCQSM 3rd Ed.</b> — TCRP Report 165</li>
+                <li><b>UU 22/2009</b> — Lalu Lintas &amp; Angkutan Jalan</li>
+              </ul>
+            </div>
+          </div>
+
+          <div class="card">
+            <div class="card-head"><h3><span class="num">C</span> Pintasan Keyboard</h3></div>
+            <div class="card-body">
+              <table style="width:100%;font-size:12px">
+                <tr><td style="padding:4px 0">Buka Dashboard</td><td style="text-align:right"><span class="mono" style="background:var(--ink-100);padding:2px 6px;border-radius:3px">Alt + 1</span></td></tr>
+                <tr><td style="padding:4px 0">Buka Jadwal</td><td style="text-align:right"><span class="mono" style="background:var(--ink-100);padding:2px 6px;border-radius:3px">Alt + 2</span></td></tr>
+                <tr><td style="padding:4px 0">Cetak Laporan</td><td style="text-align:right"><span class="mono" style="background:var(--ink-100);padding:2px 6px;border-radius:3px">Ctrl + P</span></td></tr>
+                <tr><td style="padding:4px 0">Cari Cepat</td><td style="text-align:right"><span class="mono" style="background:var(--ink-100);padding:2px 6px;border-radius:3px">Ctrl + K</span></td></tr>
+                <tr><td style="padding:4px 0">Simpan Perubahan</td><td style="text-align:right"><span class="mono" style="background:var(--ink-100);padding:2px 6px;border-radius:3px">Ctrl + S</span></td></tr>
+                <tr><td style="padding:4px 0">Notifikasi</td><td style="text-align:right"><span class="mono" style="background:var(--ink-100);padding:2px 6px;border-radius:3px">Alt + N</span></td></tr>
+              </table>
+            </div>
+          </div>
+        </div>
+
+        <div class="card" style="margin-top:18px">
+          <div class="card-head"><h3><span class="num">D</span> Pertanyaan yang Sering Diajukan (FAQ)</h3></div>
+          <div class="card-body">
+            <details style="border-bottom:1px solid var(--ink-200);padding:10px 0">
+              <summary style="font-weight:600;cursor:pointer;color:var(--navy-900)">Bagaimana cara menambah armada sisipan saat peak hour?</summary>
+              <div style="margin-top:8px;font-size:13px;color:var(--ink-700);line-height:1.6">Buka menu <b>Sisipan Armada</b>, klik <b>+ Tambah Sisipan</b>, pilih periode peak (mis. 07:00–09:00), tentukan jumlah trip, lalu <i>Sah &amp; Terbitkan</i>. Sisipan akan otomatis muncul pada Matrix Bus dengan penanda khusus.</div>
+            </details>
+            <details style="border-bottom:1px solid var(--ink-200);padding:10px 0">
+              <summary style="font-weight:600;cursor:pointer;color:var(--navy-900)">Apa yang terjadi jika headway peak melebihi 10 menit?</summary>
+              <div style="margin-top:8px;font-size:13px;color:var(--ink-700);line-height:1.6">Sistem akan otomatis menampilkan peringatan <span class="stamp warn">Belum Penuh</span> pada Audit SPM dan mengirim notifikasi ke perencana. Lihat menu <a href="#" data-page="audit" style="color:var(--info-700)">Audit SPM Compliance</a> untuk detail temuan dan rekomendasi.</div>
+            </details>
+            <details style="border-bottom:1px solid var(--ink-200);padding:10px 0">
+              <summary style="font-weight:600;cursor:pointer;color:var(--navy-900)">Bagaimana mengubah jadwal yang sudah disahkan Kepala UPT?</summary>
+              <div style="margin-top:8px;font-size:13px;color:var(--ink-700);line-height:1.6">Jadwal yang berstatus <b>SAH</b> hanya dapat diubah dengan membuat skenario baru (Komparasi Skenario), kemudian melalui workflow approval ulang. Perubahan tercatat lengkap pada <a href="#" data-page="riwayat" style="color:var(--info-700)">Riwayat Aktivitas</a>.</div>
+            </details>
+            <details style="border-bottom:1px solid var(--ink-200);padding:10px 0">
+              <summary style="font-weight:600;cursor:pointer;color:var(--navy-900)">Apakah laporan dapat diintegrasikan dengan SIPDA / e-Performance?</summary>
+              <div style="margin-top:8px;font-size:13px;color:var(--ink-700);line-height:1.6">Ya, melalui webhook pada <a href="#" data-page="pengaturan" style="color:var(--info-700)">Pengaturan Sistem</a>. Format ekspor mendukung CSV, JSON, dan PDF bertanda tangan elektronik (BSrE).</div>
+            </details>
+            <details style="padding:10px 0">
+              <summary style="font-weight:600;cursor:pointer;color:var(--navy-900)">Bagaimana melaporkan insiden di lapangan?</summary>
+              <div style="margin-top:8px;font-size:13px;color:var(--ink-700);line-height:1.6">Buka <a href="#" data-page="insiden" style="color:var(--info-700)">Manajemen Insiden</a>, klik <b>+ Lapor Insiden</b>, isi tiket dengan kategori, dampak, dan PIC. Sistem akan membuat tiket INC-xxxx yang dapat dipantau hingga selesai.</div>
+            </details>
+          </div>
+        </div>
+
+        <div class="grid-2" style="margin-top:18px">
+          <div class="card">
+            <div class="card-head"><h3><span class="num">E</span> Kontak Dukungan Teknis</h3></div>
+            <div class="card-body">
+              <div class="form-row"><label>Helpdesk Pusat</label><span class="mono">021-3506-138 (24/7)</span></div>
+              <div class="form-row"><label>Email Dukungan</label><span class="mono">helpdesk-jadwalbus@dephub.go.id</span></div>
+              <div class="form-row"><label>WhatsApp Tiket</label><span class="mono">0811-9000-138</span></div>
+              <div class="form-row"><label>Portal SLA</label><a href="#" style="color:var(--info-700)">sla.dephub.go.id</a></div>
+              <div class="form-row" style="border-bottom:none"><label>SLA Respon</label><span><span class="stamp">P1 &lt; 1 jam</span> <span class="stamp">P2 &lt; 4 jam</span></span></div>
+            </div>
+          </div>
+          <div class="card">
+            <div class="card-head"><h3><span class="num">F</span> Versi &amp; Pembaruan</h3></div>
+            <div class="card-body">
+              <div class="form-row"><label>Versi Aplikasi</label><span class="mono"><b>v2.1.0</b> · 28 Apr 2026</span></div>
+              <div class="form-row"><label>Build</label><span class="mono">2026.04.28-r3a8f2</span></div>
+              <div class="form-row"><label>Skema Database</label><span class="mono">v17 (kompatibel)</span></div>
+              <div class="form-row"><label>Status Lisensi</label><span class="stamp">Pemerintah · Berlaku</span></div>
+              <div class="form-row" style="border-bottom:none"><label>Catatan Rilis</label><a href="#" style="color:var(--info-700)">Lihat changelog</a></div>
+            </div>
+          </div>
+        </div>
+      </div>
+
     </main>
   </div>
 </div>
@@ -4249,18 +5297,296 @@
   // ─── Page navigation ───
   const navItems = document.querySelectorAll('.nav-item');
   const pages = document.querySelectorAll('.page');
-  navItems.forEach(item => {
-    item.addEventListener('click', () => {
-      const target = item.dataset.page;
-      if (!target) return;
-      navItems.forEach(n => n.classList.remove('active'));
-      item.classList.add('active');
-      pages.forEach(p => p.classList.remove('active'));
-      const activePage = document.getElementById('page-' + target);
-      if (activePage) activePage.classList.add('active');
-      window.scrollTo({ top: 0, behavior: 'smooth' });
+  function activatePage(target) {
+    if (!target) return;
+    const activePage = document.getElementById('page-' + target);
+    if (!activePage) return;
+    navItems.forEach(n => {
+      n.classList.toggle('active', n.dataset.page === target);
+    });
+    pages.forEach(p => p.classList.remove('active'));
+    activePage.classList.add('active');
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+  }
+  // Any element with data-page becomes a navigation trigger (sidebar, topbar, etc.)
+  document.querySelectorAll('[data-page]').forEach(el => {
+    el.addEventListener('click', (e) => {
+      if (el.tagName === 'A') e.preventDefault();
+      activatePage(el.dataset.page);
     });
   });
+
+  // ─── Toast notifications ───
+  const toastStack = document.getElementById('toastStack');
+  function toast(title, body, kind) {
+    if (!toastStack) return;
+    const t = document.createElement('div');
+    t.className = 'toast' + (kind ? ' ' + kind : '');
+    t.innerHTML = `<div class="t-title">${title}</div>` + (body ? `<div class="t-body">${body}</div>` : '');
+    toastStack.appendChild(t);
+    setTimeout(() => { t.classList.add('fade'); setTimeout(() => t.remove(), 250); }, 3500);
+  }
+  // Default feedback for primary buttons that have no other binding
+  document.querySelectorAll('.btn.primary').forEach(b => {
+    if (b.dataset.toastBound) return;
+    b.dataset.toastBound = '1';
+    b.addEventListener('click', (e) => {
+      const label = (b.textContent || '').trim();
+      if (!label) return;
+      // Skip if button drives a real handler we already wired (e.g. wb apply uses its own toast)
+      if (b.id === 'wbApply') return;
+      toast(label, 'Aksi tercatat di Riwayat Aktivitas.', 'ok');
+    });
+  });
+
+  // ─── Clickable breadcrumb parents ───
+  // Maps the parent label (text before "·") to a target page.
+  const crumbMap = {
+    'Beranda': 'dashboard',
+    'Perencanaan': 'jadwal',
+    'Analisa & Audit': 'audit',
+    'Analisa &amp; Audit': 'audit',
+    'Rekayasa & Skenario': 'optimasi',
+    'Rekayasa &amp; Skenario': 'optimasi',
+    'Operasional Harian': 'peta',
+    'Analitik': 'demand',
+    'Pelaporan': 'laporan',
+    'Akun & Sistem': 'notifikasi',
+    'Akun &amp; Sistem': 'notifikasi'
+  };
+  document.querySelectorAll('.breadcrumb').forEach(bc => {
+    const html = bc.innerHTML;
+    const m = html.match(/^\s*([^·]+?)\s*·/);
+    if (!m) return;
+    const parent = m[1].replace(/<[^>]+>/g, '').trim();
+    const target = crumbMap[parent];
+    if (!target) return;
+    bc.innerHTML = html.replace(m[1], `<a href="#" class="crumb" data-page="${target}">${m[1].trim()}</a>`);
+  });
+  // Re-bind click for the newly inserted crumb anchors (above forEach already ran)
+  document.querySelectorAll('.breadcrumb a.crumb').forEach(a => {
+    a.addEventListener('click', (e) => {
+      e.preventDefault();
+      activatePage(a.dataset.page);
+    });
+  });
+
+  // ─── Command Palette (Ctrl+K / Cmd+K) ───
+  const cmdkOverlay = document.getElementById('cmdk');
+  const cmdkInput   = document.getElementById('cmdkInput');
+  const cmdkList    = document.getElementById('cmdkList');
+  // Build palette index from sidebar nav items + a few global actions
+  const paletteItems = [];
+  document.querySelectorAll('.nav-item[data-page]').forEach(n => {
+    const txt = n.textContent.replace(/\s+/g, ' ').trim();
+    paletteItems.push({ kind: 'page', label: txt, page: n.dataset.page });
+  });
+  const actions = [
+    { kind: 'action', label: 'Cetak Jadwal Hari Ini',     hint: 'Ctrl+P', run: () => { toast('Cetak Jadwal', 'Membuka dialog cetak…', 'ok'); window.print(); } },
+    { kind: 'action', label: 'Sahkan Jadwal Aktif',       hint: '',       run: () => { toast('Jadwal Disahkan', 'Status berubah menjadi SAH. Tercatat di Riwayat.', 'ok'); } },
+    { kind: 'action', label: 'Tandai Semua Notifikasi Dibaca', hint: '',  run: () => { toast('Notifikasi', 'Semua notifikasi telah ditandai dibaca.', 'ok'); activatePage('notifikasi'); } },
+    { kind: 'action', label: 'Buka Helpdesk (Bantuan)',   hint: 'F1',     run: () => activatePage('bantuan') },
+  ];
+  function renderPalette(query) {
+    const q = (query || '').toLowerCase().trim();
+    const matched = (q ? [...paletteItems, ...actions].filter(i => i.label.toLowerCase().includes(q)) : [...paletteItems, ...actions]).slice(0, 30);
+    if (!matched.length) {
+      cmdkList.innerHTML = '<div class="cmdk-empty">Tidak ada hasil untuk "<b>' + q + '</b>"</div>';
+      return;
+    }
+    let html = '';
+    const pages = matched.filter(m => m.kind === 'page');
+    const acts  = matched.filter(m => m.kind === 'action');
+    if (pages.length) {
+      html += '<div class="cmdk-section">Halaman</div>';
+      pages.forEach((p, i) => {
+        html += `<div class="cmdk-item${i === 0 && !q ? ' selected' : ''}" data-kind="page" data-page="${p.page}">
+          <svg class="ic" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="9 18 15 12 9 6"/></svg>
+          <span>${p.label}</span><span class="meta">↵</span></div>`;
+      });
+    }
+    if (acts.length) {
+      html += '<div class="cmdk-section">Tindakan</div>';
+      acts.forEach((a, i) => {
+        html += `<div class="cmdk-item" data-kind="action" data-idx="${actions.indexOf(a)}">
+          <svg class="ic" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="20 6 9 17 4 12"/></svg>
+          <span>${a.label}</span><span class="meta">${a.hint || '↵'}</span></div>`;
+      });
+    }
+    cmdkList.innerHTML = html;
+    cmdkList.querySelectorAll('.cmdk-item').forEach(el => {
+      el.addEventListener('mouseenter', () => {
+        cmdkList.querySelectorAll('.cmdk-item.selected').forEach(s => s.classList.remove('selected'));
+        el.classList.add('selected');
+      });
+      el.addEventListener('click', () => triggerSelected(el));
+    });
+  }
+  function triggerSelected(el) {
+    if (!el) return;
+    if (el.dataset.kind === 'page') {
+      activatePage(el.dataset.page);
+    } else if (el.dataset.kind === 'action') {
+      const idx = parseInt(el.dataset.idx, 10);
+      if (!isNaN(idx) && actions[idx]) actions[idx].run();
+    }
+    closePalette();
+  }
+  function openPalette() {
+    cmdkOverlay.classList.add('open');
+    cmdkInput.value = '';
+    renderPalette('');
+    setTimeout(() => cmdkInput.focus(), 30);
+  }
+  function closePalette() { cmdkOverlay.classList.remove('open'); }
+  cmdkInput && cmdkInput.addEventListener('input', () => renderPalette(cmdkInput.value));
+  cmdkOverlay && cmdkOverlay.addEventListener('click', (e) => { if (e.target === cmdkOverlay) closePalette(); });
+  cmdkInput && cmdkInput.addEventListener('keydown', (e) => {
+    const items = cmdkList.querySelectorAll('.cmdk-item');
+    const sel = cmdkList.querySelector('.cmdk-item.selected');
+    let idx = sel ? Array.from(items).indexOf(sel) : -1;
+    if (e.key === 'ArrowDown') { e.preventDefault(); idx = Math.min(items.length - 1, idx + 1); }
+    else if (e.key === 'ArrowUp')   { e.preventDefault(); idx = Math.max(0, idx - 1); }
+    else if (e.key === 'Enter')     { e.preventDefault(); triggerSelected(sel || items[0]); return; }
+    else if (e.key === 'Escape')    { closePalette(); return; }
+    else return;
+    items.forEach(i => i.classList.remove('selected'));
+    if (items[idx]) { items[idx].classList.add('selected'); items[idx].scrollIntoView({ block: 'nearest' }); }
+  });
+
+  // ─── Global keyboard shortcuts ───
+  document.addEventListener('keydown', (e) => {
+    const meta = e.ctrlKey || e.metaKey;
+    if (meta && e.key.toLowerCase() === 'k') { e.preventDefault(); openPalette(); return; }
+    if (e.key === 'Escape' && cmdkOverlay.classList.contains('open')) { closePalette(); return; }
+    if (e.key === 'F1') { e.preventDefault(); activatePage('bantuan'); return; }
+    if (e.altKey && !e.ctrlKey && !e.metaKey) {
+      const map = { '1': 'dashboard', '2': 'jadwal', '3': 'utilisasi', '4': 'audit', '5': 'biaya', '6': 'peta', '7': 'laporan', 'n': 'notifikasi', 'N': 'notifikasi' };
+      const t = map[e.key];
+      if (t) { e.preventDefault(); activatePage(t); }
+    }
+    if (meta && e.key.toLowerCase() === 's') {
+      // Avoid triggering inside text inputs editing flow; allow on dashboard-level "save"
+      if (!['INPUT','TEXTAREA','SELECT'].includes(document.activeElement.tagName)) {
+        e.preventDefault();
+        toast('Disimpan', 'Perubahan tersimpan (autosaved).', 'ok');
+      }
+    }
+  });
+
+  // ─── Workbench Rekayasa (real-time recompute) ───
+  (function initWorkbench(){
+    const $ = (id) => document.getElementById(id);
+    const sRun = $('sRun'), sLay = $('sLay'), sRec = $('sRec'), sBus = $('sBus'), sLB = $('sLB');
+    if (!sRun) return;
+    const fmtRp = (jt) => 'Rp ' + jt.toFixed(2).replace('.', ',') + ' Jt';
+    const fmtMin = (m) => m.toFixed(1).replace('.', ',') + ' m';
+
+    function recompute() {
+      const run = parseInt(sRun.value, 10);
+      const lay = parseInt(sLay.value, 10);
+      const rec = parseInt(sRec.value, 10);
+      const bus = parseInt(sBus.value, 10);
+      const lb  = parseInt(sLB.value, 10);
+      const cycle   = run + lay + rec;             // one-way cycle in minutes
+      const cycleRT = cycle * 2;                    // round trip
+      const headway = cycleRT / Math.max(1, bus);
+      const opsHrs  = 17;
+      const tripsPerDay = Math.round((opsHrs * 60 / headway) * Math.min(1, bus / 1));
+      const costPerBus = 1.55;                      // Jt/day baseline
+      const costDay = bus * costPerBus + (bus > 3 ? 0.18 * (bus - 3) : 0);
+      const recPct = Math.round((rec / cycle) * 100);
+      const spmOk  = headway <= 10.5;
+
+      $('wbRun').textContent = run;
+      $('wbLay').textContent = lay;
+      $('wbRec').textContent = rec;
+      $('wbBus').textContent = bus;
+      $('wbLB').textContent  = lb + '%';
+
+      $('kpiCycle').textContent = cycleRT + ' m';
+      $('kpiHead').textContent  = fmtMin(headway);
+      $('kpiHead').style.color  = spmOk ? 'var(--ok-700)' : (headway <= 15 ? 'var(--warn-700)' : 'var(--bad-700)');
+      $('kpiTrip').textContent  = tripsPerDay;
+      $('kpiCost').textContent  = fmtRp(costDay);
+
+      const baseline = { head: 15.0, trip: 66, cost: 4.96, rec: 22 };
+      const setS = (id, txt, kind) => { const e = $(id); e.textContent = txt; e.className = 'stamp' + (kind ? ' ' + kind : ''); };
+
+      $('wbcHead').textContent  = fmtMin(headway);
+      $('wbcHeadD').textContent = (headway - baseline.head >= 0 ? '+' : '') + (headway - baseline.head).toFixed(1).replace('.', ',') + ' m';
+      setS('wbcHeadS', spmOk ? 'Memenuhi' : (headway <= 15 ? 'Marjinal' : 'Pelanggaran'), spmOk ? '' : (headway <= 15 ? 'warn' : ''));
+      if (!spmOk && headway > 15) $('wbcHeadS').style.cssText = 'background:var(--bad-100);color:var(--bad-700);border-color:var(--bad-700)';
+      else $('wbcHeadS').style.cssText = '';
+
+      $('wbcTrip').textContent  = tripsPerDay;
+      $('wbcTripD').textContent = (tripsPerDay - baseline.trip >= 0 ? '+' : '') + (tripsPerDay - baseline.trip);
+      setS('wbcTripS', tripsPerDay >= baseline.trip ? 'Naik' : 'Turun');
+
+      $('wbcCost').textContent  = fmtRp(costDay);
+      $('wbcCostD').textContent = (costDay - baseline.cost >= 0 ? '+' : '') + 'Rp ' + (costDay - baseline.cost).toFixed(2).replace('.', ',') + ' Jt';
+      setS('wbcCostS', costDay <= baseline.cost ? 'Turun' : 'Naik', costDay > baseline.cost * 1.15 ? 'warn' : '');
+
+      $('wbcRec').textContent  = recPct + '%';
+      $('wbcRecD').textContent = (recPct - baseline.rec >= 0 ? '+' : '') + (recPct - baseline.rec) + '%';
+      setS('wbcRecS', recPct >= 10 && recPct <= 25 ? 'Sehat' : 'Tinjau', (recPct < 10 || recPct > 30) ? 'warn' : '');
+
+      setS('wbcSPM',  spmOk ? 'Memenuhi' : 'Marjinal', spmOk ? '' : 'warn');
+      setS('wbcSPMS', spmOk ? 'OK' : 'Tinjau', spmOk ? '' : 'warn');
+
+      // Headway profile per period
+      const periods = [
+        { lbl: 'P03–P04 Peak Pagi', factor: 1.0,  spm: 10 },
+        { lbl: 'P05–P06 +Sisipan',  factor: 0.78, spm: 10 },
+        { lbl: 'P07 Peak Pagi 4',   factor: 1.0,  spm: 10 },
+        { lbl: 'P09–P12 Off-Peak',  factor: 1.0,  spm: 15 },
+        { lbl: 'P15–P19 Peak Sore', factor: 1.0,  spm: 10 },
+        { lbl: 'P22 Off-Peak Mlm',  factor: 1.0,  spm: 15 }
+      ];
+      const profile = $('wbHeadProfile');
+      if (profile) {
+        profile.innerHTML = periods.map(p => {
+          const h = headway * p.factor;
+          const status = h <= p.spm ? 'ok' : (h <= p.spm * 1.4 ? 'warn' : 'bad');
+          const color = status === 'ok' ? 'var(--ok-600)' : status === 'warn' ? 'var(--warn-600)' : 'var(--bad-600)';
+          const w = Math.min(100, (h / 25) * 100);
+          return `<div style="display:grid;grid-template-columns:160px 1fr 80px 60px;gap:8px;align-items:center;font-size:11px">
+            <span style="color:var(--ink-700)">${p.lbl}</span>
+            <div style="background:var(--ink-100);height:14px;border-radius:3px;position:relative">
+              <div style="background:${color};width:${w}%;height:100%;border-radius:3px"></div>
+              <div style="position:absolute;left:${(p.spm/25)*100}%;top:-2px;bottom:-2px;width:1.5px;background:var(--navy-900)"></div>
+            </div>
+            <span class="mono" style="color:${color};font-weight:700;text-align:right">${fmtMin(h)}</span>
+            <span class="mono" style="color:var(--ink-500);font-size:10px;text-align:right">≤ ${p.spm} m</span>
+          </div>`;
+        }).join('');
+      }
+
+      // Impact summary
+      $('wbImpact').innerHTML = `Cycle <b>${cycleRT} m</b> · Headway <b>${fmtMin(headway)}</b> · Trip/Hari <b>${tripsPerDay}</b> · SPM <b style="color:${spmOk ? 'var(--ok-700)' : 'var(--bad-700)'}">${spmOk ? 'Memenuhi' : 'Belum penuh'}</b>`;
+    }
+    [sRun, sLay, sRec, sBus, sLB].forEach(s => s && s.addEventListener('input', recompute));
+    recompute();
+
+    // Apply button
+    const applyBtn = $('wbApply');
+    if (applyBtn) {
+      applyBtn.addEventListener('click', () => {
+        toast('Skenario Diterapkan', 'Parameter Workbench dipublikasikan ke jadwal aktif. Tinjau di tab Gantt.', 'ok');
+        // Switch to gantt tab
+        const ganttBtn = document.querySelector('#jadwalTabs .subtab[data-tab="gantt"]');
+        if (ganttBtn) ganttBtn.click();
+      });
+    }
+
+    // Trip pattern toggle
+    document.querySelectorAll('.wb-pattern .wb-pat').forEach(p => {
+      p.addEventListener('click', () => {
+        if (p.querySelector('.name') && p.querySelector('.name').textContent.startsWith('+')) return;
+        p.classList.toggle('on');
+      });
+    });
+  })();
 
   // ─── Sub-tabs (Jadwal page) ───
   const jadwalTabs = document.querySelectorAll('#jadwalTabs .subtab');
@@ -4508,6 +5834,337 @@
   }
 
   genGantt();
+
+  // ════════════════════════════════════════════════════════════════════════
+  // ─── BACKEND INTEGRATION (FastAPI @ localhost:8000) ───
+  // Aktif hanya jika dibuka via http://localhost:8000 (file:// → mode demo).
+  // ════════════════════════════════════════════════════════════════════════
+  const API = {
+    base: '/api',
+    enabled: typeof window !== 'undefined' && /^https?:$/.test(window.location.protocol),
+    token() { return localStorage.getItem('jadwal_token') || ''; },
+    setToken(t) { if (t) localStorage.setItem('jadwal_token', t); else localStorage.removeItem('jadwal_token'); },
+    user() { try { return JSON.parse(localStorage.getItem('jadwal_user') || 'null'); } catch { return null; } },
+    setUser(u) { if (u) localStorage.setItem('jadwal_user', JSON.stringify(u)); else localStorage.removeItem('jadwal_user'); },
+    async req(method, path, body) {
+      const headers = { 'Accept': 'application/json' };
+      if (body !== undefined) headers['Content-Type'] = 'application/json';
+      const tok = this.token();
+      if (tok) headers['Authorization'] = 'Bearer ' + tok;
+      const res = await fetch(this.base + path, {
+        method, headers,
+        body: body !== undefined ? JSON.stringify(body) : undefined,
+      });
+      if (res.status === 401) {
+        this.setToken(''); this.setUser(null);
+        showLogin();
+        throw new Error('Sesi habis. Silakan login ulang.');
+      }
+      const text = await res.text();
+      const data = text ? JSON.parse(text) : null;
+      if (!res.ok) throw new Error((data && data.detail) || res.statusText);
+      return data;
+    },
+    get(p)        { return this.req('GET', p); },
+    post(p, b)    { return this.req('POST', p, b || {}); },
+    patch(p, b)   { return this.req('PATCH', p, b || {}); },
+    del(p)        { return this.req('DELETE', p); },
+  };
+  window.API = API;
+
+  // ─── Login overlay handlers ───
+  const loginOverlay = document.getElementById('loginOverlay');
+  const loginForm    = document.getElementById('loginForm');
+  const loginErr     = document.getElementById('loginErr');
+  const loginBtn     = document.getElementById('loginBtn');
+  function showLogin() { loginOverlay && loginOverlay.classList.add('open'); }
+  function hideLogin() { loginOverlay && loginOverlay.classList.remove('open'); }
+
+  if (loginForm) {
+    loginForm.addEventListener('submit', async (e) => {
+      e.preventDefault();
+      loginErr.classList.remove('show'); loginErr.textContent = '';
+      const email = document.getElementById('loginEmail').value.trim();
+      const password = document.getElementById('loginPassword').value;
+      loginBtn.disabled = true; loginBtn.textContent = 'Memverifikasi…';
+      try {
+        const r = await API.post('/auth/login', { email, password });
+        API.setToken(r.access_token);
+        API.setUser(r.user);
+        hideLogin();
+        toast('Selamat datang', `${r.user.nama} (${r.user.role})`, 'ok');
+        applyUserToUI(r.user);
+        await hydrateAll();
+      } catch (err) {
+        loginErr.textContent = err.message || 'Gagal login. Cek email/password.';
+        loginErr.classList.add('show');
+      } finally {
+        loginBtn.disabled = false; loginBtn.textContent = 'Masuk';
+      }
+    });
+  }
+
+  function applyUserToUI(u) {
+    if (!u) return;
+    // Topbar user-chip
+    const chipNama = document.querySelector('.user-chip .user-meta b');
+    const chipRole = document.querySelector('.user-chip .user-meta div');
+    const avatar   = document.querySelector('.user-chip .user-avatar');
+    if (chipNama) chipNama.textContent = u.nama;
+    if (chipRole) chipRole.textContent = (u.role || '').replace(/_/g, ' ');
+    if (avatar)   avatar.textContent   = (u.nama || '?').split(/\s+/).slice(0,2).map(s => s[0]).join('').toUpperCase();
+    // Profil page
+    const pName  = document.querySelector('#page-profil .form-row input[value*="Aditama"]');
+    const pEmail = document.querySelector('#page-profil .form-row input[value*="dephub"]');
+    if (pName)  pName.value  = u.nama;
+    if (pEmail) pEmail.value = u.email;
+  }
+
+  // ─── Hydrate helpers ───
+  function fmtDateTime(s) {
+    if (!s) return '—';
+    const d = new Date(s);
+    if (isNaN(d)) return s;
+    const dd = String(d.getDate()).padStart(2, '0');
+    const months = ['Jan','Feb','Mar','Apr','Mei','Jun','Jul','Agu','Sep','Okt','Nov','Des'];
+    const mm = months[d.getMonth()];
+    const HH = String(d.getHours()).padStart(2, '0');
+    const MM = String(d.getMinutes()).padStart(2, '0');
+    return `${dd} ${mm} ${HH}:${MM}`;
+  }
+  function fmtTime(s) {
+    if (!s) return '—';
+    return String(s).slice(0,5);
+  }
+  function escHtml(s) {
+    return String(s ?? '').replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+  }
+  function stampForStatus(status, kind) {
+    const cls = kind === 'insiden'
+      ? ({ terbuka:'warn', investigasi:'warn', tindakan:'warn', selesai:'' })
+      : ({ aktif:'', perbaikan:'warn', non_aktif:'warn', cuti:'warn' });
+    return `<span class="stamp ${cls[status] || ''}">${escHtml(status)}</span>`;
+  }
+  function stampForTingkat(t) {
+    if (t === 'kritis') return `<span class="stamp" style="background:var(--bad-100);color:var(--bad-700);border-color:var(--bad-700)">KRITIS</span>`;
+    if (t === 'peringatan') return `<span class="stamp warn">PERINGATAN</span>`;
+    return `<span class="stamp info">INFO</span>`;
+  }
+
+  // ─── Page hydrators ───
+  async function hydrateArmada() {
+    const tbody = document.querySelector('#page-armada table.table tbody');
+    if (!tbody) return;
+    try {
+      const rows = await API.get('/armada');
+      if (!rows.length) return;
+      tbody.innerHTML = rows.map(r => `
+        <tr>
+          <td><b>${escHtml(r.kode)}</b></td>
+          <td class="mono">${escHtml(r.plat)}</td>
+          <td>${escHtml(r.tipe)}</td>
+          <td class="num">${r.kapasitas}</td>
+          <td class="num">${r.tahun}</td>
+          <td class="num mono">${(r.km_total || 0).toLocaleString('id-ID')}</td>
+          <td>${stampForStatus(r.status, 'armada')}</td>
+        </tr>`).join('');
+    } catch (e) { console.warn('hydrateArmada', e); }
+  }
+
+  async function hydrateSopir() {
+    const tbody = document.querySelector('#page-roster table.table tbody');
+    if (!tbody) return;
+    try {
+      const rows = await API.get('/sopir');
+      if (!rows.length) return;
+      tbody.innerHTML = rows.map(r => `
+        <tr>
+          <td><b>${escHtml(r.kode)}</b></td>
+          <td>${escHtml(r.nama)}</td>
+          <td class="mono">${escHtml(r.no_sim || '—')}</td>
+          <td class="mono">${escHtml(r.no_hp || '—')}</td>
+          <td class="num mono">${(r.jam_kerja_minggu || 0).toFixed(1).replace('.', ',')} j</td>
+          <td>${stampForStatus(r.status, 'sopir')}</td>
+        </tr>`).join('');
+    } catch (e) { console.warn('hydrateSopir', e); }
+  }
+
+  async function hydrateHalte() {
+    const tbody = document.querySelector('#page-halte table.table tbody');
+    if (!tbody) return;
+    try {
+      const rows = await API.get('/halte');
+      if (!rows.length) return;
+      tbody.innerHTML = rows.map(r => `
+        <tr>
+          <td class="num">${r.urutan}</td>
+          <td><b>${escHtml(r.kode)}</b></td>
+          <td>${escHtml(r.nama)}</td>
+          <td class="num mono">${(r.km || 0).toFixed(2).replace('.', ',')}</td>
+          <td class="num">${r.kapasitas_naik}</td>
+          <td>${escHtml(r.fasilitas || '—')}</td>
+        </tr>`).join('');
+    } catch (e) { console.warn('hydrateHalte', e); }
+  }
+
+  async function hydrateInsiden() {
+    const tbody = document.querySelector('#page-insiden table.table tbody');
+    if (!tbody) return;
+    try {
+      const rows = await API.get('/insiden?limit=20');
+      if (!rows.length) return;
+      tbody.innerHTML = rows.map(r => {
+        const bgRow = r.dampak === 'tinggi' ? 'background:var(--bad-50)' : (r.dampak === 'sedang' && r.status !== 'selesai' ? 'background:var(--warn-50)' : '');
+        return `<tr style="${bgRow}">
+          <td class="mono"><b>${escHtml(r.tiket)}</b></td>
+          <td class="mono">${fmtDateTime(r.waktu)}</td>
+          <td>${escHtml(r.deskripsi)}</td>
+          <td class="mono">${escHtml(r.armada_kode || '—')}</td>
+          <td>${escHtml(r.lokasi || '—')}</td>
+          <td><span class="stamp">${escHtml(r.kategori)}</span></td>
+          <td>${stampForStatus(r.dampak, 'sopir')}</td>
+          <td>${escHtml(r.pic || '—')}</td>
+          <td>${stampForStatus(r.status, 'insiden')}</td>
+        </tr>`;
+      }).join('');
+    } catch (e) { console.warn('hydrateInsiden', e); }
+  }
+
+  async function hydrateNotifikasi() {
+    const tbody = document.querySelector('#page-notifikasi table.table tbody');
+    if (!tbody) return;
+    try {
+      const rows = await API.get('/notifikasi');
+      if (!rows.length) return;
+      tbody.innerHTML = rows.map(r => {
+        const bg = r.tingkat === 'kritis' ? 'background:var(--bad-50)' : (r.tingkat === 'peringatan' ? 'background:var(--warn-50)' : (r.dibaca ? 'opacity:0.7' : ''));
+        return `<tr style="${bg}">
+          <td class="mono">${fmtDateTime(r.waktu)}</td>
+          <td>${stampForTingkat(r.tingkat)}</td>
+          <td>${escHtml(r.pesan)}</td>
+          <td>${escHtml(r.sumber || '—')}</td>
+          <td><button class="btn" data-mark-read="${r.id}">${r.dibaca ? 'Dibaca' : 'Tinjau'}</button></td>
+        </tr>`;
+      }).join('');
+      tbody.querySelectorAll('button[data-mark-read]').forEach(b => {
+        b.addEventListener('click', async () => {
+          const id = b.dataset.markRead;
+          try { await API.post(`/notifikasi/${id}/read`); toast('Notifikasi', 'Ditandai dibaca.', 'ok'); hydrateNotifikasi(); }
+          catch (e) { toast('Gagal', e.message, 'bad'); }
+        });
+      });
+    } catch (e) { console.warn('hydrateNotifikasi', e); }
+  }
+
+  async function hydrateRiwayat() {
+    const tbody = document.querySelector('#page-riwayat .card .card-body table.table tbody');
+    if (!tbody) return;
+    try {
+      const rows = await API.get('/audit?limit=50');
+      if (!rows.length) return;
+      tbody.innerHTML = rows.map(r => `
+        <tr>
+          <td class="mono">${fmtDateTime(r.waktu)}</td>
+          <td><b>${escHtml(r.user_email || 'System')}</b></td>
+          <td><span class="stamp">${escHtml(r.aksi)}</span></td>
+          <td>${escHtml(r.detail || r.objek)}</td>
+          <td class="mono">${escHtml(r.ip || '—')}</td>
+          <td class="mono" style="font-size:10px">${escHtml((r.method || '') + ' ' + (r.path || ''))}</td>
+        </tr>`).join('');
+    } catch (e) { console.warn('hydrateRiwayat', e); }
+  }
+
+  async function hydrateDashboard() {
+    try {
+      const s = await API.get('/dashboard/summary');
+      // Update Sisipan badge in sidebar
+      const sBadge = document.querySelector('.nav-item[data-page="sisipan"] .badge');
+      if (sBadge && s.trip_sisipan != null) sBadge.textContent = String(s.trip_sisipan);
+      const nBadge = document.querySelector('.nav-item[data-page="notifikasi"] .badge');
+      if (nBadge && s.notifikasi_unread != null) nBadge.textContent = String(s.notifikasi_unread);
+      const iBadge = document.querySelector('.nav-item[data-page="insiden"] .badge');
+      if (iBadge && s.insiden_open != null) iBadge.textContent = String(s.insiden_open);
+    } catch (e) { console.warn('hydrateDashboard', e); }
+  }
+
+  async function hydrateUsers() {
+    const tbody = document.querySelector('#page-pengaturan table.table tbody');
+    if (!tbody) return;
+    try {
+      const rows = await API.get('/users');
+      if (!rows.length) return;
+      tbody.innerHTML = rows.map(r => `
+        <tr${r.aktif ? '' : ' style="opacity:0.6"'}>
+          <td><b>${escHtml(r.nama)}</b></td>
+          <td class="mono">${escHtml(r.nip || '—')}</td>
+          <td>${escHtml((r.role || '').replace(/_/g, ' '))}</td>
+          <td>${escHtml(r.unit_kerja || '—')}</td>
+          <td class="mono">${fmtDateTime(r.last_login_at)}</td>
+          <td><span class="stamp${r.aktif ? '' : ' warn'}">${r.aktif ? 'Aktif' : 'Nonaktif'}</span></td>
+        </tr>`).join('');
+    } catch (e) { console.warn('hydrateUsers', e); }
+  }
+
+  async function hydrateAll() {
+    await Promise.all([
+      hydrateDashboard(),
+      hydrateArmada(),
+      hydrateSopir(),
+      hydrateHalte(),
+      hydrateInsiden(),
+      hydrateNotifikasi(),
+      hydrateRiwayat(),
+      hydrateUsers(),
+    ]);
+  }
+
+  // Re-hydrate notif/insiden/riwayat saat user pindah halaman terkait
+  document.querySelectorAll('[data-page]').forEach(el => {
+    el.addEventListener('click', () => {
+      const tgt = el.dataset.page;
+      if (tgt === 'notifikasi')   hydrateNotifikasi();
+      else if (tgt === 'insiden') hydrateInsiden();
+      else if (tgt === 'riwayat') hydrateRiwayat();
+      else if (tgt === 'armada')  hydrateArmada();
+      else if (tgt === 'roster')  hydrateSopir();
+      else if (tgt === 'halte')   hydrateHalte();
+      else if (tgt === 'pengaturan') hydrateUsers();
+    });
+  });
+
+  // ─── Bootstrap: cek token, validasi /me, lalu hydrate atau tampilkan login ───
+  (async function bootstrap() {
+    if (!API.enabled) {
+      // file:// mode → tetap berfungsi sebagai demo statis (data dummy)
+      console.info('[App] Mode statis: backend tidak tersedia. Buka via http://localhost:8000 untuk mengaktifkan API.');
+      return;
+    }
+    const tok = API.token();
+    if (!tok) { showLogin(); return; }
+    try {
+      const u = await API.get('/auth/me');
+      API.setUser(u);
+      applyUserToUI(u);
+      await hydrateAll();
+    } catch {
+      API.setToken(''); API.setUser(null);
+      showLogin();
+    }
+  })();
+
+  // Keluar dari Profil page
+  document.querySelectorAll('#page-profil .btn').forEach(b => {
+    if ((b.textContent || '').toLowerCase().includes('keluar')) {
+      b.addEventListener('click', () => {
+        if (API.enabled) {
+          API.post('/auth/logout').catch(()=>{});
+        }
+        API.setToken(''); API.setUser(null);
+        toast('Keluar', 'Sesi diakhiri.', 'ok');
+        if (API.enabled) showLogin();
+      });
+    }
+  });
 </script>
 </body>
 </html>
