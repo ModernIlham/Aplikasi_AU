@@ -1100,6 +1100,199 @@
     to { opacity: 1; transform: translateY(0); }
   }
 
+  /* ─── Command Palette (Ctrl+K) ─── */
+  .cmdk-overlay {
+    position: fixed; inset: 0;
+    background: rgba(10, 22, 40, 0.55);
+    backdrop-filter: blur(2px);
+    z-index: 9000;
+    display: none;
+    align-items: flex-start; justify-content: center;
+    padding-top: 12vh;
+    animation: fadeIn 0.12s ease-out both;
+  }
+  .cmdk-overlay.open { display: flex; }
+  .cmdk-modal {
+    width: min(640px, 92vw);
+    background: var(--white);
+    border-radius: 10px;
+    box-shadow: 0 24px 64px rgba(10,22,40,0.35);
+    overflow: hidden;
+    border-top: 3px solid var(--gold-500);
+  }
+  .cmdk-input-wrap {
+    display: flex; align-items: center; gap: 10px;
+    padding: 14px 18px;
+    border-bottom: 1px solid var(--ink-200);
+  }
+  .cmdk-input {
+    flex: 1; border: none; outline: none;
+    font-size: 16px; font-family: inherit;
+    color: var(--ink-900); background: transparent;
+  }
+  .cmdk-kbd {
+    font-family: var(--font-mono); font-size: 10px;
+    background: var(--ink-100); color: var(--ink-600);
+    padding: 3px 7px; border-radius: 4px;
+    border: 1px solid var(--ink-200);
+  }
+  .cmdk-list { max-height: 56vh; overflow-y: auto; padding: 6px 0; }
+  .cmdk-section { font-size: 10px; font-weight: 700; letter-spacing: 0.1em; text-transform: uppercase; color: var(--ink-500); padding: 10px 18px 4px; }
+  .cmdk-item {
+    display: flex; align-items: center; gap: 12px;
+    padding: 9px 18px; cursor: pointer;
+    font-size: 13px; color: var(--ink-800);
+    border-left: 3px solid transparent;
+  }
+  .cmdk-item .ic { width: 16px; height: 16px; color: var(--ink-500); }
+  .cmdk-item:hover, .cmdk-item.selected {
+    background: var(--info-50);
+    border-left-color: var(--navy-700);
+    color: var(--navy-900);
+  }
+  .cmdk-item .meta { margin-left: auto; font-size: 11px; color: var(--ink-500); }
+  .cmdk-empty { padding: 28px; text-align: center; font-size: 13px; color: var(--ink-500); }
+
+  /* ─── Toast notifications ─── */
+  .toast-stack {
+    position: fixed; top: 90px; right: 24px;
+    display: flex; flex-direction: column; gap: 10px;
+    z-index: 9100;
+    pointer-events: none;
+  }
+  .toast {
+    background: var(--white);
+    border: 1px solid var(--ink-200);
+    border-left: 4px solid var(--info-600);
+    border-radius: 6px;
+    box-shadow: 0 6px 18px rgba(10,22,40,0.12);
+    padding: 10px 14px;
+    min-width: 260px; max-width: 380px;
+    font-size: 13px;
+    color: var(--ink-800);
+    pointer-events: auto;
+    animation: toastIn 0.22s ease-out both;
+  }
+  .toast.ok    { border-left-color: var(--ok-600); }
+  .toast.warn  { border-left-color: var(--warn-600); }
+  .toast.bad   { border-left-color: var(--bad-600); }
+  .toast.fade  { animation: toastOut 0.25s ease-in forwards; }
+  .toast .t-title { font-weight: 700; color: var(--navy-900); margin-bottom: 2px; }
+  .toast .t-body  { font-size: 12px; color: var(--ink-700); line-height: 1.4; }
+  @keyframes toastIn  { from { opacity: 0; transform: translateX(20px); } to { opacity: 1; transform: translateX(0); } }
+  @keyframes toastOut { to   { opacity: 0; transform: translateX(20px); } }
+
+  /* ─── Clickable breadcrumb parent ─── */
+  .breadcrumb a.crumb {
+    color: var(--info-700);
+    text-decoration: none;
+    cursor: pointer;
+  }
+  .breadcrumb a.crumb:hover { text-decoration: underline; }
+
+  /* ─── Workbench (Jadwal advanced) ─── */
+  .wb-grid { display: grid; grid-template-columns: 320px 1fr; gap: 18px; align-items: start; }
+  @media (max-width: 1100px) { .wb-grid { grid-template-columns: 1fr; } }
+  .wb-control {
+    background: var(--white);
+    border: 1px solid var(--ink-200);
+    border-radius: 8px;
+    padding: 16px;
+    position: sticky; top: 14px;
+  }
+  .wb-control h4 {
+    margin: 0 0 10px;
+    font-size: 11px; font-weight: 800;
+    letter-spacing: 0.1em; text-transform: uppercase;
+    color: var(--ink-600);
+  }
+  .wb-row { display: grid; grid-template-columns: 1fr 70px; gap: 10px; align-items: center; padding: 8px 0; border-bottom: 1px dashed var(--ink-200); font-size: 12.5px; }
+  .wb-row:last-of-type { border-bottom: none; }
+  .wb-row label { color: var(--ink-700); }
+  .wb-row .v { font-family: var(--font-mono); font-weight: 700; color: var(--navy-900); text-align: right; }
+  .wb-slider { width: 100%; accent-color: var(--gold-600); }
+  .wb-impact {
+    margin-top: 12px;
+    padding: 10px 12px;
+    background: var(--info-50);
+    border: 1px solid var(--info-100);
+    border-radius: 6px;
+    font-size: 11.5px;
+    color: var(--info-700);
+    line-height: 1.5;
+  }
+  .wb-impact b { color: var(--navy-900); }
+  .wb-pattern {
+    display: grid; grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
+    gap: 10px;
+  }
+  .wb-pat {
+    background: var(--white);
+    border: 1px solid var(--ink-200);
+    border-radius: 6px;
+    padding: 12px;
+    cursor: pointer;
+    transition: all 0.15s;
+  }
+  .wb-pat:hover { border-color: var(--gold-500); }
+  .wb-pat.on { border-color: var(--gold-600); background: var(--gold-50); box-shadow: 0 0 0 2px var(--gold-100); }
+  .wb-pat .name { font-weight: 700; color: var(--navy-900); font-size: 13px; }
+  .wb-pat .stops { font-size: 11px; color: var(--ink-600); margin-top: 4px; font-family: var(--font-mono); }
+  .wb-pat .meta { margin-top: 8px; display: flex; gap: 8px; flex-wrap: wrap; font-size: 10px; }
+  .wb-block {
+    display: grid;
+    grid-template-columns: 80px repeat(17, 1fr);
+    border: 1px solid var(--ink-200);
+    background: var(--white);
+    border-radius: 6px;
+    overflow: hidden;
+    font-size: 10px;
+  }
+  .wb-block .h { background: var(--ink-50); padding: 6px 4px; text-align: center; font-weight: 700; color: var(--ink-600); border-bottom: 1px solid var(--ink-200); border-right: 1px solid var(--ink-100); }
+  .wb-block .b { background: var(--navy-700); color: var(--white); padding: 8px 6px; font-weight: 700; border-right: 1px solid var(--navy-800); border-bottom: 1px solid var(--navy-800); display:flex; align-items:center; }
+  .wb-block .c { padding: 6px 2px; border-right: 1px solid var(--ink-100); border-bottom: 1px solid var(--ink-100); min-height: 26px; position: relative; }
+  .wb-block .c.rev   { background: var(--ok-50); }
+  .wb-block .c.dh    { background: repeating-linear-gradient(45deg, var(--info-50), var(--info-50) 4px, var(--info-100) 4px, var(--info-100) 8px); }
+  .wb-block .c.lay   { background: var(--ink-100); }
+  .wb-block .c.brk   { background: var(--warn-50); }
+  .wb-block .c span  { font-family: var(--font-mono); font-weight: 700; color: var(--ink-700); font-size: 9px; }
+
+  /* ─── Validator panel ─── */
+  .val-list { display: flex; flex-direction: column; gap: 8px; }
+  .val-item {
+    display: grid; grid-template-columns: 28px 1fr auto;
+    gap: 12px; align-items: center;
+    padding: 12px 14px;
+    border: 1px solid var(--ink-200);
+    border-radius: 6px;
+    background: var(--white);
+    font-size: 13px;
+  }
+  .val-item.ok    { border-left: 4px solid var(--ok-600); }
+  .val-item.warn  { border-left: 4px solid var(--warn-600); background: var(--warn-50); }
+  .val-item.bad   { border-left: 4px solid var(--bad-600); background: var(--bad-50); }
+  .val-item .marker {
+    width: 22px; height: 22px; border-radius: 50%;
+    display: flex; align-items: center; justify-content: center;
+    color: var(--white); font-weight: 700; font-size: 12px;
+  }
+  .val-item.ok    .marker { background: var(--ok-600); }
+  .val-item.warn  .marker { background: var(--warn-600); }
+  .val-item.bad   .marker { background: var(--bad-600); }
+  .val-item .body  { line-height: 1.45; }
+  .val-item .body b { color: var(--navy-900); }
+  .val-item .body .desc { font-size: 11.5px; color: var(--ink-600); margin-top: 2px; }
+
+  .help-dot {
+    display: inline-flex; align-items: center; justify-content: center;
+    width: 14px; height: 14px; border-radius: 50%;
+    background: var(--ink-200); color: var(--ink-700);
+    font-size: 9px; font-weight: 700;
+    cursor: help;
+    margin-left: 4px;
+  }
+  .help-dot:hover { background: var(--info-100); color: var(--info-700); }
+
   /* responsive guard rails */
   @media (max-width: 1280px) {
     .kpi-grid { grid-template-columns: repeat(2, 1fr); }
@@ -1110,6 +1303,22 @@
 </style>
 </head>
 <body>
+
+<!-- ═══ Command Palette (Ctrl+K) ═══ -->
+<div class="cmdk-overlay" id="cmdk" role="dialog" aria-modal="true" aria-label="Command palette">
+  <div class="cmdk-modal">
+    <div class="cmdk-input-wrap">
+      <svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="var(--ink-500)" stroke-width="2"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
+      <input class="cmdk-input" id="cmdkInput" placeholder="Cari halaman, perintah, atau bantuan…" autocomplete="off"/>
+      <span class="cmdk-kbd">ESC</span>
+    </div>
+    <div class="cmdk-list" id="cmdkList"></div>
+  </div>
+</div>
+
+<!-- ═══ Toast container ═══ -->
+<div class="toast-stack" id="toastStack" aria-live="polite" aria-atomic="true"></div>
+
 <div class="app">
 
   <!-- ═══ TOP BAR (formal government) ═══ -->
@@ -2051,6 +2260,9 @@
           <button class="subtab" data-tab="matrix">Matrix Halte × Waktu</button>
           <button class="subtab" data-tab="rit">RIT Detail</button>
           <button class="subtab" data-tab="perbus">Per Bus</button>
+          <button class="subtab" data-tab="workbench">⚙ Workbench Rekayasa</button>
+          <button class="subtab" data-tab="block">Block &amp; Pattern</button>
+          <button class="subtab" data-tab="validator">Validator <span class="badge" style="margin-left:6px;background:var(--warn-100);color:var(--warn-700);font-size:9px;padding:1px 5px;border-radius:8px">3</span></button>
         </div>
 
         <!-- TAB: GANTT -->
@@ -2510,7 +2722,317 @@
               </table>
             </div>
           </div>
-        </div>
+        </div><!-- /perbus pane -->
+
+        <!-- ═══ TAB: WORKBENCH REKAYASA ═══ -->
+        <div class="tab-pane" data-pane="workbench" style="display:none">
+          <div style="display:flex;align-items:center;gap:10px;flex-wrap:wrap;margin-bottom:14px;padding:12px 14px;background:var(--gold-50);border:1px solid var(--gold-100);border-radius:6px">
+            <svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="var(--gold-700)" stroke-width="2"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 00.33 1.82l.06.06a2 2 0 01-2.83 2.83l-.06-.06a1.65 1.65 0 00-1.82-.33 1.65 1.65 0 00-1 1.51V21a2 2 0 01-4 0v-.09a1.65 1.65 0 00-1-1.51 1.65 1.65 0 00-1.82.33l-.06.06a2 2 0 01-2.83-2.83l.06-.06a1.65 1.65 0 00.33-1.82 1.65 1.65 0 00-1.51-1H3a2 2 0 010-4h.09a1.65 1.65 0 001.51-1 1.65 1.65 0 00-.33-1.82l-.06-.06a2 2 0 012.83-2.83l.06.06a1.65 1.65 0 001.82.33h0a1.65 1.65 0 001-1.51V3a2 2 0 014 0v.09a1.65 1.65 0 001 1.51h0a1.65 1.65 0 001.82-.33l.06-.06a2 2 0 012.83 2.83l-.06.06a1.65 1.65 0 00-.33 1.82v0a1.65 1.65 0 001.51 1H21a2 2 0 010 4h-.09a1.65 1.65 0 00-1.51 1z"/></svg>
+            <div style="flex:1;font-size:12.5px;color:var(--gold-700)"><b>Workbench Rekayasa Jadwal.</b> Geser parameter di kiri — dampak ke headway, biaya, dan SPM dihitung instan. Klik <b>Terapkan</b> untuk mengubah jadwal aktif.</div>
+            <button class="btn">Reset</button>
+            <button class="btn primary" id="wbApply">Terapkan ke Jadwal</button>
+          </div>
+
+          <div class="wb-grid">
+            <!-- KIRI: Control Panel -->
+            <div class="wb-control" id="wbPanel">
+              <h4>Cycle Time Decomposition</h4>
+              <div class="wb-row"><label>Running time (menit)<span class="help-dot" title="Waktu murni bus bergerak antar terminal">?</span></label><span class="v" id="wbRun">25</span></div>
+              <input type="range" class="wb-slider" id="sRun" min="20" max="35" value="25"/>
+              <div class="wb-row"><label>Layover terminal (menit)<span class="help-dot" title="Istirahat sopir + buffer keterlambatan">?</span></label><span class="v" id="wbLay">10</span></div>
+              <input type="range" class="wb-slider" id="sLay" min="3" max="20" value="10"/>
+              <div class="wb-row"><label>Recovery buffer (menit)<span class="help-dot" title="Bantalan untuk variasi waktu tempuh">?</span></label><span class="v" id="wbRec">10</span></div>
+              <input type="range" class="wb-slider" id="sRec" min="0" max="15" value="10"/>
+
+              <h4 style="margin-top:18px">Armada &amp; Headway</h4>
+              <div class="wb-row"><label>Jumlah armada aktif</label><span class="v" id="wbBus">3</span></div>
+              <input type="range" class="wb-slider" id="sBus" min="1" max="12" value="3"/>
+              <div class="wb-row"><label>Layover-bias (% dari cycle)</label><span class="v" id="wbLB">22%</span></div>
+              <input type="range" class="wb-slider" id="sLB" min="10" max="40" value="22"/>
+
+              <h4 style="margin-top:18px">Strategi</h4>
+              <div class="wb-row" style="grid-template-columns:1fr auto"><label>Even-Headway Mode</label><span class="toggle"><input type="checkbox" id="cEven" checked/><span class="slider"></span></span></div>
+              <div class="wb-row" style="grid-template-columns:1fr auto"><label>Auto Sisipan Peak</label><span class="toggle"><input type="checkbox" id="cAuto" checked/><span class="slider"></span></span></div>
+              <div class="wb-row" style="grid-template-columns:1fr auto"><label>Short-turn Halte 4</label><span class="toggle"><input type="checkbox" id="cShort"/><span class="slider"></span></span></div>
+              <div class="wb-row" style="grid-template-columns:1fr auto;border-bottom:none"><label>Deadhead Otomatis</label><span class="toggle"><input type="checkbox" id="cDH" checked/><span class="slider"></span></span></div>
+
+              <div class="wb-impact" id="wbImpact">
+                Cycle Time <b>45 m</b> · Headway <b>15,0 m</b> · Trip/Hari <b>~66</b> · SPM <b style="color:var(--ok-700)">Memenuhi peak</b>
+              </div>
+            </div>
+
+            <!-- KANAN: Output / Charts -->
+            <div>
+              <div class="kpi-grid" style="grid-template-columns:repeat(4,1fr);gap:10px;margin-bottom:14px">
+                <div class="card"><div class="card-body" style="padding:12px"><div style="font-size:10px;color:var(--ink-600);text-transform:uppercase;letter-spacing:.06em">Cycle Time</div><div class="num" style="font-size:22px;font-weight:700;color:var(--navy-900)" id="kpiCycle">45 m</div><div style="font-size:10px;color:var(--ink-600)">running + layover + recovery</div></div></div>
+                <div class="card"><div class="card-body" style="padding:12px"><div style="font-size:10px;color:var(--ink-600);text-transform:uppercase;letter-spacing:.06em">Headway</div><div class="num" style="font-size:22px;font-weight:700;color:var(--gold-700)" id="kpiHead">15,0 m</div><div style="font-size:10px;color:var(--ink-600)">cycle ÷ armada</div></div></div>
+                <div class="card"><div class="card-body" style="padding:12px"><div style="font-size:10px;color:var(--ink-600);text-transform:uppercase;letter-spacing:.06em">Trip/Hari</div><div class="num" style="font-size:22px;font-weight:700;color:var(--navy-900)" id="kpiTrip">66</div><div style="font-size:10px;color:var(--ink-600)">17 jam operasi</div></div></div>
+                <div class="card"><div class="card-body" style="padding:12px"><div style="font-size:10px;color:var(--ink-600);text-transform:uppercase;letter-spacing:.06em">Biaya/Hari</div><div class="num" style="font-size:22px;font-weight:700;color:var(--navy-900)" id="kpiCost">Rp 4,96 Jt</div><div style="font-size:10px;color:var(--ink-600)">+sisipan opsional</div></div></div>
+              </div>
+
+              <div class="card" style="margin-bottom:14px">
+                <div class="card-head"><h3><span class="num">A</span> Headway Profile per Periode (real-time)</h3></div>
+                <div class="card-body">
+                  <div id="wbHeadProfile" style="display:flex;flex-direction:column;gap:6px"></div>
+                  <div style="margin-top:10px;font-size:11px;color:var(--ink-600);display:flex;gap:14px;flex-wrap:wrap">
+                    <span>● <span style="color:var(--ok-700)">Memenuhi SPM ≤ 10 m peak / ≤ 15 m off-peak</span></span>
+                    <span>● <span style="color:var(--warn-700)">Marjinal</span></span>
+                    <span>● <span style="color:var(--bad-700)">Pelanggaran</span></span>
+                  </div>
+                </div>
+              </div>
+
+              <div class="card">
+                <div class="card-head"><h3><span class="num">B</span> Pengaruh terhadap Indikator Kunci</h3></div>
+                <div class="card-body" style="padding:0">
+                  <table class="table">
+                    <thead><tr><th>Indikator</th><th class="num">Saat ini</th><th class="num">Skenario Baru</th><th class="num">Δ</th><th>Status</th></tr></thead>
+                    <tbody id="wbCompareBody">
+                      <tr><td><b>Headway peak</b></td><td class="num mono">15,0 m</td><td class="num mono" id="wbcHead">15,0 m</td><td class="num mono" id="wbcHeadD">0</td><td><span class="stamp warn" id="wbcHeadS">Marjinal</span></td></tr>
+                      <tr><td><b>Trip/hari</b></td><td class="num mono">66</td><td class="num mono" id="wbcTrip">66</td><td class="num mono" id="wbcTripD">0</td><td><span class="stamp" id="wbcTripS">Setara</span></td></tr>
+                      <tr><td><b>Biaya operasi</b></td><td class="num mono">Rp 4,96 Jt</td><td class="num mono" id="wbcCost">Rp 4,96 Jt</td><td class="num mono" id="wbcCostD">Rp 0</td><td><span class="stamp" id="wbcCostS">Setara</span></td></tr>
+                      <tr><td><b>Recovery (%)</b></td><td class="num mono">22%</td><td class="num mono" id="wbcRec">22%</td><td class="num mono" id="wbcRecD">0%</td><td><span class="stamp" id="wbcRecS">Sehat</span></td></tr>
+                      <tr><td><b>SPM Compliance</b></td><td><span class="stamp warn">Belum Penuh</span></td><td><span class="stamp" id="wbcSPM">Marjinal</span></td><td class="num mono">—</td><td><span class="stamp" id="wbcSPMS">Tinjau</span></td></tr>
+                    </tbody>
+                  </table>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div><!-- /workbench pane -->
+
+        <!-- ═══ TAB: BLOCK & PATTERN ═══ -->
+        <div class="tab-pane" data-pane="block" style="display:none">
+          <div style="display:flex;align-items:center;gap:10px;flex-wrap:wrap;margin-bottom:14px;padding:12px 14px;background:var(--info-50);border:1px solid var(--info-100);border-radius:6px;font-size:12.5px;color:var(--info-700)">
+            <b>Trip Pattern &amp; Block Scheduling.</b> Definisikan variasi pola pelayanan (full route, short-turn, express, deadhead) dan tetapkan ke block fisik bus. Mendukung rekayasa lanjutan a la GTFS <i>block_id</i>.
+          </div>
+
+          <div class="card" style="margin-bottom:14px">
+            <div class="card-head"><h3><span class="num">A</span> Pola Trip (Trip Patterns)</h3>
+              <div style="margin-left:auto;display:flex;gap:8px"><button class="btn">Impor GTFS</button><button class="btn primary">+ Pola Baru</button></div>
+            </div>
+            <div class="card-body">
+              <div class="wb-pattern">
+                <div class="wb-pat on">
+                  <div class="name">P1 — Full Route (Reguler)</div>
+                  <div class="stops">SCB · KMG · BSD · ALS · SRP · GDG · TKB</div>
+                  <div class="meta"><span class="stamp">7 halte</span><span class="stamp">25 m</span><span class="stamp ok">Default · 76% trip</span></div>
+                </div>
+                <div class="wb-pat">
+                  <div class="name">P2 — Short-turn @ Halte 4</div>
+                  <div class="stops">SCB · KMG · BSD · ALS · BSD · KMG · SCB</div>
+                  <div class="meta"><span class="stamp warn">Short-turn</span><span class="stamp">14 m</span><span class="stamp">Peak only · 12%</span></div>
+                </div>
+                <div class="wb-pat">
+                  <div class="name">P3 — Express (Skip Stop)</div>
+                  <div class="stops">SCB · BSD · SRP · TKB</div>
+                  <div class="meta"><span class="stamp" style="background:var(--info-100);color:var(--info-700);border-color:var(--info-700)">Express</span><span class="stamp">17 m</span><span class="stamp">8% trip</span></div>
+                </div>
+                <div class="wb-pat">
+                  <div class="name">P4 — Deadhead Pool→TKB</div>
+                  <div class="stops">Pool · (non-revenue) · TKB</div>
+                  <div class="meta"><span class="stamp" style="background:var(--ink-100);color:var(--ink-700)">Deadhead</span><span class="stamp">12 m</span><span class="stamp">4% trip</span></div>
+                </div>
+                <div class="wb-pat" style="border-style:dashed;color:var(--ink-500)">
+                  <div class="name" style="color:var(--ink-500)">+ Tambah Pola</div>
+                  <div class="stops">Klik untuk membuat pattern baru</div>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <div class="card">
+            <div class="card-head"><h3><span class="num">B</span> Block Schedule (Penugasan Trip ke Bus Fisik)</h3>
+              <div style="margin-left:auto;display:flex;gap:8px;align-items:center;font-size:11px;color:var(--ink-600)">
+                <span>● Revenue</span>
+                <span>▣ Deadhead</span>
+                <span>○ Layover</span>
+                <span>◌ Break</span>
+              </div>
+            </div>
+            <div class="card-body">
+              <div class="wb-block">
+                <div class="h">BLOK</div>
+                <div class="h">05</div><div class="h">06</div><div class="h">07</div><div class="h">08</div><div class="h">09</div><div class="h">10</div><div class="h">11</div><div class="h">12</div><div class="h">13</div><div class="h">14</div><div class="h">15</div><div class="h">16</div><div class="h">17</div><div class="h">18</div><div class="h">19</div><div class="h">20</div><div class="h">21</div>
+
+                <div class="b">Block 01</div>
+                <div class="c dh"><span>DH</span></div>
+                <div class="c rev"><span>R1·R2</span></div><div class="c rev"><span>R3·R4</span></div><div class="c rev"><span>R5·R6</span></div>
+                <div class="c lay"><span>LO</span></div>
+                <div class="c rev"><span>R7</span></div><div class="c rev"><span>R8</span></div><div class="c rev"><span>R9</span></div><div class="c brk"><span>BRK</span></div>
+                <div class="c rev"><span>R10</span></div><div class="c rev"><span>R11·R12</span></div><div class="c rev"><span>R13·R14</span></div><div class="c rev"><span>R15·R16</span></div><div class="c rev"><span>R17</span></div><div class="c rev"><span>R18</span></div><div class="c lay"><span>LO</span></div>
+                <div class="c dh"><span>DH</span></div>
+
+                <div class="b">Block 02</div>
+                <div class="c dh"><span>DH</span></div>
+                <div class="c rev"><span>R1·R2</span></div><div class="c rev"><span>R3·R4</span></div><div class="c rev"><span>R5·R6</span></div>
+                <div class="c rev"><span>R7</span></div><div class="c rev"><span>R8</span></div><div class="c rev"><span>R9</span></div><div class="c brk"><span>BRK</span></div>
+                <div class="c rev"><span>R10·R11</span></div><div class="c rev"><span>R12·R13</span></div><div class="c lay"><span>LO</span></div>
+                <div class="c rev"><span>R14·R15</span></div><div class="c rev"><span>R16·R17</span></div><div class="c rev"><span>R18·R19</span></div><div class="c rev"><span>R20</span></div><div class="c rev"><span>R21</span></div><div class="c lay"><span>LO</span></div>
+                <div class="c dh"><span>DH</span></div>
+
+                <div class="b">Block 03</div>
+                <div class="c dh"><span>DH</span></div>
+                <div class="c rev"><span>R1</span></div><div class="c rev"><span>R2·R3</span></div><div class="c rev"><span>R4·R5</span></div>
+                <div class="c rev"><span>R6·R7</span></div><div class="c rev"><span>R8</span></div><div class="c brk"><span>BRK</span></div>
+                <div class="c rev"><span>R9·R10</span></div><div class="c rev"><span>R11·R12</span></div><div class="c rev"><span>R13</span></div>
+                <div class="c lay"><span>LO</span></div>
+                <div class="c rev"><span>R14</span></div><div class="c rev"><span>R15·R16</span></div><div class="c rev"><span>R17·R18</span></div><div class="c rev"><span>R19</span></div><div class="c lay"><span>LO</span></div>
+                <div class="c dh"><span>DH</span></div>
+
+                <div class="b" style="background:var(--gold-600)">Block 04 ✦</div>
+                <div class="c"></div><div class="c"></div>
+                <div class="c rev" style="background:var(--gold-50)"><span>R-S1·S2</span></div>
+                <div class="c rev" style="background:var(--gold-50)"><span>R-S3·S4</span></div>
+                <div class="c"></div><div class="c"></div><div class="c"></div><div class="c"></div><div class="c"></div><div class="c"></div>
+                <div class="c rev" style="background:var(--gold-50)"><span>R-S5·S6</span></div>
+                <div class="c rev" style="background:var(--gold-50)"><span>R-S7·S8</span></div>
+                <div class="c rev" style="background:var(--gold-50)"><span>R-S9·S10</span></div>
+                <div class="c rev" style="background:var(--gold-50)"><span>R-S11</span></div>
+                <div class="c"></div><div class="c"></div><div class="c"></div>
+              </div>
+              <div style="margin-top:14px;display:grid;grid-template-columns:repeat(4,1fr);gap:10px;font-size:11.5px">
+                <div style="padding:8px 10px;background:var(--ink-50);border-radius:5px"><b>Block 01</b><br><span class="mono" style="color:var(--ink-600)">22 trip · 2 deadhead · 1 break</span></div>
+                <div style="padding:8px 10px;background:var(--ink-50);border-radius:5px"><b>Block 02</b><br><span class="mono" style="color:var(--ink-600)">22 trip · 2 deadhead · 1 break</span></div>
+                <div style="padding:8px 10px;background:var(--ink-50);border-radius:5px"><b>Block 03</b><br><span class="mono" style="color:var(--ink-600)">22 trip · 2 deadhead · 1 break</span></div>
+                <div style="padding:8px 10px;background:var(--gold-50);border-radius:5px;border:1px solid var(--gold-100)"><b>Block 04 ✦ Sisipan</b><br><span class="mono" style="color:var(--gold-700)">11 trip peak only</span></div>
+              </div>
+            </div>
+          </div>
+
+          <div class="grid-2" style="margin-top:14px">
+            <div class="card">
+              <div class="card-head"><h3><span class="num">C</span> Interlining (lintas-rute)</h3></div>
+              <div class="card-body">
+                <div class="form-row"><label>Aktifkan interlining 1E ↔ 2</label><span class="toggle"><input type="checkbox"/><span class="slider"></span></span></div>
+                <div class="form-row"><label>Min. layover untuk handover</label><span class="mono">12 menit</span></div>
+                <div class="form-row" style="border-bottom:none"><label>Penghematan armada estimasi</label><span class="mono" style="color:var(--ok-700);font-weight:700">−1 bus</span></div>
+                <div style="font-size:11px;color:var(--ink-600);margin-top:8px;line-height:1.5">Memungkinkan satu bus melayani dua rute berurutan. Membutuhkan headway kompatibel dan terminal bersama.</div>
+              </div>
+            </div>
+            <div class="card">
+              <div class="card-head"><h3><span class="num">D</span> Strategi Pemulihan (Recovery)</h3></div>
+              <div class="card-body">
+                <div class="form-row"><label>Hold-and-release di terminal</label><span class="toggle"><input type="checkbox" checked/><span class="slider"></span></span></div>
+                <div class="form-row"><label>Skip-stop saat keterlambatan ≥</label><span class="mono">5 m</span></div>
+                <div class="form-row"><label>Short-turn auto saat bunching</label><span class="toggle"><input type="checkbox"/><span class="slider"></span></span></div>
+                <div class="form-row" style="border-bottom:none"><label>Deadhead reposition</label><span class="toggle"><input type="checkbox" checked/><span class="slider"></span></span></div>
+              </div>
+            </div>
+          </div>
+        </div><!-- /block pane -->
+
+        <!-- ═══ TAB: VALIDATOR ═══ -->
+        <div class="tab-pane" data-pane="validator" style="display:none">
+          <div style="display:flex;align-items:center;gap:10px;flex-wrap:wrap;margin-bottom:14px;padding:12px 14px;background:var(--info-50);border:1px solid var(--info-100);border-radius:6px;font-size:12.5px;color:var(--info-700)">
+            <b>Validator Real-Time.</b> Pemeriksaan otomatis terhadap regulasi (Permenhub 27/2015 &amp; 79/2013), konsistensi internal, dan praktik terbaik TCQSM. <b id="vCount">3</b> temuan ditemukan pada jadwal saat ini.
+          </div>
+
+          <div class="kpi-grid" style="grid-template-columns:repeat(4,1fr);gap:10px;margin-bottom:14px">
+            <div class="card"><div class="card-body" style="padding:12px"><div style="font-size:10px;color:var(--ink-600);text-transform:uppercase">Aturan Diperiksa</div><div class="num" style="font-size:22px;font-weight:700">28</div></div></div>
+            <div class="card"><div class="card-body" style="padding:12px"><div style="font-size:10px;color:var(--ok-700);text-transform:uppercase">Lulus</div><div class="num" style="font-size:22px;font-weight:700;color:var(--ok-700)">25</div></div></div>
+            <div class="card"><div class="card-body" style="padding:12px"><div style="font-size:10px;color:var(--warn-700);text-transform:uppercase">Peringatan</div><div class="num" style="font-size:22px;font-weight:700;color:var(--warn-700)">2</div></div></div>
+            <div class="card"><div class="card-body" style="padding:12px"><div style="font-size:10px;color:var(--bad-700);text-transform:uppercase">Pelanggaran</div><div class="num" style="font-size:22px;font-weight:700;color:var(--bad-700)">1</div></div></div>
+          </div>
+
+          <div class="card" style="margin-bottom:14px">
+            <div class="card-head"><h3><span class="num">A</span> Temuan Aktif</h3>
+              <div style="margin-left:auto;display:flex;gap:6px;font-size:11px">
+                <button class="btn">Hanya Pelanggaran</button>
+                <button class="btn">Semua</button>
+              </div>
+            </div>
+            <div class="card-body">
+              <div class="val-list">
+                <div class="val-item bad">
+                  <div class="marker">✕</div>
+                  <div class="body">
+                    <b>SPM Headway Peak Pagi (P05–P06)</b> melebihi ambang Permenhub 27/2015 §5
+                    <div class="desc">Headway aktual <b class="mono">12,4 m</b> &gt; ambang <b class="mono">10 m</b>. Rekomendasi: aktifkan sisipan armada (B-04) atau short-turn @ Halte 4 untuk periode 07:00–09:00.</div>
+                  </div>
+                  <button class="btn primary">Perbaiki Otomatis</button>
+                </div>
+                <div class="val-item warn">
+                  <div class="marker">!</div>
+                  <div class="body">
+                    <b>Sopir B-02 mendekati batas 8 jam</b> (Permenhub 79/2013)
+                    <div class="desc">Akumulasi jam: <b class="mono">7 j 32 m</b>. Sisa kapasitas <b class="mono">28 m</b>. Rekomendasi: rotasi sopir di pool atau extend break trip ke-7.</div>
+                  </div>
+                  <button class="btn">Tinjau</button>
+                </div>
+                <div class="val-item warn">
+                  <div class="marker">!</div>
+                  <div class="body">
+                    <b>Recovery time Block 03 di bawah ambang</b>
+                    <div class="desc">Recovery aktual <b class="mono">8,2%</b> &lt; ambang TCQSM <b class="mono">10–15%</b>. Risiko bunching meningkat saat keterlambatan kumulatif.</div>
+                  </div>
+                  <button class="btn">Tinjau</button>
+                </div>
+                <div class="val-item ok">
+                  <div class="marker">✓</div>
+                  <div class="body">
+                    <b>Frekuensi off-peak</b> sesuai SPM (≥ 4 trip/jam)
+                    <div class="desc">Frekuensi minimum tercapai di seluruh window non-peak.</div>
+                  </div>
+                </div>
+                <div class="val-item ok">
+                  <div class="marker">✓</div>
+                  <div class="body">
+                    <b>Layover terminal</b> sesuai standar
+                    <div class="desc">Rerata <b class="mono">10,2 m</b> per terminal — dalam rentang aman 8–15 m.</div>
+                  </div>
+                </div>
+                <div class="val-item ok">
+                  <div class="marker">✓</div>
+                  <div class="body">
+                    <b>Coefficient of Variation Headway</b> baik
+                    <div class="desc">CoV <b class="mono">0,11</b> &lt; ambang <b class="mono">0,2</b> — keseragaman headway terjaga.</div>
+                  </div>
+                </div>
+                <div class="val-item ok">
+                  <div class="marker">✓</div>
+                  <div class="body">
+                    <b>Tidak ada konflik trip</b> antar block
+                    <div class="desc">Tidak terdeteksi tumpang tindih waktu atau dwelling beyond capacity.</div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <div class="grid-2">
+            <div class="card">
+              <div class="card-head"><h3><span class="num">B</span> Cakupan Aturan</h3></div>
+              <div class="card-body" style="padding:0">
+                <table class="table">
+                  <thead><tr><th>Kategori</th><th class="num">Aturan</th><th>Status</th></tr></thead>
+                  <tbody>
+                    <tr><td>Permenhub 27/2015 (SPM)</td><td class="num">8</td><td><span class="stamp warn">1 pelanggaran</span></td></tr>
+                    <tr><td>Permenhub 79/2013 (Sopir)</td><td class="num">5</td><td><span class="stamp warn">1 peringatan</span></td></tr>
+                    <tr><td>TCQSM 3rd Ed.</td><td class="num">7</td><td><span class="stamp warn">1 peringatan</span></td></tr>
+                    <tr><td>Konsistensi Internal</td><td class="num">6</td><td><span class="stamp">Lulus</span></td></tr>
+                    <tr><td>Praktik Terbaik (BTS)</td><td class="num">2</td><td><span class="stamp">Lulus</span></td></tr>
+                  </tbody>
+                </table>
+              </div>
+            </div>
+            <div class="card">
+              <div class="card-head"><h3><span class="num">C</span> Riwayat Validasi (7 hari)</h3></div>
+              <div class="card-body">
+                <div style="display:flex;align-items:flex-end;gap:6px;height:120px">
+                  <div style="flex:1;display:flex;flex-direction:column;align-items:center;gap:4px"><div style="background:var(--ok-600);width:100%;height:78%;border-radius:3px 3px 0 0"></div><span style="font-size:10px;color:var(--ink-500)">27 Apr</span></div>
+                  <div style="flex:1;display:flex;flex-direction:column;align-items:center;gap:4px"><div style="background:var(--ok-600);width:100%;height:82%;border-radius:3px 3px 0 0"></div><span style="font-size:10px;color:var(--ink-500)">28</span></div>
+                  <div style="flex:1;display:flex;flex-direction:column;align-items:center;gap:4px"><div style="background:var(--warn-600);width:100%;height:60%;border-radius:3px 3px 0 0"></div><span style="font-size:10px;color:var(--ink-500)">29</span></div>
+                  <div style="flex:1;display:flex;flex-direction:column;align-items:center;gap:4px"><div style="background:var(--ok-600);width:100%;height:88%;border-radius:3px 3px 0 0"></div><span style="font-size:10px;color:var(--ink-500)">30</span></div>
+                  <div style="flex:1;display:flex;flex-direction:column;align-items:center;gap:4px"><div style="background:var(--ok-600);width:100%;height:90%;border-radius:3px 3px 0 0"></div><span style="font-size:10px;color:var(--ink-500)">01 Mei</span></div>
+                  <div style="flex:1;display:flex;flex-direction:column;align-items:center;gap:4px"><div style="background:var(--bad-600);width:100%;height:55%;border-radius:3px 3px 0 0"></div><span style="font-size:10px;color:var(--ink-500)">02</span></div>
+                  <div style="flex:1;display:flex;flex-direction:column;align-items:center;gap:4px;font-weight:700"><div style="background:var(--warn-600);width:100%;height:72%;border-radius:3px 3px 0 0"></div><span style="font-size:10px;color:var(--navy-900)">03 ◀</span></div>
+                </div>
+                <div style="font-size:11px;color:var(--ink-600);margin-top:10px;line-height:1.5"><b>Skor hari ini: 89/100</b> — dalam rentang sehat. Penurunan 02 Mei terkait jadwal eksperimental yang sudah dikoreksi.</div>
+              </div>
+            </div>
+          </div>
+        </div><!-- /validator pane -->
       </div>
 
       <!-- ═══════ UTILISASI PAGE ═══════ -->
@@ -4683,6 +5205,278 @@
       activatePage(el.dataset.page);
     });
   });
+
+  // ─── Toast notifications ───
+  const toastStack = document.getElementById('toastStack');
+  function toast(title, body, kind) {
+    if (!toastStack) return;
+    const t = document.createElement('div');
+    t.className = 'toast' + (kind ? ' ' + kind : '');
+    t.innerHTML = `<div class="t-title">${title}</div>` + (body ? `<div class="t-body">${body}</div>` : '');
+    toastStack.appendChild(t);
+    setTimeout(() => { t.classList.add('fade'); setTimeout(() => t.remove(), 250); }, 3500);
+  }
+  // Default feedback for primary buttons that have no other binding
+  document.querySelectorAll('.btn.primary').forEach(b => {
+    if (b.dataset.toastBound) return;
+    b.dataset.toastBound = '1';
+    b.addEventListener('click', (e) => {
+      const label = (b.textContent || '').trim();
+      if (!label) return;
+      // Skip if button drives a real handler we already wired (e.g. wb apply uses its own toast)
+      if (b.id === 'wbApply') return;
+      toast(label, 'Aksi tercatat di Riwayat Aktivitas.', 'ok');
+    });
+  });
+
+  // ─── Clickable breadcrumb parents ───
+  // Maps the parent label (text before "·") to a target page.
+  const crumbMap = {
+    'Beranda': 'dashboard',
+    'Perencanaan': 'jadwal',
+    'Analisa & Audit': 'audit',
+    'Analisa &amp; Audit': 'audit',
+    'Rekayasa & Skenario': 'optimasi',
+    'Rekayasa &amp; Skenario': 'optimasi',
+    'Operasional Harian': 'peta',
+    'Analitik': 'demand',
+    'Pelaporan': 'laporan',
+    'Akun & Sistem': 'notifikasi',
+    'Akun &amp; Sistem': 'notifikasi'
+  };
+  document.querySelectorAll('.breadcrumb').forEach(bc => {
+    const html = bc.innerHTML;
+    const m = html.match(/^\s*([^·]+?)\s*·/);
+    if (!m) return;
+    const parent = m[1].replace(/<[^>]+>/g, '').trim();
+    const target = crumbMap[parent];
+    if (!target) return;
+    bc.innerHTML = html.replace(m[1], `<a href="#" class="crumb" data-page="${target}">${m[1].trim()}</a>`);
+  });
+  // Re-bind click for the newly inserted crumb anchors (above forEach already ran)
+  document.querySelectorAll('.breadcrumb a.crumb').forEach(a => {
+    a.addEventListener('click', (e) => {
+      e.preventDefault();
+      activatePage(a.dataset.page);
+    });
+  });
+
+  // ─── Command Palette (Ctrl+K / Cmd+K) ───
+  const cmdkOverlay = document.getElementById('cmdk');
+  const cmdkInput   = document.getElementById('cmdkInput');
+  const cmdkList    = document.getElementById('cmdkList');
+  // Build palette index from sidebar nav items + a few global actions
+  const paletteItems = [];
+  document.querySelectorAll('.nav-item[data-page]').forEach(n => {
+    const txt = n.textContent.replace(/\s+/g, ' ').trim();
+    paletteItems.push({ kind: 'page', label: txt, page: n.dataset.page });
+  });
+  const actions = [
+    { kind: 'action', label: 'Cetak Jadwal Hari Ini',     hint: 'Ctrl+P', run: () => { toast('Cetak Jadwal', 'Membuka dialog cetak…', 'ok'); window.print(); } },
+    { kind: 'action', label: 'Sahkan Jadwal Aktif',       hint: '',       run: () => { toast('Jadwal Disahkan', 'Status berubah menjadi SAH. Tercatat di Riwayat.', 'ok'); } },
+    { kind: 'action', label: 'Tandai Semua Notifikasi Dibaca', hint: '',  run: () => { toast('Notifikasi', 'Semua notifikasi telah ditandai dibaca.', 'ok'); activatePage('notifikasi'); } },
+    { kind: 'action', label: 'Buka Helpdesk (Bantuan)',   hint: 'F1',     run: () => activatePage('bantuan') },
+  ];
+  function renderPalette(query) {
+    const q = (query || '').toLowerCase().trim();
+    const matched = (q ? [...paletteItems, ...actions].filter(i => i.label.toLowerCase().includes(q)) : [...paletteItems, ...actions]).slice(0, 30);
+    if (!matched.length) {
+      cmdkList.innerHTML = '<div class="cmdk-empty">Tidak ada hasil untuk "<b>' + q + '</b>"</div>';
+      return;
+    }
+    let html = '';
+    const pages = matched.filter(m => m.kind === 'page');
+    const acts  = matched.filter(m => m.kind === 'action');
+    if (pages.length) {
+      html += '<div class="cmdk-section">Halaman</div>';
+      pages.forEach((p, i) => {
+        html += `<div class="cmdk-item${i === 0 && !q ? ' selected' : ''}" data-kind="page" data-page="${p.page}">
+          <svg class="ic" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="9 18 15 12 9 6"/></svg>
+          <span>${p.label}</span><span class="meta">↵</span></div>`;
+      });
+    }
+    if (acts.length) {
+      html += '<div class="cmdk-section">Tindakan</div>';
+      acts.forEach((a, i) => {
+        html += `<div class="cmdk-item" data-kind="action" data-idx="${actions.indexOf(a)}">
+          <svg class="ic" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="20 6 9 17 4 12"/></svg>
+          <span>${a.label}</span><span class="meta">${a.hint || '↵'}</span></div>`;
+      });
+    }
+    cmdkList.innerHTML = html;
+    cmdkList.querySelectorAll('.cmdk-item').forEach(el => {
+      el.addEventListener('mouseenter', () => {
+        cmdkList.querySelectorAll('.cmdk-item.selected').forEach(s => s.classList.remove('selected'));
+        el.classList.add('selected');
+      });
+      el.addEventListener('click', () => triggerSelected(el));
+    });
+  }
+  function triggerSelected(el) {
+    if (!el) return;
+    if (el.dataset.kind === 'page') {
+      activatePage(el.dataset.page);
+    } else if (el.dataset.kind === 'action') {
+      const idx = parseInt(el.dataset.idx, 10);
+      if (!isNaN(idx) && actions[idx]) actions[idx].run();
+    }
+    closePalette();
+  }
+  function openPalette() {
+    cmdkOverlay.classList.add('open');
+    cmdkInput.value = '';
+    renderPalette('');
+    setTimeout(() => cmdkInput.focus(), 30);
+  }
+  function closePalette() { cmdkOverlay.classList.remove('open'); }
+  cmdkInput && cmdkInput.addEventListener('input', () => renderPalette(cmdkInput.value));
+  cmdkOverlay && cmdkOverlay.addEventListener('click', (e) => { if (e.target === cmdkOverlay) closePalette(); });
+  cmdkInput && cmdkInput.addEventListener('keydown', (e) => {
+    const items = cmdkList.querySelectorAll('.cmdk-item');
+    const sel = cmdkList.querySelector('.cmdk-item.selected');
+    let idx = sel ? Array.from(items).indexOf(sel) : -1;
+    if (e.key === 'ArrowDown') { e.preventDefault(); idx = Math.min(items.length - 1, idx + 1); }
+    else if (e.key === 'ArrowUp')   { e.preventDefault(); idx = Math.max(0, idx - 1); }
+    else if (e.key === 'Enter')     { e.preventDefault(); triggerSelected(sel || items[0]); return; }
+    else if (e.key === 'Escape')    { closePalette(); return; }
+    else return;
+    items.forEach(i => i.classList.remove('selected'));
+    if (items[idx]) { items[idx].classList.add('selected'); items[idx].scrollIntoView({ block: 'nearest' }); }
+  });
+
+  // ─── Global keyboard shortcuts ───
+  document.addEventListener('keydown', (e) => {
+    const meta = e.ctrlKey || e.metaKey;
+    if (meta && e.key.toLowerCase() === 'k') { e.preventDefault(); openPalette(); return; }
+    if (e.key === 'Escape' && cmdkOverlay.classList.contains('open')) { closePalette(); return; }
+    if (e.key === 'F1') { e.preventDefault(); activatePage('bantuan'); return; }
+    if (e.altKey && !e.ctrlKey && !e.metaKey) {
+      const map = { '1': 'dashboard', '2': 'jadwal', '3': 'utilisasi', '4': 'audit', '5': 'biaya', '6': 'peta', '7': 'laporan', 'n': 'notifikasi', 'N': 'notifikasi' };
+      const t = map[e.key];
+      if (t) { e.preventDefault(); activatePage(t); }
+    }
+    if (meta && e.key.toLowerCase() === 's') {
+      // Avoid triggering inside text inputs editing flow; allow on dashboard-level "save"
+      if (!['INPUT','TEXTAREA','SELECT'].includes(document.activeElement.tagName)) {
+        e.preventDefault();
+        toast('Disimpan', 'Perubahan tersimpan (autosaved).', 'ok');
+      }
+    }
+  });
+
+  // ─── Workbench Rekayasa (real-time recompute) ───
+  (function initWorkbench(){
+    const $ = (id) => document.getElementById(id);
+    const sRun = $('sRun'), sLay = $('sLay'), sRec = $('sRec'), sBus = $('sBus'), sLB = $('sLB');
+    if (!sRun) return;
+    const fmtRp = (jt) => 'Rp ' + jt.toFixed(2).replace('.', ',') + ' Jt';
+    const fmtMin = (m) => m.toFixed(1).replace('.', ',') + ' m';
+
+    function recompute() {
+      const run = parseInt(sRun.value, 10);
+      const lay = parseInt(sLay.value, 10);
+      const rec = parseInt(sRec.value, 10);
+      const bus = parseInt(sBus.value, 10);
+      const lb  = parseInt(sLB.value, 10);
+      const cycle   = run + lay + rec;             // one-way cycle in minutes
+      const cycleRT = cycle * 2;                    // round trip
+      const headway = cycleRT / Math.max(1, bus);
+      const opsHrs  = 17;
+      const tripsPerDay = Math.round((opsHrs * 60 / headway) * Math.min(1, bus / 1));
+      const costPerBus = 1.55;                      // Jt/day baseline
+      const costDay = bus * costPerBus + (bus > 3 ? 0.18 * (bus - 3) : 0);
+      const recPct = Math.round((rec / cycle) * 100);
+      const spmOk  = headway <= 10.5;
+
+      $('wbRun').textContent = run;
+      $('wbLay').textContent = lay;
+      $('wbRec').textContent = rec;
+      $('wbBus').textContent = bus;
+      $('wbLB').textContent  = lb + '%';
+
+      $('kpiCycle').textContent = cycleRT + ' m';
+      $('kpiHead').textContent  = fmtMin(headway);
+      $('kpiHead').style.color  = spmOk ? 'var(--ok-700)' : (headway <= 15 ? 'var(--warn-700)' : 'var(--bad-700)');
+      $('kpiTrip').textContent  = tripsPerDay;
+      $('kpiCost').textContent  = fmtRp(costDay);
+
+      const baseline = { head: 15.0, trip: 66, cost: 4.96, rec: 22 };
+      const setS = (id, txt, kind) => { const e = $(id); e.textContent = txt; e.className = 'stamp' + (kind ? ' ' + kind : ''); };
+
+      $('wbcHead').textContent  = fmtMin(headway);
+      $('wbcHeadD').textContent = (headway - baseline.head >= 0 ? '+' : '') + (headway - baseline.head).toFixed(1).replace('.', ',') + ' m';
+      setS('wbcHeadS', spmOk ? 'Memenuhi' : (headway <= 15 ? 'Marjinal' : 'Pelanggaran'), spmOk ? '' : (headway <= 15 ? 'warn' : ''));
+      if (!spmOk && headway > 15) $('wbcHeadS').style.cssText = 'background:var(--bad-100);color:var(--bad-700);border-color:var(--bad-700)';
+      else $('wbcHeadS').style.cssText = '';
+
+      $('wbcTrip').textContent  = tripsPerDay;
+      $('wbcTripD').textContent = (tripsPerDay - baseline.trip >= 0 ? '+' : '') + (tripsPerDay - baseline.trip);
+      setS('wbcTripS', tripsPerDay >= baseline.trip ? 'Naik' : 'Turun');
+
+      $('wbcCost').textContent  = fmtRp(costDay);
+      $('wbcCostD').textContent = (costDay - baseline.cost >= 0 ? '+' : '') + 'Rp ' + (costDay - baseline.cost).toFixed(2).replace('.', ',') + ' Jt';
+      setS('wbcCostS', costDay <= baseline.cost ? 'Turun' : 'Naik', costDay > baseline.cost * 1.15 ? 'warn' : '');
+
+      $('wbcRec').textContent  = recPct + '%';
+      $('wbcRecD').textContent = (recPct - baseline.rec >= 0 ? '+' : '') + (recPct - baseline.rec) + '%';
+      setS('wbcRecS', recPct >= 10 && recPct <= 25 ? 'Sehat' : 'Tinjau', (recPct < 10 || recPct > 30) ? 'warn' : '');
+
+      setS('wbcSPM',  spmOk ? 'Memenuhi' : 'Marjinal', spmOk ? '' : 'warn');
+      setS('wbcSPMS', spmOk ? 'OK' : 'Tinjau', spmOk ? '' : 'warn');
+
+      // Headway profile per period
+      const periods = [
+        { lbl: 'P03–P04 Peak Pagi', factor: 1.0,  spm: 10 },
+        { lbl: 'P05–P06 +Sisipan',  factor: 0.78, spm: 10 },
+        { lbl: 'P07 Peak Pagi 4',   factor: 1.0,  spm: 10 },
+        { lbl: 'P09–P12 Off-Peak',  factor: 1.0,  spm: 15 },
+        { lbl: 'P15–P19 Peak Sore', factor: 1.0,  spm: 10 },
+        { lbl: 'P22 Off-Peak Mlm',  factor: 1.0,  spm: 15 }
+      ];
+      const profile = $('wbHeadProfile');
+      if (profile) {
+        profile.innerHTML = periods.map(p => {
+          const h = headway * p.factor;
+          const status = h <= p.spm ? 'ok' : (h <= p.spm * 1.4 ? 'warn' : 'bad');
+          const color = status === 'ok' ? 'var(--ok-600)' : status === 'warn' ? 'var(--warn-600)' : 'var(--bad-600)';
+          const w = Math.min(100, (h / 25) * 100);
+          return `<div style="display:grid;grid-template-columns:160px 1fr 80px 60px;gap:8px;align-items:center;font-size:11px">
+            <span style="color:var(--ink-700)">${p.lbl}</span>
+            <div style="background:var(--ink-100);height:14px;border-radius:3px;position:relative">
+              <div style="background:${color};width:${w}%;height:100%;border-radius:3px"></div>
+              <div style="position:absolute;left:${(p.spm/25)*100}%;top:-2px;bottom:-2px;width:1.5px;background:var(--navy-900)"></div>
+            </div>
+            <span class="mono" style="color:${color};font-weight:700;text-align:right">${fmtMin(h)}</span>
+            <span class="mono" style="color:var(--ink-500);font-size:10px;text-align:right">≤ ${p.spm} m</span>
+          </div>`;
+        }).join('');
+      }
+
+      // Impact summary
+      $('wbImpact').innerHTML = `Cycle <b>${cycleRT} m</b> · Headway <b>${fmtMin(headway)}</b> · Trip/Hari <b>${tripsPerDay}</b> · SPM <b style="color:${spmOk ? 'var(--ok-700)' : 'var(--bad-700)'}">${spmOk ? 'Memenuhi' : 'Belum penuh'}</b>`;
+    }
+    [sRun, sLay, sRec, sBus, sLB].forEach(s => s && s.addEventListener('input', recompute));
+    recompute();
+
+    // Apply button
+    const applyBtn = $('wbApply');
+    if (applyBtn) {
+      applyBtn.addEventListener('click', () => {
+        toast('Skenario Diterapkan', 'Parameter Workbench dipublikasikan ke jadwal aktif. Tinjau di tab Gantt.', 'ok');
+        // Switch to gantt tab
+        const ganttBtn = document.querySelector('#jadwalTabs .subtab[data-tab="gantt"]');
+        if (ganttBtn) ganttBtn.click();
+      });
+    }
+
+    // Trip pattern toggle
+    document.querySelectorAll('.wb-pattern .wb-pat').forEach(p => {
+      p.addEventListener('click', () => {
+        if (p.querySelector('.name') && p.querySelector('.name').textContent.startsWith('+')) return;
+        p.classList.toggle('on');
+      });
+    });
+  })();
 
   // ─── Sub-tabs (Jadwal page) ───
   const jadwalTabs = document.querySelectorAll('#jadwalTabs .subtab');
