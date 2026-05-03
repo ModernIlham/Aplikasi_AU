@@ -1153,14 +1153,95 @@
   .cmdk-item .meta { margin-left: auto; font-size: 11px; color: var(--ink-500); }
   .cmdk-empty { padding: 28px; text-align: center; font-size: 13px; color: var(--ink-500); }
 
+  /* ─── Login overlay ─── */
+  .login-overlay {
+    position: fixed; inset: 0;
+    background: linear-gradient(135deg, var(--navy-900), var(--navy-700));
+    z-index: 9500;
+    display: none;
+    align-items: center; justify-content: center;
+    padding: 24px;
+  }
+  .login-overlay.open { display: flex; }
+  .login-card {
+    width: min(420px, 96vw);
+    background: var(--white);
+    border-radius: 10px;
+    box-shadow: 0 32px 80px rgba(0,0,0,0.5);
+    overflow: hidden;
+    border-top: 4px solid var(--gold-500);
+  }
+  .login-head {
+    padding: 28px 28px 18px;
+    background: var(--navy-900);
+    color: var(--white);
+    display: flex; gap: 14px; align-items: center;
+  }
+  .login-head .crest {
+    width: 44px; height: 44px;
+    background: var(--gold-500); color: var(--navy-900);
+    border-radius: 50%;
+    display: flex; align-items: center; justify-content: center;
+    font-weight: 800;
+  }
+  .login-head h2 {
+    margin: 0;
+    font-family: var(--font-serif);
+    font-size: 17px; font-weight: 700;
+    letter-spacing: 0.02em;
+  }
+  .login-head .sub { font-size: 11px; color: var(--ink-300); margin-top: 2px; letter-spacing: 0.06em; text-transform: uppercase; }
+  .login-body { padding: 24px 28px 28px; }
+  .login-body label {
+    display: block;
+    font-size: 11px; font-weight: 700;
+    letter-spacing: 0.08em; text-transform: uppercase;
+    color: var(--ink-600);
+    margin-bottom: 6px;
+  }
+  .login-body input {
+    width: 100%; padding: 10px 12px;
+    border: 1px solid var(--ink-300);
+    border-radius: 5px; font-size: 14px;
+    font-family: inherit; outline: none;
+    margin-bottom: 14px;
+  }
+  .login-body input:focus { border-color: var(--navy-700); box-shadow: 0 0 0 3px var(--info-100); }
+  .login-body .err {
+    background: var(--bad-50); color: var(--bad-700);
+    border: 1px solid var(--bad-100); border-radius: 5px;
+    padding: 8px 10px; font-size: 12px;
+    margin-bottom: 12px;
+    display: none;
+  }
+  .login-body .err.show { display: block; }
+  .login-body button {
+    width: 100%; padding: 11px;
+    background: var(--navy-700); color: var(--white);
+    border: none; border-radius: 5px; font-weight: 700;
+    font-size: 14px; cursor: pointer;
+    transition: background 0.15s;
+  }
+  .login-body button:hover:not(:disabled) { background: var(--navy-800); }
+  .login-body button:disabled { opacity: 0.6; cursor: not-allowed; }
+  .login-hint {
+    margin-top: 14px;
+    padding: 10px 12px;
+    background: var(--info-50);
+    border: 1px solid var(--info-100);
+    border-radius: 5px;
+    font-size: 11px; color: var(--info-700); line-height: 1.5;
+  }
+  .login-hint code { font-family: var(--font-mono); background: var(--white); padding: 1px 4px; border-radius: 3px; }
+  .api-loading { color: var(--ink-500); font-style: italic; padding: 14px; text-align: center; }
+
   /* ─── Toast notifications ─── */
   .toast-stack {
     position: fixed; top: 90px; right: 24px;
     display: flex; flex-direction: column; gap: 10px;
     z-index: 9100;
     pointer-events: none;
-  }
-  .toast {
+  }  .toast {
     background: var(--white);
     border: 1px solid var(--ink-200);
     border-left: 4px solid var(--info-600);
@@ -1303,6 +1384,35 @@
 </style>
 </head>
 <body>
+
+<!-- ═══ Login Overlay ═══ -->
+<div class="login-overlay" id="loginOverlay" role="dialog" aria-modal="true" aria-label="Masuk ke Sistem">
+  <div class="login-card">
+    <div class="login-head">
+      <div class="crest">
+        <svg viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="currentColor" stroke-width="2"><rect x="4" y="6" width="16" height="11" rx="2"/><path d="M4 11h16"/><circle cx="8" cy="18" r="1.5"/><circle cx="16" cy="18" r="1.5"/></svg>
+      </div>
+      <div>
+        <h2>Sistem Penjadwalan Bus Massal</h2>
+        <div class="sub">JADWAL BUS · v2.1 · Buy The Service</div>
+      </div>
+    </div>
+    <div class="login-body">
+      <form id="loginForm" autocomplete="on">
+        <div class="err" id="loginErr"></div>
+        <label for="loginEmail">Email Dinas</label>
+        <input id="loginEmail" type="email" required placeholder="nama@dephub.go.id" autocomplete="email"/>
+        <label for="loginPassword">Password</label>
+        <input id="loginPassword" type="password" required placeholder="••••••••" autocomplete="current-password"/>
+        <button type="submit" id="loginBtn">Masuk</button>
+      </form>
+      <div class="login-hint">
+        <b>Demo:</b> <code>rizki@dephub.go.id</code> / <code>password123</code> · atau <code>admin@dephub.go.id</code> / <code>admin1234</code>.
+        Backend harus jalan di port 8000 — lihat <code>backend/README.md</code>.
+      </div>
+    </div>
+  </div>
+</div>
 
 <!-- ═══ Command Palette (Ctrl+K) ═══ -->
 <div class="cmdk-overlay" id="cmdk" role="dialog" aria-modal="true" aria-label="Command palette">
@@ -5724,6 +5834,337 @@
   }
 
   genGantt();
+
+  // ════════════════════════════════════════════════════════════════════════
+  // ─── BACKEND INTEGRATION (FastAPI @ localhost:8000) ───
+  // Aktif hanya jika dibuka via http://localhost:8000 (file:// → mode demo).
+  // ════════════════════════════════════════════════════════════════════════
+  const API = {
+    base: '/api',
+    enabled: typeof window !== 'undefined' && /^https?:$/.test(window.location.protocol),
+    token() { return localStorage.getItem('jadwal_token') || ''; },
+    setToken(t) { if (t) localStorage.setItem('jadwal_token', t); else localStorage.removeItem('jadwal_token'); },
+    user() { try { return JSON.parse(localStorage.getItem('jadwal_user') || 'null'); } catch { return null; } },
+    setUser(u) { if (u) localStorage.setItem('jadwal_user', JSON.stringify(u)); else localStorage.removeItem('jadwal_user'); },
+    async req(method, path, body) {
+      const headers = { 'Accept': 'application/json' };
+      if (body !== undefined) headers['Content-Type'] = 'application/json';
+      const tok = this.token();
+      if (tok) headers['Authorization'] = 'Bearer ' + tok;
+      const res = await fetch(this.base + path, {
+        method, headers,
+        body: body !== undefined ? JSON.stringify(body) : undefined,
+      });
+      if (res.status === 401) {
+        this.setToken(''); this.setUser(null);
+        showLogin();
+        throw new Error('Sesi habis. Silakan login ulang.');
+      }
+      const text = await res.text();
+      const data = text ? JSON.parse(text) : null;
+      if (!res.ok) throw new Error((data && data.detail) || res.statusText);
+      return data;
+    },
+    get(p)        { return this.req('GET', p); },
+    post(p, b)    { return this.req('POST', p, b || {}); },
+    patch(p, b)   { return this.req('PATCH', p, b || {}); },
+    del(p)        { return this.req('DELETE', p); },
+  };
+  window.API = API;
+
+  // ─── Login overlay handlers ───
+  const loginOverlay = document.getElementById('loginOverlay');
+  const loginForm    = document.getElementById('loginForm');
+  const loginErr     = document.getElementById('loginErr');
+  const loginBtn     = document.getElementById('loginBtn');
+  function showLogin() { loginOverlay && loginOverlay.classList.add('open'); }
+  function hideLogin() { loginOverlay && loginOverlay.classList.remove('open'); }
+
+  if (loginForm) {
+    loginForm.addEventListener('submit', async (e) => {
+      e.preventDefault();
+      loginErr.classList.remove('show'); loginErr.textContent = '';
+      const email = document.getElementById('loginEmail').value.trim();
+      const password = document.getElementById('loginPassword').value;
+      loginBtn.disabled = true; loginBtn.textContent = 'Memverifikasi…';
+      try {
+        const r = await API.post('/auth/login', { email, password });
+        API.setToken(r.access_token);
+        API.setUser(r.user);
+        hideLogin();
+        toast('Selamat datang', `${r.user.nama} (${r.user.role})`, 'ok');
+        applyUserToUI(r.user);
+        await hydrateAll();
+      } catch (err) {
+        loginErr.textContent = err.message || 'Gagal login. Cek email/password.';
+        loginErr.classList.add('show');
+      } finally {
+        loginBtn.disabled = false; loginBtn.textContent = 'Masuk';
+      }
+    });
+  }
+
+  function applyUserToUI(u) {
+    if (!u) return;
+    // Topbar user-chip
+    const chipNama = document.querySelector('.user-chip .user-meta b');
+    const chipRole = document.querySelector('.user-chip .user-meta div');
+    const avatar   = document.querySelector('.user-chip .user-avatar');
+    if (chipNama) chipNama.textContent = u.nama;
+    if (chipRole) chipRole.textContent = (u.role || '').replace(/_/g, ' ');
+    if (avatar)   avatar.textContent   = (u.nama || '?').split(/\s+/).slice(0,2).map(s => s[0]).join('').toUpperCase();
+    // Profil page
+    const pName  = document.querySelector('#page-profil .form-row input[value*="Aditama"]');
+    const pEmail = document.querySelector('#page-profil .form-row input[value*="dephub"]');
+    if (pName)  pName.value  = u.nama;
+    if (pEmail) pEmail.value = u.email;
+  }
+
+  // ─── Hydrate helpers ───
+  function fmtDateTime(s) {
+    if (!s) return '—';
+    const d = new Date(s);
+    if (isNaN(d)) return s;
+    const dd = String(d.getDate()).padStart(2, '0');
+    const months = ['Jan','Feb','Mar','Apr','Mei','Jun','Jul','Agu','Sep','Okt','Nov','Des'];
+    const mm = months[d.getMonth()];
+    const HH = String(d.getHours()).padStart(2, '0');
+    const MM = String(d.getMinutes()).padStart(2, '0');
+    return `${dd} ${mm} ${HH}:${MM}`;
+  }
+  function fmtTime(s) {
+    if (!s) return '—';
+    return String(s).slice(0,5);
+  }
+  function escHtml(s) {
+    return String(s ?? '').replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+  }
+  function stampForStatus(status, kind) {
+    const cls = kind === 'insiden'
+      ? ({ terbuka:'warn', investigasi:'warn', tindakan:'warn', selesai:'' })
+      : ({ aktif:'', perbaikan:'warn', non_aktif:'warn', cuti:'warn' });
+    return `<span class="stamp ${cls[status] || ''}">${escHtml(status)}</span>`;
+  }
+  function stampForTingkat(t) {
+    if (t === 'kritis') return `<span class="stamp" style="background:var(--bad-100);color:var(--bad-700);border-color:var(--bad-700)">KRITIS</span>`;
+    if (t === 'peringatan') return `<span class="stamp warn">PERINGATAN</span>`;
+    return `<span class="stamp info">INFO</span>`;
+  }
+
+  // ─── Page hydrators ───
+  async function hydrateArmada() {
+    const tbody = document.querySelector('#page-armada table.table tbody');
+    if (!tbody) return;
+    try {
+      const rows = await API.get('/armada');
+      if (!rows.length) return;
+      tbody.innerHTML = rows.map(r => `
+        <tr>
+          <td><b>${escHtml(r.kode)}</b></td>
+          <td class="mono">${escHtml(r.plat)}</td>
+          <td>${escHtml(r.tipe)}</td>
+          <td class="num">${r.kapasitas}</td>
+          <td class="num">${r.tahun}</td>
+          <td class="num mono">${(r.km_total || 0).toLocaleString('id-ID')}</td>
+          <td>${stampForStatus(r.status, 'armada')}</td>
+        </tr>`).join('');
+    } catch (e) { console.warn('hydrateArmada', e); }
+  }
+
+  async function hydrateSopir() {
+    const tbody = document.querySelector('#page-roster table.table tbody');
+    if (!tbody) return;
+    try {
+      const rows = await API.get('/sopir');
+      if (!rows.length) return;
+      tbody.innerHTML = rows.map(r => `
+        <tr>
+          <td><b>${escHtml(r.kode)}</b></td>
+          <td>${escHtml(r.nama)}</td>
+          <td class="mono">${escHtml(r.no_sim || '—')}</td>
+          <td class="mono">${escHtml(r.no_hp || '—')}</td>
+          <td class="num mono">${(r.jam_kerja_minggu || 0).toFixed(1).replace('.', ',')} j</td>
+          <td>${stampForStatus(r.status, 'sopir')}</td>
+        </tr>`).join('');
+    } catch (e) { console.warn('hydrateSopir', e); }
+  }
+
+  async function hydrateHalte() {
+    const tbody = document.querySelector('#page-halte table.table tbody');
+    if (!tbody) return;
+    try {
+      const rows = await API.get('/halte');
+      if (!rows.length) return;
+      tbody.innerHTML = rows.map(r => `
+        <tr>
+          <td class="num">${r.urutan}</td>
+          <td><b>${escHtml(r.kode)}</b></td>
+          <td>${escHtml(r.nama)}</td>
+          <td class="num mono">${(r.km || 0).toFixed(2).replace('.', ',')}</td>
+          <td class="num">${r.kapasitas_naik}</td>
+          <td>${escHtml(r.fasilitas || '—')}</td>
+        </tr>`).join('');
+    } catch (e) { console.warn('hydrateHalte', e); }
+  }
+
+  async function hydrateInsiden() {
+    const tbody = document.querySelector('#page-insiden table.table tbody');
+    if (!tbody) return;
+    try {
+      const rows = await API.get('/insiden?limit=20');
+      if (!rows.length) return;
+      tbody.innerHTML = rows.map(r => {
+        const bgRow = r.dampak === 'tinggi' ? 'background:var(--bad-50)' : (r.dampak === 'sedang' && r.status !== 'selesai' ? 'background:var(--warn-50)' : '');
+        return `<tr style="${bgRow}">
+          <td class="mono"><b>${escHtml(r.tiket)}</b></td>
+          <td class="mono">${fmtDateTime(r.waktu)}</td>
+          <td>${escHtml(r.deskripsi)}</td>
+          <td class="mono">${escHtml(r.armada_kode || '—')}</td>
+          <td>${escHtml(r.lokasi || '—')}</td>
+          <td><span class="stamp">${escHtml(r.kategori)}</span></td>
+          <td>${stampForStatus(r.dampak, 'sopir')}</td>
+          <td>${escHtml(r.pic || '—')}</td>
+          <td>${stampForStatus(r.status, 'insiden')}</td>
+        </tr>`;
+      }).join('');
+    } catch (e) { console.warn('hydrateInsiden', e); }
+  }
+
+  async function hydrateNotifikasi() {
+    const tbody = document.querySelector('#page-notifikasi table.table tbody');
+    if (!tbody) return;
+    try {
+      const rows = await API.get('/notifikasi');
+      if (!rows.length) return;
+      tbody.innerHTML = rows.map(r => {
+        const bg = r.tingkat === 'kritis' ? 'background:var(--bad-50)' : (r.tingkat === 'peringatan' ? 'background:var(--warn-50)' : (r.dibaca ? 'opacity:0.7' : ''));
+        return `<tr style="${bg}">
+          <td class="mono">${fmtDateTime(r.waktu)}</td>
+          <td>${stampForTingkat(r.tingkat)}</td>
+          <td>${escHtml(r.pesan)}</td>
+          <td>${escHtml(r.sumber || '—')}</td>
+          <td><button class="btn" data-mark-read="${r.id}">${r.dibaca ? 'Dibaca' : 'Tinjau'}</button></td>
+        </tr>`;
+      }).join('');
+      tbody.querySelectorAll('button[data-mark-read]').forEach(b => {
+        b.addEventListener('click', async () => {
+          const id = b.dataset.markRead;
+          try { await API.post(`/notifikasi/${id}/read`); toast('Notifikasi', 'Ditandai dibaca.', 'ok'); hydrateNotifikasi(); }
+          catch (e) { toast('Gagal', e.message, 'bad'); }
+        });
+      });
+    } catch (e) { console.warn('hydrateNotifikasi', e); }
+  }
+
+  async function hydrateRiwayat() {
+    const tbody = document.querySelector('#page-riwayat .card .card-body table.table tbody');
+    if (!tbody) return;
+    try {
+      const rows = await API.get('/audit?limit=50');
+      if (!rows.length) return;
+      tbody.innerHTML = rows.map(r => `
+        <tr>
+          <td class="mono">${fmtDateTime(r.waktu)}</td>
+          <td><b>${escHtml(r.user_email || 'System')}</b></td>
+          <td><span class="stamp">${escHtml(r.aksi)}</span></td>
+          <td>${escHtml(r.detail || r.objek)}</td>
+          <td class="mono">${escHtml(r.ip || '—')}</td>
+          <td class="mono" style="font-size:10px">${escHtml((r.method || '') + ' ' + (r.path || ''))}</td>
+        </tr>`).join('');
+    } catch (e) { console.warn('hydrateRiwayat', e); }
+  }
+
+  async function hydrateDashboard() {
+    try {
+      const s = await API.get('/dashboard/summary');
+      // Update Sisipan badge in sidebar
+      const sBadge = document.querySelector('.nav-item[data-page="sisipan"] .badge');
+      if (sBadge && s.trip_sisipan != null) sBadge.textContent = String(s.trip_sisipan);
+      const nBadge = document.querySelector('.nav-item[data-page="notifikasi"] .badge');
+      if (nBadge && s.notifikasi_unread != null) nBadge.textContent = String(s.notifikasi_unread);
+      const iBadge = document.querySelector('.nav-item[data-page="insiden"] .badge');
+      if (iBadge && s.insiden_open != null) iBadge.textContent = String(s.insiden_open);
+    } catch (e) { console.warn('hydrateDashboard', e); }
+  }
+
+  async function hydrateUsers() {
+    const tbody = document.querySelector('#page-pengaturan table.table tbody');
+    if (!tbody) return;
+    try {
+      const rows = await API.get('/users');
+      if (!rows.length) return;
+      tbody.innerHTML = rows.map(r => `
+        <tr${r.aktif ? '' : ' style="opacity:0.6"'}>
+          <td><b>${escHtml(r.nama)}</b></td>
+          <td class="mono">${escHtml(r.nip || '—')}</td>
+          <td>${escHtml((r.role || '').replace(/_/g, ' '))}</td>
+          <td>${escHtml(r.unit_kerja || '—')}</td>
+          <td class="mono">${fmtDateTime(r.last_login_at)}</td>
+          <td><span class="stamp${r.aktif ? '' : ' warn'}">${r.aktif ? 'Aktif' : 'Nonaktif'}</span></td>
+        </tr>`).join('');
+    } catch (e) { console.warn('hydrateUsers', e); }
+  }
+
+  async function hydrateAll() {
+    await Promise.all([
+      hydrateDashboard(),
+      hydrateArmada(),
+      hydrateSopir(),
+      hydrateHalte(),
+      hydrateInsiden(),
+      hydrateNotifikasi(),
+      hydrateRiwayat(),
+      hydrateUsers(),
+    ]);
+  }
+
+  // Re-hydrate notif/insiden/riwayat saat user pindah halaman terkait
+  document.querySelectorAll('[data-page]').forEach(el => {
+    el.addEventListener('click', () => {
+      const tgt = el.dataset.page;
+      if (tgt === 'notifikasi')   hydrateNotifikasi();
+      else if (tgt === 'insiden') hydrateInsiden();
+      else if (tgt === 'riwayat') hydrateRiwayat();
+      else if (tgt === 'armada')  hydrateArmada();
+      else if (tgt === 'roster')  hydrateSopir();
+      else if (tgt === 'halte')   hydrateHalte();
+      else if (tgt === 'pengaturan') hydrateUsers();
+    });
+  });
+
+  // ─── Bootstrap: cek token, validasi /me, lalu hydrate atau tampilkan login ───
+  (async function bootstrap() {
+    if (!API.enabled) {
+      // file:// mode → tetap berfungsi sebagai demo statis (data dummy)
+      console.info('[App] Mode statis: backend tidak tersedia. Buka via http://localhost:8000 untuk mengaktifkan API.');
+      return;
+    }
+    const tok = API.token();
+    if (!tok) { showLogin(); return; }
+    try {
+      const u = await API.get('/auth/me');
+      API.setUser(u);
+      applyUserToUI(u);
+      await hydrateAll();
+    } catch {
+      API.setToken(''); API.setUser(null);
+      showLogin();
+    }
+  })();
+
+  // Keluar dari Profil page
+  document.querySelectorAll('#page-profil .btn').forEach(b => {
+    if ((b.textContent || '').toLowerCase().includes('keluar')) {
+      b.addEventListener('click', () => {
+        if (API.enabled) {
+          API.post('/auth/logout').catch(()=>{});
+        }
+        API.setToken(''); API.setUser(null);
+        toast('Keluar', 'Sesi diakhiri.', 'ok');
+        if (API.enabled) showLogin();
+      });
+    }
+  });
 </script>
 </body>
 </html>
