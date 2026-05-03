@@ -143,13 +143,25 @@
   .topbar-btn:hover { background: rgba(255,255,255,0.16); }
   .topbar-btn.primary { background: var(--gold-500); color: var(--navy-900); border-color: var(--gold-500); }
   .topbar-btn.primary:hover { background: var(--gold-400); }
+  .topbar-bell { position: relative; padding: 6px 10px; }
+  .topbar-bell .bell-dot {
+    position: absolute; top: 4px; right: 6px;
+    width: 8px; height: 8px; border-radius: 50%;
+    background: var(--bad-600); border: 1.5px solid var(--navy-900);
+  }
   .user-chip {
     display: flex; align-items: center; gap: 8px;
     padding: 4px 12px 4px 4px;
     background: rgba(255,255,255,0.06);
     border-radius: 100px;
     border: 1px solid rgba(255,255,255,0.12);
+    color: var(--white);
+    font-family: inherit;
+    text-align: left;
+    cursor: pointer;
+    transition: background 0.15s;
   }
+  .user-chip:hover { background: rgba(255,255,255,0.14); }
   .user-avatar {
     width: 26px; height: 26px; border-radius: 50%;
     background: var(--navy-600);
@@ -1110,8 +1122,8 @@
       </div>
       <div class="right">
         <span>Senin, 03 Mei 2026 · 09:42 WIB</span>
-        <a href="#">Bantuan</a>
-        <a href="#">Permenhub 27/2015</a>
+        <a href="#" data-page="bantuan">Bantuan</a>
+        <a href="#" data-page="wawasan">Permenhub 27/2015</a>
       </div>
     </div>
     <div class="topbar-main">
@@ -1140,10 +1152,14 @@
           <svg class="ic" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="20 6 9 17 4 12"/></svg>
           Sah &amp; Terbitkan
         </button>
-        <div class="user-chip">
+        <button class="topbar-btn topbar-bell" data-page="notifikasi" title="Notifikasi &amp; Peringatan">
+          <svg class="ic" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M18 8A6 6 0 006 8c0 7-3 9-3 9h18s-3-2-3-9"/><path d="M13.73 21a2 2 0 01-3.46 0"/></svg>
+          <span class="bell-dot"></span>
+        </button>
+        <button class="user-chip" data-page="profil" title="Profil Pengguna">
           <div class="user-avatar">RA</div>
           <div class="user-meta"><b>Ir. Rizki A.</b><div>Perencana Madya</div></div>
-        </div>
+        </button>
       </div>
     </div>
   </header>
@@ -1308,6 +1324,32 @@
         <button class="nav-item" data-page="pengaturan">
           <svg class="ic" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 00.33 1.82l.06.06a2 2 0 01-2.83 2.83l-.06-.06a1.65 1.65 0 00-1.82-.33 1.65 1.65 0 00-1 1.51V21a2 2 0 01-4 0v-.09a1.65 1.65 0 00-1-1.51 1.65 1.65 0 00-1.82.33l-.06.06a2 2 0 01-2.83-2.83l.06-.06a1.65 1.65 0 00.33-1.82 1.65 1.65 0 00-1.51-1H3a2 2 0 010-4h.09a1.65 1.65 0 001.51-1 1.65 1.65 0 00-.33-1.82l-.06-.06a2 2 0 012.83-2.83l.06.06a1.65 1.65 0 001.82.33H7a1.65 1.65 0 001-1.51V3a2 2 0 014 0v.09a1.65 1.65 0 001 1.51h0a1.65 1.65 0 001.82-.33l.06-.06a2 2 0 012.83 2.83l-.06.06a1.65 1.65 0 00-.33 1.82V9a1.65 1.65 0 001.51 1H21a2 2 0 010 4h-.09a1.65 1.65 0 00-1.51 1z"/></svg>
           Pengaturan Sistem
+        </button>
+      </div>
+
+      <div class="nav-section">
+        <div class="nav-section-title">Akun &amp; Sistem</div>
+        <button class="nav-item" data-page="notifikasi">
+          <svg class="ic" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M18 8A6 6 0 006 8c0 7-3 9-3 9h18s-3-2-3-9"/><path d="M13.73 21a2 2 0 01-3.46 0"/></svg>
+          Notifikasi &amp; Peringatan
+          <span class="badge">5</span>
+        </button>
+        <button class="nav-item" data-page="insiden">
+          <svg class="ic" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg>
+          Manajemen Insiden
+          <span class="badge">2</span>
+        </button>
+        <button class="nav-item" data-page="riwayat">
+          <svg class="ic" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 12a9 9 0 109-9"/><polyline points="3 4 3 12 11 12"/><line x1="12" y1="7" x2="12" y2="12"/><line x1="12" y1="12" x2="15" y2="14"/></svg>
+          Riwayat Aktivitas
+        </button>
+        <button class="nav-item" data-page="profil">
+          <svg class="ic" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20 21v-2a4 4 0 00-4-4H8a4 4 0 00-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>
+          Profil Pengguna
+        </button>
+        <button class="nav-item" data-page="bantuan">
+          <svg class="ic" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><path d="M9.09 9a3 3 0 015.83 1c0 2-3 3-3 3"/><line x1="12" y1="17" x2="12.01" y2="17"/></svg>
+          Bantuan &amp; Dokumentasi
         </button>
       </div>
 
@@ -4241,6 +4283,380 @@
         </div>
       </div>
 
+      <!-- ═══════ NOTIFIKASI & PERINGATAN PAGE ═══════ -->
+      <div class="page" id="page-notifikasi">
+        <div class="page-head">
+          <div>
+            <div class="breadcrumb">Akun &amp; Sistem · <b>Notifikasi &amp; Peringatan</b></div>
+            <h1 class="page-title">Pusat Notifikasi Operasi</h1>
+            <div class="page-subtitle"><b class="mono">5</b> baru · <b class="mono">12</b> minggu ini · Pemberitahuan SPM, kepatuhan, dan kejadian armada</div>
+          </div>
+          <div class="page-actions">
+            <button class="btn">Tandai Semua Dibaca</button>
+            <button class="btn primary">Pengaturan Saluran</button>
+          </div>
+        </div>
+
+        <div class="grid-2">
+          <div class="card">
+            <div class="card-head"><h3><span class="num">A</span> Notifikasi Aktif</h3></div>
+            <div class="card-body" style="padding:0">
+              <table class="table">
+                <thead><tr><th style="width:90px">Waktu</th><th style="width:90px">Tingkat</th><th>Pesan</th><th style="width:120px">Sumber</th><th style="width:80px">Aksi</th></tr></thead>
+                <tbody>
+                  <tr style="background:var(--bad-50)"><td class="mono">09:38</td><td><span class="stamp" style="background:var(--bad-100);color:var(--bad-700);border-color:var(--bad-700)">KRITIS</span></td><td><b>Bus B-02</b> menyimpang &gt; 5 menit dari jadwal trip ke-7. Headway peak terganggu.</td><td>Peta Live</td><td><button class="btn">Tinjau</button></td></tr>
+                  <tr style="background:var(--warn-50)"><td class="mono">09:24</td><td><span class="stamp warn">PERINGATAN</span></td><td>SPM headway peak pagi <b>12,4 m</b> &gt; ambang <b>10 m</b> (Permenhub 27/2015 §5).</td><td>Audit SPM</td><td><button class="btn">Tinjau</button></td></tr>
+                  <tr style="background:var(--warn-50)"><td class="mono">09:12</td><td><span class="stamp warn">PERINGATAN</span></td><td>Sopir <b>Hadi P.</b> mendekati batas 8 jam (sisa 28 menit). Permenhub 79/2013.</td><td>Roster Sopir</td><td><button class="btn">Tinjau</button></td></tr>
+                  <tr><td class="mono">08:45</td><td><span class="stamp info">INFO</span></td><td>Skenario <b>A — Sisipan Peak Pagi</b> berhasil diadopsi sebagai jadwal aktif.</td><td>Komparasi</td><td><button class="btn">Buka</button></td></tr>
+                  <tr><td class="mono">08:10</td><td><span class="stamp info">INFO</span></td><td>Pemeliharaan terjadwal <b>Bus B-04</b> akan jatuh dalam 3 hari (target KM tercapai).</td><td>Pemeliharaan</td><td><button class="btn">Buka</button></td></tr>
+                  <tr style="opacity:0.7"><td class="mono">07:55</td><td><span class="stamp">DIBACA</span></td><td>Faktor cuaca: hujan ringan terdeteksi di Halte 4–6, OTP perlu dipantau.</td><td>Faktor Eksternal</td><td><button class="btn">Buka</button></td></tr>
+                  <tr style="opacity:0.7"><td class="mono">07:30</td><td><span class="stamp">DIBACA</span></td><td>Laporan harian <b>02 Mei 2026</b> berhasil diunggah ke arsip resmi.</td><td>Laporan</td><td><button class="btn">Buka</button></td></tr>
+                </tbody>
+              </table>
+            </div>
+          </div>
+
+          <div class="card">
+            <div class="card-head"><h3><span class="num">B</span> Saluran &amp; Preferensi</h3></div>
+            <div class="card-body">
+              <div class="form-row"><label>Email Resmi (NIP)</label><span class="toggle"><input type="checkbox" checked/><span class="slider"></span></span></div>
+              <div class="form-row"><label>SMS / WhatsApp Operator</label><span class="toggle"><input type="checkbox" checked/><span class="slider"></span></span></div>
+              <div class="form-row"><label>Push Browser Dashboard</label><span class="toggle"><input type="checkbox" checked/><span class="slider"></span></span></div>
+              <div class="form-row"><label>Webhook ke ITS Pusat</label><span class="toggle"><input type="checkbox"/><span class="slider"></span></span></div>
+              <div class="form-row"><label>Eskalasi Kepala UPT (≥KRITIS)</label><span class="toggle"><input type="checkbox" checked/><span class="slider"></span></span></div>
+              <div class="form-row" style="border-bottom:none"><label>Ringkasan Harian (08:00 WIB)</label><span class="toggle"><input type="checkbox" checked/><span class="slider"></span></span></div>
+            </div>
+          </div>
+        </div>
+
+        <div class="card" style="margin-top:18px">
+          <div class="card-head"><h3><span class="num">C</span> Aturan Pemicu (Threshold)</h3></div>
+          <div class="card-body" style="padding:0">
+            <table class="table">
+              <thead><tr><th>Kategori</th><th>Pemicu</th><th>Ambang</th><th>Tingkat</th><th>Penerima</th><th>Status</th></tr></thead>
+              <tbody>
+                <tr><td>Headway</td><td>Headway peak &gt; ambang SPM</td><td class="mono">10 menit</td><td><span class="stamp warn">Peringatan</span></td><td>Operator, Perencana</td><td><span class="stamp">Aktif</span></td></tr>
+                <tr><td>Penyimpangan</td><td>Bus &gt; X menit dari jadwal</td><td class="mono">5 menit</td><td><span class="stamp" style="background:var(--bad-100);color:var(--bad-700);border-color:var(--bad-700)">Kritis</span></td><td>Pengawas Lapangan</td><td><span class="stamp">Aktif</span></td></tr>
+                <tr><td>Jam Sopir</td><td>Sopir mendekati batas Permenhub 79</td><td class="mono">7 jam 30 m</td><td><span class="stamp warn">Peringatan</span></td><td>Roster, Sopir</td><td><span class="stamp">Aktif</span></td></tr>
+                <tr><td>Pemeliharaan</td><td>KM bus mendekati interval servis</td><td class="mono">95% interval</td><td><span class="stamp info">Info</span></td><td>Bengkel, Perencana</td><td><span class="stamp">Aktif</span></td></tr>
+                <tr><td>Pendapatan</td><td>Margin harian rute &lt; ambang</td><td class="mono">−5%</td><td><span class="stamp warn">Peringatan</span></td><td>Manajemen Keuangan</td><td><span class="stamp">Aktif</span></td></tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
+      </div>
+
+      <!-- ═══════ MANAJEMEN INSIDEN PAGE ═══════ -->
+      <div class="page" id="page-insiden">
+        <div class="page-head">
+          <div>
+            <div class="breadcrumb">Akun &amp; Sistem · <b>Manajemen Insiden</b></div>
+            <h1 class="page-title">Catatan &amp; Tindak Lanjut Insiden Operasi</h1>
+            <div class="page-subtitle">Pelaporan insiden lapangan, penyebab, dampak, dan corrective action.</div>
+          </div>
+          <div class="page-actions">
+            <button class="btn">Ekspor Berita Acara</button>
+            <button class="btn primary">+ Lapor Insiden</button>
+          </div>
+        </div>
+
+        <div class="kpi-grid" style="margin-bottom:18px">
+          <div class="card"><div class="card-body"><div style="font-size:11px;color:var(--ink-600);text-transform:uppercase;letter-spacing:0.06em">Insiden Bulan Ini</div><div class="num" style="font-size:28px;font-weight:700;color:var(--navy-900);margin-top:4px">7</div><div style="font-size:11px;color:var(--ok-700)">▼ 30% vs bulan lalu</div></div></div>
+          <div class="card"><div class="card-body"><div style="font-size:11px;color:var(--ink-600);text-transform:uppercase;letter-spacing:0.06em">Terbuka</div><div class="num" style="font-size:28px;font-weight:700;color:var(--bad-700);margin-top:4px">2</div><div style="font-size:11px;color:var(--ink-600)">SLA &lt; 24 jam</div></div></div>
+          <div class="card"><div class="card-body"><div style="font-size:11px;color:var(--ink-600);text-transform:uppercase;letter-spacing:0.06em">Selesai</div><div class="num" style="font-size:28px;font-weight:700;color:var(--ok-700);margin-top:4px">5</div><div style="font-size:11px;color:var(--ink-600)">Rata-rata 6 jam</div></div></div>
+          <div class="card"><div class="card-body"><div style="font-size:11px;color:var(--ink-600);text-transform:uppercase;letter-spacing:0.06em">MTBF Armada</div><div class="num" style="font-size:28px;font-weight:700;color:var(--navy-900);margin-top:4px">12,4</div><div style="font-size:11px;color:var(--ink-600)">hari antar insiden</div></div></div>
+        </div>
+
+        <div class="card">
+          <div class="card-head"><h3><span class="num">A</span> Daftar Insiden Aktif &amp; Riwayat</h3></div>
+          <div class="card-body" style="padding:0">
+            <table class="table">
+              <thead><tr><th style="width:80px">Tiket</th><th style="width:90px">Tanggal</th><th>Insiden</th><th style="width:90px">Bus</th><th style="width:100px">Lokasi</th><th style="width:100px">Kategori</th><th style="width:90px">Dampak</th><th style="width:100px">Penanggung Jawab</th><th style="width:90px">Status</th></tr></thead>
+              <tbody>
+                <tr style="background:var(--bad-50)"><td class="mono"><b>INC-0247</b></td><td class="mono">03 Mei 09:38</td><td><b>Bus terlambat 12 menit</b> akibat penumpukan di Halte 4</td><td class="mono">B-02</td><td>H4 → H5</td><td><span class="stamp warn">Operasional</span></td><td><span class="stamp" style="background:var(--bad-100);color:var(--bad-700);border-color:var(--bad-700)">Tinggi</span></td><td>Sri Yulianti</td><td><span class="stamp warn">Investigasi</span></td></tr>
+                <tr style="background:var(--warn-50)"><td class="mono"><b>INC-0246</b></td><td class="mono">03 Mei 08:14</td><td>AC kabin penumpang tidak dingin (laporan penumpang)</td><td class="mono">B-04</td><td>H1</td><td><span class="stamp">Teknis</span></td><td><span class="stamp warn">Sedang</span></td><td>Bengkel</td><td><span class="stamp warn">Tindakan</span></td></tr>
+                <tr><td class="mono">INC-0245</td><td class="mono">02 Mei 17:32</td><td>Pintu otomatis macet, ditangani manual oleh kondektur</td><td class="mono">B-01</td><td>H6</td><td><span class="stamp">Teknis</span></td><td><span class="stamp">Rendah</span></td><td>Bengkel</td><td><span class="stamp">Selesai</span></td></tr>
+                <tr><td class="mono">INC-0244</td><td class="mono">02 Mei 14:08</td><td>Demonstrasi sementara di sekitar Halte 3, rute dibelokkan</td><td class="mono">Semua</td><td>H3</td><td><span class="stamp info">Eksternal</span></td><td><span class="stamp warn">Sedang</span></td><td>Pengawas Lapangan</td><td><span class="stamp">Selesai</span></td></tr>
+                <tr><td class="mono">INC-0243</td><td class="mono">01 Mei 19:55</td><td>Penumpang sakit, evakuasi ke RS terdekat (10 menit)</td><td class="mono">B-03</td><td>H5</td><td><span class="stamp info">Pelayanan</span></td><td><span class="stamp warn">Sedang</span></td><td>Sopir + Tim P3K</td><td><span class="stamp">Selesai</span></td></tr>
+                <tr><td class="mono">INC-0242</td><td class="mono">30 Apr 11:20</td><td>Tabrakan minor dengan motor, tidak ada korban</td><td class="mono">B-02</td><td>H2 → H3</td><td><span class="stamp warn">Keselamatan</span></td><td><span class="stamp" style="background:var(--bad-100);color:var(--bad-700);border-color:var(--bad-700)">Tinggi</span></td><td>Pengawas Lapangan</td><td><span class="stamp">Selesai</span></td></tr>
+                <tr><td class="mono">INC-0241</td><td class="mono">29 Apr 06:48</td><td>Bus tertunda berangkat 8 menit (sopir terlambat)</td><td class="mono">B-01</td><td>Pool</td><td><span class="stamp warn">SDM</span></td><td><span class="stamp">Rendah</span></td><td>Roster Sopir</td><td><span class="stamp">Selesai</span></td></tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
+
+        <div class="grid-2" style="margin-top:18px">
+          <div class="card">
+            <div class="card-head"><h3><span class="num">B</span> Distribusi Kategori (30 hari)</h3></div>
+            <div class="card-body">
+              <div style="display:flex;flex-direction:column;gap:10px">
+                <div style="display:flex;align-items:center;gap:10px"><span style="width:120px;font-size:12px">Operasional</span><div style="flex:1;background:var(--ink-100);height:18px;border-radius:3px"><div style="width:42%;height:100%;background:var(--warn-600);border-radius:3px"></div></div><span class="mono" style="width:40px;text-align:right">11</span></div>
+                <div style="display:flex;align-items:center;gap:10px"><span style="width:120px;font-size:12px">Teknis</span><div style="flex:1;background:var(--ink-100);height:18px;border-radius:3px"><div style="width:30%;height:100%;background:var(--info-600);border-radius:3px"></div></div><span class="mono" style="width:40px;text-align:right">8</span></div>
+                <div style="display:flex;align-items:center;gap:10px"><span style="width:120px;font-size:12px">Pelayanan</span><div style="flex:1;background:var(--ink-100);height:18px;border-radius:3px"><div style="width:18%;height:100%;background:var(--ok-600);border-radius:3px"></div></div><span class="mono" style="width:40px;text-align:right">5</span></div>
+                <div style="display:flex;align-items:center;gap:10px"><span style="width:120px;font-size:12px">Keselamatan</span><div style="flex:1;background:var(--ink-100);height:18px;border-radius:3px"><div style="width:8%;height:100%;background:var(--bad-600);border-radius:3px"></div></div><span class="mono" style="width:40px;text-align:right">2</span></div>
+                <div style="display:flex;align-items:center;gap:10px"><span style="width:120px;font-size:12px">Eksternal</span><div style="flex:1;background:var(--ink-100);height:18px;border-radius:3px"><div style="width:6%;height:100%;background:var(--ink-500);border-radius:3px"></div></div><span class="mono" style="width:40px;text-align:right">1</span></div>
+              </div>
+            </div>
+          </div>
+          <div class="card">
+            <div class="card-head"><h3><span class="num">C</span> Tindak Lanjut (Corrective Action)</h3></div>
+            <div class="card-body">
+              <ul style="margin:0;padding-left:18px;line-height:1.7;font-size:13px">
+                <li><b>INC-0247</b> — Tambah petugas penjaga di Halte 4 saat peak pagi (PIC: Sri Yulianti, target: 04 Mei).</li>
+                <li><b>INC-0246</b> — Penggantian kompresor AC B-04 dijadwal pada slot pemeliharaan 06 Mei.</li>
+                <li><b>INC-0242</b> — Refresher training defensive driving untuk seluruh sopir (PIC: HR, target: 15 Mei).</li>
+                <li><b>Pola berulang</b>: 4 dari 7 insiden bulan ini terjadi di periode peak pagi → naikkan supervisi.</li>
+              </ul>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- ═══════ RIWAYAT AKTIVITAS / AUDIT LOG PAGE ═══════ -->
+      <div class="page" id="page-riwayat">
+        <div class="page-head">
+          <div>
+            <div class="breadcrumb">Akun &amp; Sistem · <b>Riwayat Aktivitas</b></div>
+            <h1 class="page-title">Audit Trail Sistem (Tamper-evident)</h1>
+            <div class="page-subtitle">Setiap perubahan tercatat dengan NIP, IP, hash, dan timestamp WIB. Wajib retensi <b>5 tahun</b>.</div>
+          </div>
+          <div class="page-actions">
+            <button class="btn">Ekspor CSV</button>
+            <button class="btn">Verifikasi Hash</button>
+            <button class="btn primary">Filter Lanjutan</button>
+          </div>
+        </div>
+
+        <div class="card" style="margin-bottom:18px">
+          <div class="card-body" style="display:flex;gap:10px;flex-wrap:wrap;align-items:center">
+            <input class="input" placeholder="Cari NIP, nama pengguna, atau kata kunci..." style="flex:1;min-width:240px"/>
+            <select class="input" style="width:170px"><option>Semua aksi</option><option>Login / Logout</option><option>Edit jadwal</option><option>Setujui / Sah</option><option>Hapus data</option></select>
+            <select class="input" style="width:170px"><option>Semua pengguna</option><option>Perencana Madya</option><option>Kepala UPT</option><option>Operator Jadwal</option><option>Auditor</option></select>
+            <input type="date" class="input" style="width:160px"/>
+          </div>
+        </div>
+
+        <div class="card">
+          <div class="card-head"><h3><span class="num">A</span> Log Terbaru (50 entri)</h3></div>
+          <div class="card-body" style="padding:0">
+            <table class="table">
+              <thead><tr><th style="width:130px">Waktu</th><th style="width:160px">Pengguna</th><th style="width:90px">Aksi</th><th>Objek / Detail</th><th style="width:120px">IP</th><th style="width:90px">Hash</th></tr></thead>
+              <tbody>
+                <tr><td class="mono">03 Mei 09:42</td><td><b>Ir. Rizki A.</b><div style="font-size:10px;color:var(--ink-600)" class="mono">19850412...003</div></td><td><span class="stamp">View</span></td><td>Buka Dashboard Koridor 1E</td><td class="mono">10.10.4.21</td><td class="mono" style="font-size:10px">a3f2…d1c8</td></tr>
+                <tr style="background:var(--ok-50)"><td class="mono">03 Mei 09:38</td><td><b>Drs. Haryanto</b><div style="font-size:10px;color:var(--ink-600)" class="mono">19720718...002</div></td><td><span class="stamp">Setujui</span></td><td>Sah jadwal Skenario A — 76 trip · 4 bus aktif</td><td class="mono">10.10.4.05</td><td class="mono" style="font-size:10px">b7e1…9a04</td></tr>
+                <tr><td class="mono">03 Mei 09:24</td><td><b>Sri Yulianti</b><div style="font-size:10px;color:var(--ink-600)" class="mono">19900521...001</div></td><td><span class="stamp warn">Edit</span></td><td>Ubah headway peak pagi 15m → 12m (Periode Operasi)</td><td class="mono">10.10.4.18</td><td class="mono" style="font-size:10px">c5d8…3b21</td></tr>
+                <tr><td class="mono">03 Mei 09:12</td><td><b>Sri Yulianti</b><div style="font-size:10px;color:var(--ink-600)" class="mono">19900521...001</div></td><td><span class="stamp warn">Edit</span></td><td>Tambah Sisipan Bus B-04 pada periode 07–09</td><td class="mono">10.10.4.18</td><td class="mono" style="font-size:10px">d2c4…8e15</td></tr>
+                <tr><td class="mono">03 Mei 08:55</td><td><b>Sri Yulianti</b></td><td><span class="stamp info">Login</span></td><td>Otentikasi sukses (SSO Pemerintahan)</td><td class="mono">10.10.4.18</td><td class="mono" style="font-size:10px">e1a0…7c93</td></tr>
+                <tr><td class="mono">03 Mei 08:42</td><td><b>Ir. Rizki A.</b></td><td><span class="stamp">Generate</span></td><td>Cetak Laporan Resmi Harian 02 Mei 2026</td><td class="mono">10.10.4.21</td><td class="mono" style="font-size:10px">f6b9…2a47</td></tr>
+                <tr><td class="mono">03 Mei 08:10</td><td><b>System</b></td><td><span class="stamp">Otomatis</span></td><td>Sinkronisasi data GPS armada (4 bus, 9.412 ping)</td><td class="mono">127.0.0.1</td><td class="mono" style="font-size:10px">9c7f…be03</td></tr>
+                <tr style="background:var(--bad-50)"><td class="mono">02 Mei 22:08</td><td><b>Adi Suryana</b><div style="font-size:10px;color:var(--ink-600)" class="mono">19880304...005</div></td><td><span class="stamp" style="background:var(--bad-100);color:var(--bad-700);border-color:var(--bad-700)">Hapus</span></td><td>Tolak draft Skenario B (alasan: belum approve Kepala UPT)</td><td class="mono">10.10.4.31</td><td class="mono" style="font-size:10px">8a0d…4f56</td></tr>
+                <tr><td class="mono">02 Mei 16:18</td><td><b>Drs. Haryanto</b></td><td><span class="stamp info">Login</span></td><td>Otentikasi sukses (SSO Pemerintahan)</td><td class="mono">10.10.4.05</td><td class="mono" style="font-size:10px">7b2c…1f88</td></tr>
+                <tr><td class="mono">02 Mei 14:30</td><td><b>Adi Suryana</b></td><td><span class="stamp">View</span></td><td>Audit SPM Compliance — ekspor temuan</td><td class="mono">10.10.4.31</td><td class="mono" style="font-size:10px">6e4a…d077</td></tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
+
+        <div style="margin-top:14px;padding:12px 16px;background:var(--info-50);border:1px solid var(--info-100);border-radius:6px;font-size:12px;color:var(--info-700);line-height:1.6">
+          <b>Integritas Data:</b> Setiap entri di-hash dengan SHA-256 dan dirantai (Merkle chain). Verifikasi terakhir <b class="mono">03 Mei 09:00</b> — semua entri valid (0 anomali). Kebijakan retensi mengikuti <b>Permenpan-RB 53/2018</b>.
+        </div>
+      </div>
+
+      <!-- ═══════ PROFIL PENGGUNA PAGE ═══════ -->
+      <div class="page" id="page-profil">
+        <div class="page-head">
+          <div>
+            <div class="breadcrumb">Akun &amp; Sistem · <b>Profil Pengguna</b></div>
+            <h1 class="page-title">Profil &amp; Keamanan Akun</h1>
+            <div class="page-subtitle">Identitas resmi, hak akses, dan preferensi sesi.</div>
+          </div>
+          <div class="page-actions">
+            <button class="btn">Keluar (Logout)</button>
+            <button class="btn primary">Simpan Perubahan</button>
+          </div>
+        </div>
+
+        <div class="grid-2">
+          <div class="card">
+            <div class="card-head"><h3><span class="num">A</span> Identitas Resmi</h3></div>
+            <div class="card-body">
+              <div style="display:flex;align-items:center;gap:14px;margin-bottom:14px;padding-bottom:14px;border-bottom:1px solid var(--ink-200)">
+                <div style="width:64px;height:64px;border-radius:50%;background:var(--navy-700);color:var(--white);display:flex;align-items:center;justify-content:center;font-size:22px;font-weight:700">RA</div>
+                <div>
+                  <div style="font-size:16px;font-weight:700;color:var(--navy-900)">Ir. Rizki Aditama, M.T.</div>
+                  <div style="font-size:12px;color:var(--ink-600)">Perencana Madya · Direktorat Jenderal Perhubungan Darat</div>
+                  <div style="margin-top:4px"><span class="stamp">PNS Aktif</span> <span class="stamp info">Golongan IV/a</span></div>
+                </div>
+              </div>
+              <div class="form-row"><label>NIP</label><input class="input mono" value="19850412 200912 1 003" readonly/></div>
+              <div class="form-row"><label>Nama Lengkap</label><input class="input" value="Ir. Rizki Aditama, M.T."/></div>
+              <div class="form-row"><label>Email Dinas</label><input class="input" value="rizki.aditama@dephub.go.id"/></div>
+              <div class="form-row"><label>No. HP Dinas</label><input class="input mono" value="0812-3456-7890"/></div>
+              <div class="form-row" style="border-bottom:none"><label>Unit Kerja</label><input class="input" value="BPTJ — OIKN" readonly/></div>
+            </div>
+          </div>
+
+          <div class="card">
+            <div class="card-head"><h3><span class="num">B</span> Keamanan &amp; Sesi</h3></div>
+            <div class="card-body">
+              <div class="form-row"><label>Password</label><button class="btn">Ubah Password</button></div>
+              <div class="form-row"><label>Two-Factor (TOTP)</label><span class="stamp">Aktif · Google Authenticator</span></div>
+              <div class="form-row"><label>SSO Pemerintahan</label><span class="stamp">Tersinkron</span></div>
+              <div class="form-row"><label>Tanda Tangan Elektronik</label><span class="stamp">BSrE Aktif</span></div>
+              <div class="form-row"><label>Sesi Aktif</label><span class="mono">2 perangkat</span></div>
+              <div class="form-row" style="border-bottom:none"><label>Login Terakhir</label><span class="mono">03 Mei 2026 · 09:42 WIB · 10.10.4.21</span></div>
+            </div>
+          </div>
+        </div>
+
+        <div class="grid-2" style="margin-top:18px">
+          <div class="card">
+            <div class="card-head"><h3><span class="num">C</span> Hak Akses (Role)</h3></div>
+            <div class="card-body" style="padding:0">
+              <table class="table">
+                <thead><tr><th>Modul</th><th>Akses</th></tr></thead>
+                <tbody>
+                  <tr><td>Dashboard &amp; Ikhtisar</td><td><span class="stamp">View</span></td></tr>
+                  <tr><td>Perencanaan Jadwal</td><td><span class="stamp">Edit</span></td></tr>
+                  <tr><td>Sah &amp; Terbitkan Jadwal</td><td><span class="stamp warn">Approver</span></td></tr>
+                  <tr><td>Audit SPM</td><td><span class="stamp">View</span></td></tr>
+                  <tr><td>Biaya &amp; Kontrak</td><td><span class="stamp">Edit</span></td></tr>
+                  <tr><td>Pengaturan Sistem</td><td><span class="stamp warn">Admin</span></td></tr>
+                  <tr><td>Hapus Data Master</td><td><span class="stamp" style="background:var(--bad-100);color:var(--bad-700);border-color:var(--bad-700)">Tidak Diizinkan</span></td></tr>
+                </tbody>
+              </table>
+            </div>
+          </div>
+          <div class="card">
+            <div class="card-head"><h3><span class="num">D</span> Preferensi Tampilan</h3></div>
+            <div class="card-body">
+              <div class="form-row"><label>Bahasa</label><input class="input" value="Bahasa Indonesia"/></div>
+              <div class="form-row"><label>Zona Waktu</label><input class="input" value="WIB (UTC+7)"/></div>
+              <div class="form-row"><label>Format Tanggal</label><input class="input" value="DD MMM YYYY"/></div>
+              <div class="form-row"><label>Halaman Awal</label><input class="input" value="Dashboard"/></div>
+              <div class="form-row"><label>Mode Kontras Tinggi</label><span class="toggle"><input type="checkbox"/><span class="slider"></span></span></div>
+              <div class="form-row" style="border-bottom:none"><label>Notifikasi Suara</label><span class="toggle"><input type="checkbox" checked/><span class="slider"></span></span></div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- ═══════ BANTUAN & DOKUMENTASI PAGE ═══════ -->
+      <div class="page" id="page-bantuan">
+        <div class="page-head">
+          <div>
+            <div class="breadcrumb">Akun &amp; Sistem · <b>Bantuan &amp; Dokumentasi</b></div>
+            <h1 class="page-title">Pusat Bantuan Pengguna</h1>
+            <div class="page-subtitle">Panduan operasional, dasar regulasi, dan kontak dukungan teknis 24/7.</div>
+          </div>
+          <div class="page-actions">
+            <button class="btn">Unduh Manual (PDF)</button>
+            <button class="btn primary">Hubungi Helpdesk</button>
+          </div>
+        </div>
+
+        <div class="card" style="margin-bottom:18px">
+          <div class="card-body" style="display:flex;gap:10px;align-items:center">
+            <svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="var(--ink-500)" stroke-width="2"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
+            <input class="input" placeholder="Cari topik bantuan: 'cara membuat jadwal', 'audit SPM', 'sisipan armada'..." style="flex:1"/>
+            <button class="btn primary">Cari</button>
+          </div>
+        </div>
+
+        <div class="grid-3">
+          <div class="card">
+            <div class="card-head"><h3><span class="num">A</span> Mulai Cepat</h3></div>
+            <div class="card-body">
+              <ul style="margin:0;padding-left:18px;line-height:1.9;font-size:13px">
+                <li><a href="#" data-page="setup" style="color:var(--info-700);text-decoration:none">Mengatur Parameter Rute</a></li>
+                <li><a href="#" data-page="periode" style="color:var(--info-700);text-decoration:none">Menentukan Periode Operasi</a></li>
+                <li><a href="#" data-page="jadwal" style="color:var(--info-700);text-decoration:none">Membuat Matrix Jadwal Bus</a></li>
+                <li><a href="#" data-page="sisipan" style="color:var(--info-700);text-decoration:none">Menambah Sisipan Armada Peak</a></li>
+                <li><a href="#" data-page="audit" style="color:var(--info-700);text-decoration:none">Menjalankan Audit SPM</a></li>
+                <li><a href="#" data-page="laporan" style="color:var(--info-700);text-decoration:none">Mencetak Laporan Resmi</a></li>
+              </ul>
+            </div>
+          </div>
+
+          <div class="card">
+            <div class="card-head"><h3><span class="num">B</span> Dasar Regulasi</h3></div>
+            <div class="card-body">
+              <ul style="margin:0;padding-left:18px;line-height:1.9;font-size:13px">
+                <li><b>Permenhub 27/2015</b> — SPM Angkutan Massal</li>
+                <li><b>Permenhub 79/2013</b> — Jam Kerja Sopir</li>
+                <li><b>PM 9/2020</b> — Buy The Service (BTS)</li>
+                <li><b>Permenpan-RB 53/2018</b> — Arsip Elektronik</li>
+                <li><b>TCQSM 3rd Ed.</b> — TCRP Report 165</li>
+                <li><b>UU 22/2009</b> — Lalu Lintas &amp; Angkutan Jalan</li>
+              </ul>
+            </div>
+          </div>
+
+          <div class="card">
+            <div class="card-head"><h3><span class="num">C</span> Pintasan Keyboard</h3></div>
+            <div class="card-body">
+              <table style="width:100%;font-size:12px">
+                <tr><td style="padding:4px 0">Buka Dashboard</td><td style="text-align:right"><span class="mono" style="background:var(--ink-100);padding:2px 6px;border-radius:3px">Alt + 1</span></td></tr>
+                <tr><td style="padding:4px 0">Buka Jadwal</td><td style="text-align:right"><span class="mono" style="background:var(--ink-100);padding:2px 6px;border-radius:3px">Alt + 2</span></td></tr>
+                <tr><td style="padding:4px 0">Cetak Laporan</td><td style="text-align:right"><span class="mono" style="background:var(--ink-100);padding:2px 6px;border-radius:3px">Ctrl + P</span></td></tr>
+                <tr><td style="padding:4px 0">Cari Cepat</td><td style="text-align:right"><span class="mono" style="background:var(--ink-100);padding:2px 6px;border-radius:3px">Ctrl + K</span></td></tr>
+                <tr><td style="padding:4px 0">Simpan Perubahan</td><td style="text-align:right"><span class="mono" style="background:var(--ink-100);padding:2px 6px;border-radius:3px">Ctrl + S</span></td></tr>
+                <tr><td style="padding:4px 0">Notifikasi</td><td style="text-align:right"><span class="mono" style="background:var(--ink-100);padding:2px 6px;border-radius:3px">Alt + N</span></td></tr>
+              </table>
+            </div>
+          </div>
+        </div>
+
+        <div class="card" style="margin-top:18px">
+          <div class="card-head"><h3><span class="num">D</span> Pertanyaan yang Sering Diajukan (FAQ)</h3></div>
+          <div class="card-body">
+            <details style="border-bottom:1px solid var(--ink-200);padding:10px 0">
+              <summary style="font-weight:600;cursor:pointer;color:var(--navy-900)">Bagaimana cara menambah armada sisipan saat peak hour?</summary>
+              <div style="margin-top:8px;font-size:13px;color:var(--ink-700);line-height:1.6">Buka menu <b>Sisipan Armada</b>, klik <b>+ Tambah Sisipan</b>, pilih periode peak (mis. 07:00–09:00), tentukan jumlah trip, lalu <i>Sah &amp; Terbitkan</i>. Sisipan akan otomatis muncul pada Matrix Bus dengan penanda khusus.</div>
+            </details>
+            <details style="border-bottom:1px solid var(--ink-200);padding:10px 0">
+              <summary style="font-weight:600;cursor:pointer;color:var(--navy-900)">Apa yang terjadi jika headway peak melebihi 10 menit?</summary>
+              <div style="margin-top:8px;font-size:13px;color:var(--ink-700);line-height:1.6">Sistem akan otomatis menampilkan peringatan <span class="stamp warn">Belum Penuh</span> pada Audit SPM dan mengirim notifikasi ke perencana. Lihat menu <a href="#" data-page="audit" style="color:var(--info-700)">Audit SPM Compliance</a> untuk detail temuan dan rekomendasi.</div>
+            </details>
+            <details style="border-bottom:1px solid var(--ink-200);padding:10px 0">
+              <summary style="font-weight:600;cursor:pointer;color:var(--navy-900)">Bagaimana mengubah jadwal yang sudah disahkan Kepala UPT?</summary>
+              <div style="margin-top:8px;font-size:13px;color:var(--ink-700);line-height:1.6">Jadwal yang berstatus <b>SAH</b> hanya dapat diubah dengan membuat skenario baru (Komparasi Skenario), kemudian melalui workflow approval ulang. Perubahan tercatat lengkap pada <a href="#" data-page="riwayat" style="color:var(--info-700)">Riwayat Aktivitas</a>.</div>
+            </details>
+            <details style="border-bottom:1px solid var(--ink-200);padding:10px 0">
+              <summary style="font-weight:600;cursor:pointer;color:var(--navy-900)">Apakah laporan dapat diintegrasikan dengan SIPDA / e-Performance?</summary>
+              <div style="margin-top:8px;font-size:13px;color:var(--ink-700);line-height:1.6">Ya, melalui webhook pada <a href="#" data-page="pengaturan" style="color:var(--info-700)">Pengaturan Sistem</a>. Format ekspor mendukung CSV, JSON, dan PDF bertanda tangan elektronik (BSrE).</div>
+            </details>
+            <details style="padding:10px 0">
+              <summary style="font-weight:600;cursor:pointer;color:var(--navy-900)">Bagaimana melaporkan insiden di lapangan?</summary>
+              <div style="margin-top:8px;font-size:13px;color:var(--ink-700);line-height:1.6">Buka <a href="#" data-page="insiden" style="color:var(--info-700)">Manajemen Insiden</a>, klik <b>+ Lapor Insiden</b>, isi tiket dengan kategori, dampak, dan PIC. Sistem akan membuat tiket INC-xxxx yang dapat dipantau hingga selesai.</div>
+            </details>
+          </div>
+        </div>
+
+        <div class="grid-2" style="margin-top:18px">
+          <div class="card">
+            <div class="card-head"><h3><span class="num">E</span> Kontak Dukungan Teknis</h3></div>
+            <div class="card-body">
+              <div class="form-row"><label>Helpdesk Pusat</label><span class="mono">021-3506-138 (24/7)</span></div>
+              <div class="form-row"><label>Email Dukungan</label><span class="mono">helpdesk-jadwalbus@dephub.go.id</span></div>
+              <div class="form-row"><label>WhatsApp Tiket</label><span class="mono">0811-9000-138</span></div>
+              <div class="form-row"><label>Portal SLA</label><a href="#" style="color:var(--info-700)">sla.dephub.go.id</a></div>
+              <div class="form-row" style="border-bottom:none"><label>SLA Respon</label><span><span class="stamp">P1 &lt; 1 jam</span> <span class="stamp">P2 &lt; 4 jam</span></span></div>
+            </div>
+          </div>
+          <div class="card">
+            <div class="card-head"><h3><span class="num">F</span> Versi &amp; Pembaruan</h3></div>
+            <div class="card-body">
+              <div class="form-row"><label>Versi Aplikasi</label><span class="mono"><b>v2.1.0</b> · 28 Apr 2026</span></div>
+              <div class="form-row"><label>Build</label><span class="mono">2026.04.28-r3a8f2</span></div>
+              <div class="form-row"><label>Skema Database</label><span class="mono">v17 (kompatibel)</span></div>
+              <div class="form-row"><label>Status Lisensi</label><span class="stamp">Pemerintah · Berlaku</span></div>
+              <div class="form-row" style="border-bottom:none"><label>Catatan Rilis</label><a href="#" style="color:var(--info-700)">Lihat changelog</a></div>
+            </div>
+          </div>
+        </div>
+      </div>
+
     </main>
   </div>
 </div>
@@ -4249,16 +4665,22 @@
   // ─── Page navigation ───
   const navItems = document.querySelectorAll('.nav-item');
   const pages = document.querySelectorAll('.page');
-  navItems.forEach(item => {
-    item.addEventListener('click', () => {
-      const target = item.dataset.page;
-      if (!target) return;
-      navItems.forEach(n => n.classList.remove('active'));
-      item.classList.add('active');
-      pages.forEach(p => p.classList.remove('active'));
-      const activePage = document.getElementById('page-' + target);
-      if (activePage) activePage.classList.add('active');
-      window.scrollTo({ top: 0, behavior: 'smooth' });
+  function activatePage(target) {
+    if (!target) return;
+    const activePage = document.getElementById('page-' + target);
+    if (!activePage) return;
+    navItems.forEach(n => {
+      n.classList.toggle('active', n.dataset.page === target);
+    });
+    pages.forEach(p => p.classList.remove('active'));
+    activePage.classList.add('active');
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+  }
+  // Any element with data-page becomes a navigation trigger (sidebar, topbar, etc.)
+  document.querySelectorAll('[data-page]').forEach(el => {
+    el.addEventListener('click', (e) => {
+      if (el.tagName === 'A') e.preventDefault();
+      activatePage(el.dataset.page);
     });
   });
 
