@@ -14,6 +14,8 @@ from app.models import (
     Halte,
     Insiden,
     Notifikasi,
+    Pengaduan,
+    Periode,
     Sopir,
     Trip,
     User,
@@ -159,6 +161,41 @@ def main() -> None:
             db.add_all(trips)
             db.commit()
             print(f"  ✓ {len(trips)} trip dibuat")
+
+        if db.query(Periode).count() == 0:
+            periodes = [
+                Periode(kode="P01", nama="Buka Pagi",        jam_mulai=time(5,  0), jam_selesai=time(5, 30), kategori="off_peak", headway_target_menit=20.0, armada_target=2),
+                Periode(kode="P02", nama="Pra-Peak",          jam_mulai=time(5, 30), jam_selesai=time(6,  0), kategori="transisi", headway_target_menit=18.0, armada_target=3),
+                Periode(kode="P03", nama="Peak Pagi 1",       jam_mulai=time(6,  0), jam_selesai=time(7,  0), kategori="peak",     headway_target_menit=15.0, armada_target=3),
+                Periode(kode="P04", nama="Peak Pagi 2",       jam_mulai=time(7,  0), jam_selesai=time(8,  0), kategori="peak",     headway_target_menit=10.0, armada_target=4),
+                Periode(kode="P05", nama="Peak Pagi 3",       jam_mulai=time(8,  0), jam_selesai=time(8, 30), kategori="peak",     headway_target_menit=12.0, armada_target=4),
+                Periode(kode="P06", nama="Transisi Pagi",     jam_mulai=time(8, 30), jam_selesai=time(9,  0), kategori="transisi", headway_target_menit=15.0, armada_target=3),
+                Periode(kode="P07", nama="Off-Peak Siang",    jam_mulai=time(9,  0), jam_selesai=time(14, 0), kategori="off_peak", headway_target_menit=15.0, armada_target=3),
+                Periode(kode="P08", nama="Pra-Sore",           jam_mulai=time(14, 0), jam_selesai=time(15,30), kategori="transisi", headway_target_menit=15.0, armada_target=3),
+                Periode(kode="P09", nama="Peak Sore 1",       jam_mulai=time(15,30), jam_selesai=time(17, 0), kategori="peak",     headway_target_menit=12.0, armada_target=4),
+                Periode(kode="P10", nama="Peak Sore 2",       jam_mulai=time(17, 0), jam_selesai=time(19,30), kategori="peak",     headway_target_menit=10.0, armada_target=4),
+                Periode(kode="P11", nama="Off-Peak Malam",    jam_mulai=time(19,30), jam_selesai=time(21, 0), kategori="off_peak", headway_target_menit=15.0, armada_target=3),
+                Periode(kode="P12", nama="Late",               jam_mulai=time(21, 0), jam_selesai=time(22, 0), kategori="late",     headway_target_menit=20.0, armada_target=2),
+                Periode(kode="P13", nama="Last Trip",          jam_mulai=time(22, 0), jam_selesai=time(22,30), kategori="late",     headway_target_menit=30.0, armada_target=1),
+                Periode(kode="P14", nama="Tutup",              jam_mulai=time(22,30), jam_selesai=time(23,59), kategori="tutup",    aktif=False),
+            ]
+            db.add_all(periodes)
+            db.commit()
+            print(f"  ✓ {len(periodes)} periode operasi dibuat")
+
+        if db.query(Pengaduan).count() == 0:
+            now = datetime.now(timezone.utc)
+            pengaduans = [
+                Pengaduan(tiket="PGD-0001", waktu=now - timedelta(hours=2),  pelapor_nama="Budi Santoso",     pelapor_kontak="081298765432", kanal="wa",     isi="Bus B-02 melaju terlalu kencang di tikungan dekat halte 4.",                       rute="1E", halte="H4",  armada_kode="B-02", status="ditinjau", pic="Sri Yulianti"),
+                Pengaduan(tiket="PGD-0002", waktu=now - timedelta(hours=8),  pelapor_nama="Ani Lestari",      pelapor_kontak="ani@gmail.com", kanal="email", isi="AC bus tidak dingin, penumpang lain juga mengeluh.",                                rute="1E", halte=None,  armada_kode="B-04", status="tindak_lanjut", pic="Bengkel"),
+                Pengaduan(tiket="PGD-0003", waktu=now - timedelta(days=1),   pelapor_nama="Pak Hadi",          pelapor_kontak="082112345678", kanal="telepon",isi="Bus tidak datang sesuai jadwal, saya tunggu 25 menit di halte BSD.",               rute="1E", halte="BSD", armada_kode=None,    status="selesai", pic="Sri Yulianti", tanggapan="Bus mengalami keterlambatan akibat kemacetan tidak terduga. Mohon maaf atas ketidaknyamanan.", rating=3),
+                Pengaduan(tiket="PGD-0004", waktu=now - timedelta(days=2),   pelapor_nama="Siti Aminah",       pelapor_kontak=None,            kanal="lapor",  isi="Halte SCB kurang penerangan saat malam. Tolong dipasang lampu tambahan.",          rute="1E", halte="SCB", armada_kode=None,    status="tindak_lanjut", pic="Manajemen Halte"),
+                Pengaduan(tiket="PGD-0005", waktu=now - timedelta(days=3),   pelapor_nama="Joko Supardi",      pelapor_kontak="joko@example.com", kanal="web",  isi="Apresiasi: sopir Bus B-01 sangat ramah dan membantu lansia naik. Terima kasih!",   rute="1E", halte=None,  armada_kode="B-01", status="selesai", pic="Manajemen", tanggapan="Terima kasih atas apresiasinya. Akan kami sampaikan kepada sopir.", rating=5),
+                Pengaduan(tiket="PGD-0006", waktu=now - timedelta(days=4),   pelapor_nama="Endang Wahyuni",    pelapor_kontak="081100002222", kanal="sosmed", isi="Tarif Rp 3.500 terlalu mahal untuk pelajar. Bisa diberi diskon?",                  rute="1E", halte=None,  armada_kode=None,    status="ditolak", pic="Manajemen", tanggapan="Tarif sudah mengikuti SK Walikota. Kartu pelajar tidak berlaku diskon di koridor ini."),
+            ]
+            db.add_all(pengaduans)
+            db.commit()
+            print(f"  ✓ {len(pengaduans)} pengaduan publik dibuat")
 
         if db.query(Insiden).count() == 0:
             now = datetime.now(timezone.utc)

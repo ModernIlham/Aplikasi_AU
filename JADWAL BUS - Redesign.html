@@ -3306,6 +3306,16 @@
             </div>
           </div>
         </div>
+
+        <!-- Live SPM check (hydrated from /api/compliance/spm) -->
+        <div class="card" id="liveSpmCheck" style="margin-top:18px">
+          <div class="card-head"><h3><span class="num">★</span> Pemeriksaan Otomatis (Real-time)</h3>
+            <button class="btn" id="btnReRunSpm" style="margin-left:auto">⟳ Periksa Ulang</button>
+          </div>
+          <div class="card-body" id="liveSpmBody">
+            <div class="api-loading">Menghubungkan ke backend untuk validasi SPM…</div>
+          </div>
+        </div>
       </div>
 
       <!-- ═══════ BIAYA PAGE ═══════ -->
@@ -3909,6 +3919,22 @@
                 <tr><td><b>B2</b></td><td class="num">9 / 18</td><td class="num">15,9 km</td><td>SRP · arah TKB</td><td class="mono">3m 02s</td><td class="num">21 km/j</td><td class="num">52 / 56 <span style="color:var(--warn-700)">93%</span></td><td><span class="stamp warn">Padat</span></td></tr>
                 <tr><td><b>B3</b></td><td class="num">7 / 14</td><td class="num">25,8 km</td><td>CKR · arah SCB</td><td class="mono">1m 45s</td><td class="num">25 km/j</td><td class="num">29 / 56 <span style="color:var(--ok-700)">52%</span></td><td><span class="stamp">On-Time</span></td></tr>
                 <tr style="background:var(--gold-50)"><td><b>B4 ✦</b></td><td class="num">6 / 11</td><td class="num">11,3 km</td><td>BSD · arah TKB</td><td class="mono">2m 50s</td><td class="num">22 km/j</td><td class="num">44 / 56 <span style="color:var(--ok-700)">79%</span></td><td><span class="stamp" style="border-color:var(--gold-700);color:var(--gold-700);background:var(--gold-50)">Sisipan</span></td></tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
+
+        <!-- Live GPS feed (hydrated from /api/posisi/live) -->
+        <div class="card" id="liveGpsCard" style="margin-top:18px">
+          <div class="card-head"><h3><span class="num">★</span> Feed GPS Live (dari Backend)</h3>
+            <button class="btn" id="btnGpsTick" style="margin-left:auto">⟳ Mock Tick</button>
+            <button class="btn" id="btnGpsRefresh">⟳ Refresh</button>
+          </div>
+          <div class="card-body" style="padding:0">
+            <table class="table">
+              <thead><tr><th>Armada</th><th>Plat</th><th>Halte</th><th class="num">Lat</th><th class="num">Lon</th><th class="num">Kec.</th><th class="num">Heading</th><th class="num">Delay</th><th>Update</th></tr></thead>
+              <tbody id="liveGpsTbody">
+                <tr><td colspan="9" class="api-loading">Menghubungkan ke backend…</td></tr>
               </tbody>
             </table>
           </div>
@@ -6074,6 +6100,64 @@
     } catch (e) { console.warn('hydrateRiwayat', e); }
   }
 
+  async function hydrateLiveGps() {
+    const tbody = document.getElementById('liveGpsTbody');
+    if (!tbody) return;
+    try {
+      const rows = await API.get('/posisi/live');
+      if (!rows.length) {
+        tbody.innerHTML = '<tr><td colspan="9" class="api-loading">Belum ada data GPS. Klik <b>Mock Tick</b> untuk generate.</td></tr>';
+        return;
+      }
+      tbody.innerHTML = rows.map(r => {
+        const delayColor = r.delay_menit > 3 ? 'color:var(--bad-700)' : (r.delay_menit > 1 ? 'color:var(--warn-700)' : 'color:var(--ok-700)');
+        return `<tr>
+          <td><b>${escHtml(r.armada_kode)}</b></td>
+          <td class="mono">${escHtml(r.armada_plat)}</td>
+          <td>${escHtml(r.halte_kode || '—')}</td>
+          <td class="num mono">${r.lat.toFixed(5)}</td>
+          <td class="num mono">${r.lon.toFixed(5)}</td>
+          <td class="num mono">${r.speed_kmh.toFixed(1)} km/j</td>
+          <td class="num mono">${r.heading.toFixed(0)}°</td>
+          <td class="num mono" style="${delayColor}">${(r.delay_menit > 0 ? '+' : '')}${r.delay_menit.toFixed(1)} m</td>
+          <td class="mono">${fmtDateTime(r.waktu)}</td>
+        </tr>`;
+      }).join('');
+    } catch (e) { console.warn('hydrateLiveGps', e); }
+  }
+
+  async function hydrateSpmCheck() {
+    const body = document.getElementById('liveSpmBody');
+    if (!body) return;
+    try {
+      const r = await API.get('/compliance/spm');
+      const sevColor = { lulus: 'var(--ok-600)', peringatan: 'var(--warn-600)', pelanggaran: 'var(--bad-600)' };
+      const sevIcon  = { lulus: '✓', peringatan: '!', pelanggaran: '✕' };
+      body.innerHTML = `
+        <div style="display:grid;grid-template-columns:repeat(4,1fr);gap:10px;margin-bottom:14px">
+          <div style="padding:10px 12px;background:var(--ink-50);border-radius:5px"><div style="font-size:10px;color:var(--ink-600);text-transform:uppercase">Skor</div><div class="num" style="font-size:22px;font-weight:700;color:var(--navy-900)">${r.skor}/100</div></div>
+          <div style="padding:10px 12px;background:var(--ok-50);border-radius:5px"><div style="font-size:10px;color:var(--ok-700);text-transform:uppercase">Lulus</div><div class="num" style="font-size:22px;font-weight:700;color:var(--ok-700)">${r.lulus}</div></div>
+          <div style="padding:10px 12px;background:var(--warn-50);border-radius:5px"><div style="font-size:10px;color:var(--warn-700);text-transform:uppercase">Peringatan</div><div class="num" style="font-size:22px;font-weight:700;color:var(--warn-700)">${r.peringatan}</div></div>
+          <div style="padding:10px 12px;background:var(--bad-50);border-radius:5px"><div style="font-size:10px;color:var(--bad-700);text-transform:uppercase">Pelanggaran</div><div class="num" style="font-size:22px;font-weight:700;color:var(--bad-700)">${r.pelanggaran}</div></div>
+        </div>
+        <div style="display:flex;flex-direction:column;gap:8px">
+          ${r.temuan.map(t => `
+            <div style="display:grid;grid-template-columns:28px 1fr auto;gap:12px;align-items:center;padding:10px 12px;border:1px solid var(--ink-200);border-left:4px solid ${sevColor[t.severity]};border-radius:5px;${t.severity!=='lulus'?'background:'+(t.severity==='peringatan'?'var(--warn-50)':'var(--bad-50)'):''}">
+              <div style="width:22px;height:22px;border-radius:50%;background:${sevColor[t.severity]};color:#fff;display:flex;align-items:center;justify-content:center;font-weight:700;font-size:12px">${sevIcon[t.severity]}</div>
+              <div>
+                <div style="font-weight:600;color:var(--navy-900);font-size:13px">${escHtml(t.judul)}</div>
+                <div style="font-size:11.5px;color:var(--ink-600);margin-top:2px">${escHtml(t.deskripsi)}${t.metric_aktual ? ` <b class="mono">${escHtml(t.metric_aktual)}</b> (ambang ${escHtml(t.metric_ambang || '')})` : ''}</div>
+                ${t.rekomendasi ? `<div style="font-size:11px;color:var(--info-700);margin-top:4px">→ ${escHtml(t.rekomendasi)}</div>` : ''}
+              </div>
+              <span class="stamp" style="font-size:10px">${escHtml(t.aturan)}</span>
+            </div>
+          `).join('')}
+        </div>`;
+    } catch (e) {
+      body.innerHTML = `<div class="api-loading" style="color:var(--bad-700)">Gagal memuat: ${escHtml(e.message)}</div>`;
+    }
+  }
+
   async function hydrateDashboard() {
     try {
       const s = await API.get('/dashboard/summary');
@@ -6115,6 +6199,8 @@
       hydrateNotifikasi(),
       hydrateRiwayat(),
       hydrateUsers(),
+      hydrateLiveGps(),
+      hydrateSpmCheck(),
     ]);
   }
 
@@ -6129,7 +6215,26 @@
       else if (tgt === 'roster')  hydrateSopir();
       else if (tgt === 'halte')   hydrateHalte();
       else if (tgt === 'pengaturan') hydrateUsers();
+      else if (tgt === 'peta')    hydrateLiveGps();
+      else if (tgt === 'audit')   hydrateSpmCheck();
     });
+  });
+
+  // Tombol GPS mock-tick & refresh
+  const btnGpsTick = document.getElementById('btnGpsTick');
+  if (btnGpsTick) btnGpsTick.addEventListener('click', async () => {
+    if (!API.enabled) { toast('Mode statis', 'Backend tidak tersedia.', 'warn'); return; }
+    try { await API.post('/posisi/mock-tick'); toast('GPS Mock Tick', 'Posisi armada di-update.', 'ok'); hydrateLiveGps(); }
+    catch (e) { toast('Gagal', e.message, 'bad'); }
+  });
+  const btnGpsRefresh = document.getElementById('btnGpsRefresh');
+  if (btnGpsRefresh) btnGpsRefresh.addEventListener('click', () => hydrateLiveGps());
+
+  // Tombol re-run SPM check
+  const btnReRunSpm = document.getElementById('btnReRunSpm');
+  if (btnReRunSpm) btnReRunSpm.addEventListener('click', () => {
+    hydrateSpmCheck();
+    toast('SPM Check', 'Pemeriksaan ulang dijalankan.', 'ok');
   });
 
   // ─── Bootstrap: cek token, validasi /me, lalu hydrate atau tampilkan login ───

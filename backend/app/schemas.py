@@ -267,6 +267,136 @@ class AuditOut(ORMModel):
     path: str | None = None
 
 
+# ─── Periode Operasi ───────────────────────────────────────────────────────
+
+class PeriodeBase(BaseModel):
+    kode: str
+    nama: str
+    jam_mulai: time
+    jam_selesai: time
+    kategori: str = "off_peak"
+    headway_target_menit: float | None = None
+    armada_target: int | None = None
+    aktif: bool = True
+    catatan: str | None = None
+
+
+class PeriodeCreate(PeriodeBase):
+    pass
+
+
+class PeriodeUpdate(BaseModel):
+    nama: str | None = None
+    jam_mulai: time | None = None
+    jam_selesai: time | None = None
+    kategori: str | None = None
+    headway_target_menit: float | None = None
+    armada_target: int | None = None
+    aktif: bool | None = None
+    catatan: str | None = None
+
+
+class PeriodeOut(PeriodeBase, ORMModel):
+    id: int
+    created_at: datetime
+
+
+# ─── Pengaduan ─────────────────────────────────────────────────────────────
+
+class PengaduanBase(BaseModel):
+    pelapor_nama: str
+    pelapor_kontak: str | None = None
+    kanal: str = "web"
+    isi: str
+    rute: str | None = None
+    halte: str | None = None
+    armada_kode: str | None = None
+
+
+class PengaduanCreate(PengaduanBase):
+    pass
+
+
+class PengaduanUpdate(BaseModel):
+    status: str | None = None
+    pic: str | None = None
+    tanggapan: str | None = None
+    rating: int | None = None
+
+
+class PengaduanOut(PengaduanBase, ORMModel):
+    id: int
+    tiket: str
+    waktu: datetime
+    status: str
+    pic: str | None = None
+    tanggapan: str | None = None
+    rating: int | None = None
+    created_at: datetime
+
+
+# ─── Posisi Bus (GPS) ──────────────────────────────────────────────────────
+
+class PosisiBusCreate(BaseModel):
+    armada_id: int
+    lat: float
+    lon: float
+    speed_kmh: float = 0.0
+    heading: float = 0.0
+    halte_kode: str | None = None
+    delay_menit: float = 0.0
+    sumber: str = "gps"
+
+
+class PosisiBusOut(ORMModel):
+    id: int
+    armada_id: int
+    waktu: datetime
+    lat: float
+    lon: float
+    speed_kmh: float
+    heading: float
+    halte_kode: str | None = None
+    delay_menit: float
+    sumber: str
+
+
+class PosisiBusLive(BaseModel):
+    """Posisi terbaru per armada untuk halaman Peta Live."""
+    armada_kode: str
+    armada_plat: str
+    armada_status: str
+    lat: float
+    lon: float
+    speed_kmh: float
+    heading: float
+    halte_kode: str | None
+    delay_menit: float
+    waktu: datetime
+
+
+# ─── SPM Compliance ────────────────────────────────────────────────────────
+
+class SpmTemuan(BaseModel):
+    id: str  # e.g. "spm.headway.peak"
+    aturan: str  # "Permenhub 27/2015 §5"
+    judul: str
+    severity: Literal["lulus", "peringatan", "pelanggaran"]
+    deskripsi: str
+    metric_aktual: str | None = None
+    metric_ambang: str | None = None
+    rekomendasi: str | None = None
+
+
+class SpmCompliance(BaseModel):
+    skor: int  # 0..100
+    diperiksa: int
+    lulus: int
+    peringatan: int
+    pelanggaran: int
+    temuan: list[SpmTemuan]
+
+
 # ─── Generic ───────────────────────────────────────────────────────────────
 
 class Message(BaseModel):

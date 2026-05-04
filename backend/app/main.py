@@ -12,7 +12,21 @@ from . import models  # noqa: F401  (register models)
 from .config import get_settings
 from .database import Base, engine, get_db
 from .deps import get_current_user
-from .routers import armada, audit, auth, halte, insiden, notifikasi, sopir, trip, users
+from .routers import (
+    armada,
+    audit,
+    auth,
+    compliance,
+    halte,
+    insiden,
+    notifikasi,
+    pengaduan,
+    periode,
+    posisi,
+    sopir,
+    trip,
+    users,
+)
 
 settings = get_settings()
 
@@ -49,6 +63,11 @@ app.include_router(trip.router)
 app.include_router(insiden.router)
 app.include_router(notifikasi.router)
 app.include_router(audit.router)
+app.include_router(periode.router)
+app.include_router(pengaduan.router)
+app.include_router(pengaduan.public_router)
+app.include_router(posisi.router)
+app.include_router(compliance.router)
 
 
 # ─── Dashboard / Health ─────────────────────────────────────────────────────

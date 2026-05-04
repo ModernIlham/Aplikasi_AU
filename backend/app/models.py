@@ -28,6 +28,9 @@ INSIDEN_DAMPAK = ("rendah", "sedang", "tinggi")
 INSIDEN_STATUS = ("terbuka", "investigasi", "tindakan", "selesai")
 NOTIF_TINGKAT = ("info", "peringatan", "kritis")
 TRIP_KATEGORI = ("peak", "off_peak", "transisi", "break", "standby", "sisipan", "deadhead")
+PERIODE_KATEGORI = ("peak", "off_peak", "transisi", "break", "late", "tutup")
+PENGADUAN_STATUS = ("baru", "ditinjau", "tindak_lanjut", "selesai", "ditolak")
+PENGADUAN_KANAL = ("web", "email", "telepon", "wa", "sosmed", "lapor", "datang_langsung")
 
 
 # ─── User ──────────────────────────────────────────────────────────────────
@@ -175,3 +178,70 @@ class AuditLog(Base):
     ip: Mapped[str | None] = mapped_column(String(64))
     method: Mapped[str | None] = mapped_column(String(8))
     path: Mapped[str | None] = mapped_column(String(255))
+
+
+# ─── Periode Operasi (window scheduling) ───────────────────────────────────
+
+class Periode(Base):
+    """Window operasi 24 jam — basis untuk perencanaan headway per periode.
+
+    Contoh: P03 (Peak Pagi) 06:00–07:00, headway 15 m, kategori "peak".
+    """
+    __tablename__ = "periodes"
+
+    id: Mapped[int] = mapped_column(Integer, primary_key=True)
+    kode: Mapped[str] = mapped_column(String(8), unique=True, index=True, nullable=False)  # P01..P25
+    nama: Mapped[str] = mapped_column(String(80), nullable=False)
+    jam_mulai: Mapped[time] = mapped_column(Time, nullable=False)
+    jam_selesai: Mapped[time] = mapped_column(Time, nullable=False)
+    kategori: Mapped[str] = mapped_column(String(20), default="off_peak", nullable=False)
+    headway_target_menit: Mapped[float | None] = mapped_column(Float)
+    armada_target: Mapped[int | None] = mapped_column(Integer)
+    aktif: Mapped[bool] = mapped_column(Boolean, default=True, nullable=False)
+    catatan: Mapped[str | None] = mapped_column(Text)
+    created_at: Mapped[datetime] = mapped_column(DateTime(timezone=True), server_default=func.now())
+
+
+# ─── Pengaduan Publik (UU 25/2009 Pelayanan Publik) ────────────────────────
+
+class Pengaduan(Base):
+    __tablename__ = "pengaduans"
+
+    id: Mapped[int] = mapped_column(Integer, primary_key=True)
+    tiket: Mapped[str] = mapped_column(String(16), unique=True, index=True, nullable=False)  # PGD-0001
+    waktu: Mapped[datetime] = mapped_column(DateTime(timezone=True), nullable=False, server_default=func.now())
+    pelapor_nama: Mapped[str] = mapped_column(String(160), nullable=False)
+    pelapor_kontak: Mapped[str | None] = mapped_column(String(80))
+    kanal: Mapped[str] = mapped_column(String(20), default="web", nullable=False)
+    isi: Mapped[str] = mapped_column(Text, nullable=False)
+    rute: Mapped[str | None] = mapped_column(String(40))
+    halte: Mapped[str | None] = mapped_column(String(40))
+    armada_kode: Mapped[str | None] = mapped_column(String(16))
+    status: Mapped[str] = mapped_column(String(20), default="baru", nullable=False)
+    pic: Mapped[str | None] = mapped_column(String(160))
+    tanggapan: Mapped[str | None] = mapped_column(Text)
+    rating: Mapped[int | None] = mapped_column(Integer)  # 1..5 setelah selesai
+    created_at: Mapped[datetime] = mapped_column(DateTime(timezone=True), server_default=func.now())
+
+
+# ─── Posisi Bus (GPS ping) ─────────────────────────────────────────────────
+
+class PosisiBus(Base):
+    """Snapshot posisi armada — append-only. Dipakai oleh halaman Peta Live.
+
+    Disimpan ringan; tabel ini boleh di-prune berkala (mis. retain 30 hari).
+    """
+    __tablename__ = "posisi_bus"
+
+    id: Mapped[int] = mapped_column(Integer, primary_key=True)
+    armada_id: Mapped[int] = mapped_column(ForeignKey("armadas.id"), index=True, nullable=False)
+    waktu: Mapped[datetime] = mapped_column(DateTime(timezone=True), nullable=False, server_default=func.now(), index=True)
+    lat: Mapped[float] = mapped_column(Float, nullable=False)
+    lon: Mapped[float] = mapped_column(Float, nullable=False)
+    speed_kmh: Mapped[float] = mapped_column(Float, default=0.0, nullable=False)
+    heading: Mapped[float] = mapped_column(Float, default=0.0, nullable=False)  # 0–359
+    halte_kode: Mapped[str | None] = mapped_column(String(16))  # halte terdekat saat ini
+    delay_menit: Mapped[float] = mapped_column(Float, default=0.0, nullable=False)  # vs jadwal
+    sumber: Mapped[str] = mapped_column(String(20), default="gps", nullable=False)  # gps|mock|manual
+
+    armada: Mapped[Armada] = relationship()
