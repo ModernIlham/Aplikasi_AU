@@ -14,9 +14,11 @@ from app.models import (
     Halte,
     Insiden,
     Notifikasi,
+    Pemeliharaan,
     Pengaduan,
     Periode,
     Sopir,
+    Tarif,
     Trip,
     User,
 )
@@ -239,6 +241,47 @@ def main() -> None:
             db.add_all(audits)
             db.commit()
             print(f"  ✓ {len(audits)} entry audit log dibuat")
+
+        if db.query(Tarif).count() == 0:
+            tarifs = [
+                Tarif(kategori="dewasa",       label="Dewasa Umum",       tarif_rp=5000, verifikasi=None,               pax_per_hari=1380, aktif=True),
+                Tarif(kategori="pelajar",      label="Pelajar",           tarif_rp=2000, verifikasi="KIA/KTM",          pax_per_hari=340,  aktif=True),
+                Tarif(kategori="lansia",       label="Lansia >60",        tarif_rp=2500, verifikasi="KTP",              pax_per_hari=85,   aktif=True),
+                Tarif(kategori="difabel",      label="Difabel",           tarif_rp=0,    verifikasi="Kartu Disabilitas",pax_per_hari=15,   aktif=True),
+                Tarif(kategori="asn_subsidi",  label="ASN/PNS Bersubsidi",tarif_rp=3000, verifikasi="NIP",              pax_per_hari=20,   aktif=True),
+            ]
+            db.add_all(tarifs)
+            db.commit()
+            print(f"  ✓ {len(tarifs)} kategori tarif dibuat")
+
+        if db.query(Pemeliharaan).count() == 0:
+            now = datetime.now(timezone.utc)
+            armadas_by_kode = {a.kode: a for a in db.query(Armada).all()}
+            entries = []
+            spec = [
+                # (kode, tipe, sejak_hari_lalu, odo_terakhir, next_hari, odo_target, kir_hari_depan, biaya, catatan, status)
+                ("B-01", "berkala_10k", 18, 80000,  7,  90000, 162, 3_500_000, "Ganti oli mesin & filter",       "terjadwal"),
+                ("B-02", "berkala_10k", 21, 80000,  14, 90000, 162, 3_500_000, "Ganti oli mesin & filter",       "terjadwal"),
+                ("B-03", "berkala_10k", 15, 80000,  4,  90000, 162, 3_500_000, "Ganti oli mesin & filter",       "terjadwal"),
+                ("B-04", "berkala_10k", 23, 40000,  53, 50000, 162,  3_500_000, "Ganti oli mesin & filter",       "terjadwal"),
+                ("B-05", "major",       1,  46000, -1,  50000,  60, 12_000_000, "Servis besar + brake pad set",    "sedang_dikerjakan"),
+            ]
+            for kode, tipe, sejak, odo_last, next_hari, odo_tgt, kir_hari, biaya, cat, stat in spec:
+                a = armadas_by_kode.get(kode)
+                if not a:
+                    continue
+                entries.append(Pemeliharaan(
+                    armada_id=a.id, tipe=tipe,
+                    tanggal_service_terakhir=now - timedelta(days=sejak),
+                    odometer_terakhir_km=odo_last,
+                    tanggal_service_berikutnya=now + timedelta(days=next_hari),
+                    odometer_target_km=odo_tgt,
+                    kir_berlaku=now + timedelta(days=kir_hari),
+                    biaya_rp=biaya, catatan=cat, status=stat,
+                ))
+            db.add_all(entries)
+            db.commit()
+            print(f"  ✓ {len(entries)} jadwal pemeliharaan dibuat")
 
         print("\n✅ Seed selesai. Login dengan:")
         print("   email:    rizki@dephub.go.id      password: password123")

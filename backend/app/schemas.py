@@ -397,6 +397,95 @@ class SpmCompliance(BaseModel):
     temuan: list[SpmTemuan]
 
 
+# ─── Pemeliharaan ──────────────────────────────────────────────────────────
+
+class PemeliharaanBase(BaseModel):
+    armada_id: int
+    tipe: str = "berkala_10k"
+    tanggal_service_terakhir: datetime | None = None
+    odometer_terakhir_km: float = 0.0
+    tanggal_service_berikutnya: datetime | None = None
+    odometer_target_km: float = 0.0
+    kir_berlaku: datetime | None = None
+    biaya_rp: float = 0.0
+    catatan: str | None = None
+    status: str = "terjadwal"
+
+
+class PemeliharaanCreate(PemeliharaanBase):
+    pass
+
+
+class PemeliharaanUpdate(BaseModel):
+    tipe: str | None = None
+    tanggal_service_terakhir: datetime | None = None
+    odometer_terakhir_km: float | None = None
+    tanggal_service_berikutnya: datetime | None = None
+    odometer_target_km: float | None = None
+    kir_berlaku: datetime | None = None
+    biaya_rp: float | None = None
+    catatan: str | None = None
+    status: str | None = None
+
+
+class PemeliharaanOut(PemeliharaanBase, ORMModel):
+    id: int
+    created_at: datetime
+
+
+class PemeliharaanArmadaRow(BaseModel):
+    """Ringkasan per armada — untuk halaman Jadwal Pemeliharaan."""
+    armada_kode: str
+    armada_plat: str
+    odometer_km: float
+    service_terakhir_tgl: datetime | None
+    service_terakhir_km: float | None
+    service_berikutnya_tgl: datetime | None
+    service_berikutnya_km: float | None
+    tipe: str | None
+    kir_berlaku: datetime | None
+    status: str
+    hari_ke_service: int | None  # negative = overdue
+
+
+# ─── Tarif ─────────────────────────────────────────────────────────────────
+
+class TarifBase(BaseModel):
+    kategori: str
+    label: str
+    tarif_rp: float = 0.0
+    verifikasi: str | None = None
+    pax_per_hari: int = 0
+    aktif: bool = True
+    efektif_mulai: datetime | None = None
+    catatan: str | None = None
+
+
+class TarifCreate(TarifBase):
+    pass
+
+
+class TarifUpdate(BaseModel):
+    label: str | None = None
+    tarif_rp: float | None = None
+    verifikasi: str | None = None
+    pax_per_hari: int | None = None
+    aktif: bool | None = None
+    efektif_mulai: datetime | None = None
+    catatan: str | None = None
+
+
+class TarifOut(TarifBase, ORMModel):
+    id: int
+    created_at: datetime
+
+
+class TarifSummary(BaseModel):
+    total_pax: int
+    total_pendapatan: float
+    per_kategori: list[dict]
+
+
 # ─── Generic ───────────────────────────────────────────────────────────────
 
 class Message(BaseModel):

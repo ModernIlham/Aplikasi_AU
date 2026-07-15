@@ -99,6 +99,10 @@ Semua endpoint kecuali `/api/auth/*` membutuhkan header `Authorization: Bearer <
 | POST    | `/api/posisi/mock-tick`               | Generate mock GPS untuk demo              |
 | GET     | `/api/posisi/{armada_id}`             | Riwayat posisi per armada                 |
 | GET     | `/api/compliance/spm`                 | Validasi SPM otomatis (Permenhub 27/2015) |
+| GET/POST/PATCH/DELETE | `/api/pemeliharaan`     | Jadwal service, KIR, brake per armada     |
+| GET     | `/api/pemeliharaan/per-armada`        | Ringkasan pemeliharaan per armada         |
+| GET/POST/PATCH/DELETE | `/api/tarif`            | Struktur tarif per kategori penumpang     |
+| GET     | `/api/tarif/summary`                  | Total pax & pendapatan per kategori       |
 
 Semua write-operation otomatis mencatat entri ke `audit_logs` (lihat halaman **Riwayat Aktivitas** di frontend).
 

@@ -1658,6 +1658,11 @@
           Manajemen Insiden
           <span class="badge">2</span>
         </button>
+        <button class="nav-item" data-page="pengaduan">
+          <svg class="ic" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15a2 2 0 01-2 2H7l-4 4V5a2 2 0 012-2h14a2 2 0 012 2z"/></svg>
+          Pengaduan Publik
+          <span class="badge">3</span>
+        </button>
         <button class="nav-item" data-page="riwayat">
           <svg class="ic" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 12a9 9 0 109-9"/><polyline points="3 4 3 12 11 12"/><line x1="12" y1="7" x2="12" y2="12"/><line x1="12" y1="12" x2="15" y2="14"/></svg>
           Riwayat Aktivitas
@@ -5315,6 +5320,116 @@
         </div>
       </div>
 
+      <!-- ═══════ PENGADUAN PUBLIK PAGE ═══════ -->
+      <div class="page" id="page-pengaduan">
+        <div class="page-head">
+          <div>
+            <div class="breadcrumb">Akun &amp; Sistem · <b>Pengaduan Publik</b></div>
+            <h1 class="page-title">Kanal Pengaduan Warga (UU 25/2009)</h1>
+            <div class="page-subtitle">Terima, tinjau, dan tindak lanjuti pengaduan publik. SLA respon &lt; 24 jam untuk kanal resmi.</div>
+          </div>
+          <div class="page-actions">
+            <button class="btn">Ekspor CSV</button>
+            <button class="btn primary" id="btnNewPengaduan">+ Input Pengaduan</button>
+          </div>
+        </div>
+
+        <div class="kpi-grid" style="grid-template-columns:repeat(5,1fr);gap:10px;margin-bottom:14px">
+          <div class="card"><div class="card-body" style="padding:12px"><div style="font-size:10px;color:var(--ink-600);text-transform:uppercase">Total</div><div class="num" style="font-size:22px;font-weight:700" id="pgdTotal">—</div></div></div>
+          <div class="card"><div class="card-body" style="padding:12px"><div style="font-size:10px;color:var(--bad-700);text-transform:uppercase">Baru</div><div class="num" style="font-size:22px;font-weight:700;color:var(--bad-700)" id="pgdBaru">—</div></div></div>
+          <div class="card"><div class="card-body" style="padding:12px"><div style="font-size:10px;color:var(--warn-700);text-transform:uppercase">Dalam Proses</div><div class="num" style="font-size:22px;font-weight:700;color:var(--warn-700)" id="pgdProses">—</div></div></div>
+          <div class="card"><div class="card-body" style="padding:12px"><div style="font-size:10px;color:var(--ok-700);text-transform:uppercase">Selesai</div><div class="num" style="font-size:22px;font-weight:700;color:var(--ok-700)" id="pgdSelesai">—</div></div></div>
+          <div class="card"><div class="card-body" style="padding:12px"><div style="font-size:10px;color:var(--gold-700);text-transform:uppercase">Rating Rata²</div><div class="num" style="font-size:22px;font-weight:700;color:var(--gold-700)" id="pgdRating">—</div></div></div>
+        </div>
+
+        <div class="card" style="margin-bottom:14px">
+          <div class="card-head"><h3><span class="num">A</span> Daftar Pengaduan</h3>
+            <div style="margin-left:auto;font-size:11px;color:var(--ink-500)">Data dari <b class="mono">GET /api/pengaduan</b></div>
+          </div>
+          <div class="card-body" style="padding:0">
+            <table class="table">
+              <thead><tr><th style="width:100px">Tiket</th><th style="width:100px">Waktu</th><th>Pelapor</th><th style="width:80px">Kanal</th><th>Isi</th><th style="width:90px">Halte/Bus</th><th style="width:100px">Status</th><th style="width:70px">Rating</th><th style="width:120px">PIC</th></tr></thead>
+              <tbody id="pengaduanTbody">
+                <tr><td colspan="9" class="api-loading">Menghubungkan ke backend…</td></tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
+
+        <div class="grid-2">
+          <div class="card">
+            <div class="card-head"><h3><span class="num">B</span> Distribusi Kanal</h3></div>
+            <div class="card-body" id="pgdKanal">
+              <div class="api-loading">Memuat…</div>
+            </div>
+          </div>
+          <div class="card">
+            <div class="card-head"><h3><span class="num">C</span> Alur Tindak Lanjut</h3></div>
+            <div class="card-body">
+              <ul style="margin:0;padding-left:18px;line-height:1.8;font-size:13px">
+                <li><b>Baru</b> → verifikasi pelapor dalam 24 jam.</li>
+                <li><b>Ditinjau</b> → tetapkan PIC (unit kerja terkait).</li>
+                <li><b>Tindak Lanjut</b> → aksi konkret oleh PIC, update log.</li>
+                <li><b>Selesai</b> → tanggapan resmi + minta rating dari pelapor.</li>
+                <li><b>Ditolak</b> → beri alasan jelas & rekomendasi kanal lain (opsional).</li>
+              </ul>
+              <div style="margin-top:12px;padding:10px 12px;background:var(--info-50);border:1px solid var(--info-100);border-radius:5px;font-size:12px;color:var(--info-700);line-height:1.5">
+                <b>Dasar hukum:</b> UU 25/2009 Pelayanan Publik, Permenpan-RB 76/2013. SLA respon awal 24 jam; SLA penyelesaian 14 hari kerja.
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Modal input pengaduan (dipakai pengaduan page) -->
+      <div id="pgdModalOverlay" style="display:none;position:fixed;inset:0;background:rgba(10,22,40,0.55);z-index:9200;align-items:center;justify-content:center;padding:24px" role="dialog" aria-modal="true">
+        <div style="background:var(--white);border-radius:8px;width:min(520px,96vw);border-top:3px solid var(--gold-500);box-shadow:0 24px 60px rgba(0,0,0,0.4)">
+          <div style="padding:14px 18px;border-bottom:1px solid var(--ink-200);display:flex;align-items:center;gap:10px">
+            <b style="font-family:var(--font-serif);font-size:16px;color:var(--navy-900)">Input Pengaduan Baru</b>
+            <button id="pgdClose" style="margin-left:auto;background:none;border:none;font-size:20px;cursor:pointer;color:var(--ink-500)">×</button>
+          </div>
+          <form id="pgdForm" style="padding:18px 20px">
+            <div id="pgdErr" style="display:none;background:var(--bad-50);color:var(--bad-700);border:1px solid var(--bad-100);border-radius:4px;padding:8px 10px;font-size:12px;margin-bottom:10px"></div>
+            <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:10px">
+              <div>
+                <label style="font-size:11px;font-weight:700;text-transform:uppercase;color:var(--ink-600);display:block;margin-bottom:4px">Nama Pelapor *</label>
+                <input class="input" id="pgdNama" required style="width:100%"/>
+              </div>
+              <div>
+                <label style="font-size:11px;font-weight:700;text-transform:uppercase;color:var(--ink-600);display:block;margin-bottom:4px">Kontak (HP/email)</label>
+                <input class="input" id="pgdKontak" style="width:100%"/>
+              </div>
+            </div>
+            <div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:10px;margin-bottom:10px">
+              <div>
+                <label style="font-size:11px;font-weight:700;text-transform:uppercase;color:var(--ink-600);display:block;margin-bottom:4px">Kanal</label>
+                <select class="input" id="pgdKanal" style="width:100%">
+                  <option value="web">Web</option><option value="email">Email</option><option value="wa">WhatsApp</option>
+                  <option value="telepon">Telepon</option><option value="sosmed">Sosmed</option><option value="lapor">Lapor.go.id</option>
+                  <option value="datang_langsung">Datang Langsung</option>
+                </select>
+              </div>
+              <div>
+                <label style="font-size:11px;font-weight:700;text-transform:uppercase;color:var(--ink-600);display:block;margin-bottom:4px">Halte</label>
+                <input class="input" id="pgdHalte" placeholder="SCB, BSD, dll" style="width:100%"/>
+              </div>
+              <div>
+                <label style="font-size:11px;font-weight:700;text-transform:uppercase;color:var(--ink-600);display:block;margin-bottom:4px">Kode Bus</label>
+                <input class="input" id="pgdArmada" placeholder="B-01, B-02, dll" style="width:100%"/>
+              </div>
+            </div>
+            <div style="margin-bottom:14px">
+              <label style="font-size:11px;font-weight:700;text-transform:uppercase;color:var(--ink-600);display:block;margin-bottom:4px">Isi Pengaduan *</label>
+              <textarea class="input" id="pgdIsi" required rows="4" style="width:100%;font-family:inherit;resize:vertical"></textarea>
+            </div>
+            <div style="display:flex;justify-content:flex-end;gap:8px">
+              <button type="button" class="btn" id="pgdCancel">Batal</button>
+              <button type="submit" class="btn primary">Kirim Pengaduan</button>
+            </div>
+          </form>
+        </div>
+      </div>
+
     </main>
   </div>
 </div>
@@ -6189,6 +6304,115 @@
     } catch (e) { console.warn('hydrateUsers', e); }
   }
 
+  async function hydrateTarif() {
+    const tbody = document.querySelector('#page-tarif table.table tbody');
+    if (!tbody) return;
+    try {
+      const s = await API.get('/tarif/summary');
+      if (!s.per_kategori || !s.per_kategori.length) return;
+      const rows = s.per_kategori;
+      const fmt = (n) => 'Rp ' + Number(n || 0).toLocaleString('id-ID');
+      tbody.innerHTML = rows.map(r => `
+        <tr>
+          <td><b>${escHtml(r.label)}</b></td>
+          <td class="num">${r.tarif_rp === 0 ? 'Gratis' : fmt(r.tarif_rp)}</td>
+          <td class="num">${Number(r.pax).toLocaleString('id-ID')}</td>
+          <td class="num"><b>${fmt(r.pendapatan_rp)}</b></td>
+          <td>${escHtml(r.verifikasi || '—')}</td>
+        </tr>`).join('') + `
+        <tr style="background:var(--gold-50)">
+          <td><b>Total</b></td>
+          <td>—</td>
+          <td class="num"><b>${Number(s.total_pax).toLocaleString('id-ID')}</b></td>
+          <td class="num"><b style="font-size:14px;color:var(--navy-900)">${fmt(s.total_pendapatan)}</b></td>
+          <td>—</td>
+        </tr>`;
+    } catch (e) { console.warn('hydrateTarif', e); }
+  }
+
+  async function hydratePemeliharaan() {
+    const tbody = document.querySelector('#page-maintenance table.table tbody');
+    if (!tbody) return;
+    try {
+      const rows = await API.get('/pemeliharaan/per-armada');
+      if (!rows.length) return;
+      const stampFor = (days, status) => {
+        if (status === 'sedang_dikerjakan') return '<span class="stamp warn">Sedang Service</span>';
+        if (days === null || days === undefined) return '<span class="stamp">—</span>';
+        if (days < 0) return '<span class="stamp" style="background:var(--bad-100);color:var(--bad-700);border-color:var(--bad-700)">Overdue ' + Math.abs(days) + ' hari</span>';
+        if (days <= 3) return '<span class="stamp warn">' + days + ' hari lagi</span>';
+        if (days <= 14) return '<span class="stamp info">' + days + ' hari lagi</span>';
+        return '<span class="stamp">' + days + ' hari lagi</span>';
+      };
+      const fmtKm = (n) => n == null ? '—' : Number(n).toLocaleString('id-ID') + ' km';
+      const fmtDate = (s) => s ? fmtDateTime(s).split(' ').slice(0,3).join(' ') : '—';
+      tbody.innerHTML = rows.map(r => `
+        <tr>
+          <td><b>${escHtml(r.armada_kode)}</b></td>
+          <td class="num">${fmtKm(r.odometer_km)}</td>
+          <td class="mono">${fmtDate(r.service_terakhir_tgl)} · ${fmtKm(r.service_terakhir_km)}</td>
+          <td class="mono">${fmtDate(r.service_berikutnya_tgl)} · ${fmtKm(r.service_berikutnya_km)}</td>
+          <td>${escHtml((r.tipe || '—').replace(/_/g, ' '))}</td>
+          <td class="mono">${fmtDate(r.kir_berlaku)}</td>
+          <td>${stampFor(r.hari_ke_service, r.status)}</td>
+        </tr>`).join('');
+    } catch (e) { console.warn('hydratePemeliharaan', e); }
+  }
+
+  async function hydratePengaduan() {
+    const tbody = document.getElementById('pengaduanTbody');
+    if (!tbody) return;
+    try {
+      const [rows, stats] = await Promise.all([
+        API.get('/pengaduan?limit=50'),
+        API.get('/pengaduan/stats/summary').catch(() => null),
+      ]);
+      if (stats) {
+        const el = (id) => document.getElementById(id);
+        if (el('pgdTotal'))   el('pgdTotal').textContent   = stats.total;
+        if (el('pgdBaru'))    el('pgdBaru').textContent    = stats.baru;
+        if (el('pgdSelesai')) el('pgdSelesai').textContent = stats.selesai;
+        if (el('pgdProses'))  el('pgdProses').textContent  = Math.max(0, stats.total - stats.baru - stats.selesai);
+        if (el('pgdRating'))  el('pgdRating').textContent  = stats.rating_avg ? stats.rating_avg.toFixed(1) : '—';
+        const kanalBox = document.getElementById('pgdKanal');
+        if (kanalBox && stats.per_kanal) {
+          const total = Object.values(stats.per_kanal).reduce((a,b) => a+b, 0) || 1;
+          kanalBox.innerHTML = Object.entries(stats.per_kanal).map(([k, n]) => {
+            const pct = ((n / total) * 100).toFixed(0);
+            return `<div style="display:flex;align-items:center;gap:10px;margin-bottom:8px">
+              <span style="width:120px;font-size:12px;text-transform:capitalize">${escHtml(k)}</span>
+              <div style="flex:1;background:var(--ink-100);height:16px;border-radius:3px"><div style="width:${pct}%;height:100%;background:var(--info-600);border-radius:3px"></div></div>
+              <span class="mono" style="width:70px;text-align:right"><b>${n}</b> <span style="color:var(--ink-500)">(${pct}%)</span></span>
+            </div>`;
+          }).join('');
+        }
+      }
+      if (!rows.length) {
+        tbody.innerHTML = '<tr><td colspan="9" class="api-loading">Belum ada pengaduan.</td></tr>';
+        return;
+      }
+      const statusStamp = (s) => {
+        const map = { baru: 'bad', ditinjau: 'warn', tindak_lanjut: 'warn', selesai: '', ditolak: 'warn' };
+        return `<span class="stamp ${map[s] === 'bad' ? '' : map[s] || ''}"${map[s]==='bad'?' style="background:var(--bad-100);color:var(--bad-700);border-color:var(--bad-700)"':''}>${escHtml(s.replace(/_/g, ' '))}</span>`;
+      };
+      tbody.innerHTML = rows.map(r => {
+        const stars = r.rating ? '★'.repeat(r.rating) + '☆'.repeat(5 - r.rating) : '—';
+        const loc = [r.halte, r.armada_kode].filter(Boolean).join(' / ') || '—';
+        return `<tr>
+          <td class="mono"><b>${escHtml(r.tiket)}</b></td>
+          <td class="mono">${fmtDateTime(r.waktu)}</td>
+          <td><b>${escHtml(r.pelapor_nama)}</b><div style="font-size:10px;color:var(--ink-600)" class="mono">${escHtml(r.pelapor_kontak || '')}</div></td>
+          <td><span class="stamp" style="font-size:10px">${escHtml(r.kanal)}</span></td>
+          <td>${escHtml(r.isi)}</td>
+          <td class="mono">${escHtml(loc)}</td>
+          <td>${statusStamp(r.status)}</td>
+          <td class="mono" style="color:var(--gold-700)">${stars}</td>
+          <td>${escHtml(r.pic || '—')}</td>
+        </tr>`;
+      }).join('');
+    } catch (e) { console.warn('hydratePengaduan', e); }
+  }
+
   async function hydrateAll() {
     await Promise.all([
       hydrateDashboard(),
@@ -6201,6 +6425,9 @@
       hydrateUsers(),
       hydrateLiveGps(),
       hydrateSpmCheck(),
+      hydrateTarif(),
+      hydratePemeliharaan(),
+      hydratePengaduan(),
     ]);
   }
 
@@ -6217,8 +6444,53 @@
       else if (tgt === 'pengaturan') hydrateUsers();
       else if (tgt === 'peta')    hydrateLiveGps();
       else if (tgt === 'audit')   hydrateSpmCheck();
+      else if (tgt === 'tarif')   hydrateTarif();
+      else if (tgt === 'maintenance') hydratePemeliharaan();
+      else if (tgt === 'pengaduan') hydratePengaduan();
     });
   });
+
+  // ─── Pengaduan modal handlers ───
+  const pgdOverlay = document.getElementById('pgdModalOverlay');
+  const pgdForm    = document.getElementById('pgdForm');
+  const pgdErr     = document.getElementById('pgdErr');
+  const pgdOpen    = document.getElementById('btnNewPengaduan');
+  const pgdClose   = document.getElementById('pgdClose');
+  const pgdCancel  = document.getElementById('pgdCancel');
+  function showPgd() { if (pgdOverlay) pgdOverlay.style.display = 'flex'; }
+  function hidePgd() { if (pgdOverlay) pgdOverlay.style.display = 'none'; if (pgdErr) pgdErr.style.display='none'; if (pgdForm) pgdForm.reset(); }
+  if (pgdOpen)   pgdOpen.addEventListener('click', showPgd);
+  if (pgdClose)  pgdClose.addEventListener('click', hidePgd);
+  if (pgdCancel) pgdCancel.addEventListener('click', hidePgd);
+  if (pgdOverlay) pgdOverlay.addEventListener('click', (e) => { if (e.target === pgdOverlay) hidePgd(); });
+  if (pgdForm) {
+    pgdForm.addEventListener('submit', async (e) => {
+      e.preventDefault();
+      pgdErr.style.display = 'none';
+      const payload = {
+        pelapor_nama:   document.getElementById('pgdNama').value.trim(),
+        pelapor_kontak: document.getElementById('pgdKontak').value.trim() || null,
+        kanal:          document.getElementById('pgdKanal').value,
+        halte:          document.getElementById('pgdHalte').value.trim() || null,
+        armada_kode:    document.getElementById('pgdArmada').value.trim() || null,
+        isi:            document.getElementById('pgdIsi').value.trim(),
+      };
+      if (!payload.pelapor_nama || !payload.isi) {
+        pgdErr.textContent = 'Nama pelapor dan isi wajib diisi.'; pgdErr.style.display = 'block'; return;
+      }
+      try {
+        // Prefer public endpoint (no auth needed) → memungkinkan submit tanpa login
+        const path = API.token() ? '/pengaduan/public' : '/pengaduan/public';
+        const r = await API.req('POST', path, payload);
+        toast('Pengaduan Terkirim', `Tiket ${r.tiket} dibuat. Kami akan tinjau dalam 24 jam.`, 'ok');
+        hidePgd();
+        hydratePengaduan();
+      } catch (err) {
+        pgdErr.textContent = err.message || 'Gagal mengirim pengaduan.';
+        pgdErr.style.display = 'block';
+      }
+    });
+  }
 
   // Tombol GPS mock-tick & refresh
   const btnGpsTick = document.getElementById('btnGpsTick');

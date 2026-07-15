@@ -20,10 +20,12 @@ from .routers import (
     halte,
     insiden,
     notifikasi,
+    pemeliharaan,
     pengaduan,
     periode,
     posisi,
     sopir,
+    tarif,
     trip,
     users,
 )
@@ -68,6 +70,8 @@ app.include_router(pengaduan.router)
 app.include_router(pengaduan.public_router)
 app.include_router(posisi.router)
 app.include_router(compliance.router)
+app.include_router(pemeliharaan.router)
+app.include_router(tarif.router)
 
 
 # ─── Dashboard / Health ─────────────────────────────────────────────────────

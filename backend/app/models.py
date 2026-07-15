@@ -31,6 +31,9 @@ TRIP_KATEGORI = ("peak", "off_peak", "transisi", "break", "standby", "sisipan", 
 PERIODE_KATEGORI = ("peak", "off_peak", "transisi", "break", "late", "tutup")
 PENGADUAN_STATUS = ("baru", "ditinjau", "tindak_lanjut", "selesai", "ditolak")
 PENGADUAN_KANAL = ("web", "email", "telepon", "wa", "sosmed", "lapor", "datang_langsung")
+PEMELIHARAAN_TIPE = ("berkala_10k", "berkala_50k", "major", "kir", "spot", "brake", "engine")
+PEMELIHARAAN_STATUS = ("terjadwal", "sedang_dikerjakan", "selesai", "batal")
+TARIF_KATEGORI = ("dewasa", "pelajar", "lansia", "difabel", "asn_subsidi")
 
 
 # ─── User ──────────────────────────────────────────────────────────────────
@@ -245,3 +248,41 @@ class PosisiBus(Base):
     sumber: Mapped[str] = mapped_column(String(20), default="gps", nullable=False)  # gps|mock|manual
 
     armada: Mapped[Armada] = relationship()
+
+
+# ─── Pemeliharaan (Service schedule & KIR) ─────────────────────────────────
+
+class Pemeliharaan(Base):
+    __tablename__ = "pemeliharaans"
+
+    id: Mapped[int] = mapped_column(Integer, primary_key=True)
+    armada_id: Mapped[int] = mapped_column(ForeignKey("armadas.id"), index=True, nullable=False)
+    tipe: Mapped[str] = mapped_column(String(20), default="berkala_10k", nullable=False)
+    tanggal_service_terakhir: Mapped[datetime | None] = mapped_column(DateTime(timezone=True))
+    odometer_terakhir_km: Mapped[float] = mapped_column(Float, default=0.0, nullable=False)
+    tanggal_service_berikutnya: Mapped[datetime | None] = mapped_column(DateTime(timezone=True))
+    odometer_target_km: Mapped[float] = mapped_column(Float, default=0.0, nullable=False)
+    kir_berlaku: Mapped[datetime | None] = mapped_column(DateTime(timezone=True))
+    biaya_rp: Mapped[float] = mapped_column(Float, default=0.0, nullable=False)
+    catatan: Mapped[str | None] = mapped_column(Text)
+    status: Mapped[str] = mapped_column(String(20), default="terjadwal", nullable=False)
+    created_at: Mapped[datetime] = mapped_column(DateTime(timezone=True), server_default=func.now())
+
+    armada: Mapped[Armada] = relationship()
+
+
+# ─── Tarif (Fare structure) ────────────────────────────────────────────────
+
+class Tarif(Base):
+    __tablename__ = "tarifs"
+
+    id: Mapped[int] = mapped_column(Integer, primary_key=True)
+    kategori: Mapped[str] = mapped_column(String(20), unique=True, index=True, nullable=False)
+    label: Mapped[str] = mapped_column(String(80), nullable=False)  # "Dewasa Umum", dll
+    tarif_rp: Mapped[float] = mapped_column(Float, default=0.0, nullable=False)
+    verifikasi: Mapped[str | None] = mapped_column(String(80))  # "KIA/KTM", "Kartu Disabilitas"
+    pax_per_hari: Mapped[int] = mapped_column(Integer, default=0, nullable=False)
+    aktif: Mapped[bool] = mapped_column(Boolean, default=True, nullable=False)
+    efektif_mulai: Mapped[datetime | None] = mapped_column(DateTime(timezone=True))
+    catatan: Mapped[str | None] = mapped_column(Text)
+    created_at: Mapped[datetime] = mapped_column(DateTime(timezone=True), server_default=func.now())
