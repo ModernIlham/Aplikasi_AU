@@ -267,6 +267,335 @@ class AuditOut(ORMModel):
     path: str | None = None
 
 
+# ─── Periode Operasi ───────────────────────────────────────────────────────
+
+class PeriodeBase(BaseModel):
+    kode: str
+    nama: str
+    jam_mulai: time
+    jam_selesai: time
+    kategori: str = "off_peak"
+    headway_target_menit: float | None = None
+    armada_target: int | None = None
+    aktif: bool = True
+    catatan: str | None = None
+
+
+class PeriodeCreate(PeriodeBase):
+    pass
+
+
+class PeriodeUpdate(BaseModel):
+    nama: str | None = None
+    jam_mulai: time | None = None
+    jam_selesai: time | None = None
+    kategori: str | None = None
+    headway_target_menit: float | None = None
+    armada_target: int | None = None
+    aktif: bool | None = None
+    catatan: str | None = None
+
+
+class PeriodeOut(PeriodeBase, ORMModel):
+    id: int
+    created_at: datetime
+
+
+# ─── Pengaduan ─────────────────────────────────────────────────────────────
+
+class PengaduanBase(BaseModel):
+    pelapor_nama: str
+    pelapor_kontak: str | None = None
+    kanal: str = "web"
+    isi: str
+    rute: str | None = None
+    halte: str | None = None
+    armada_kode: str | None = None
+
+
+class PengaduanCreate(PengaduanBase):
+    pass
+
+
+class PengaduanUpdate(BaseModel):
+    status: str | None = None
+    pic: str | None = None
+    tanggapan: str | None = None
+    rating: int | None = None
+
+
+class PengaduanOut(PengaduanBase, ORMModel):
+    id: int
+    tiket: str
+    waktu: datetime
+    status: str
+    pic: str | None = None
+    tanggapan: str | None = None
+    rating: int | None = None
+    created_at: datetime
+
+
+# ─── Posisi Bus (GPS) ──────────────────────────────────────────────────────
+
+class PosisiBusCreate(BaseModel):
+    armada_id: int
+    lat: float
+    lon: float
+    speed_kmh: float = 0.0
+    heading: float = 0.0
+    halte_kode: str | None = None
+    delay_menit: float = 0.0
+    sumber: str = "gps"
+
+
+class PosisiBusOut(ORMModel):
+    id: int
+    armada_id: int
+    waktu: datetime
+    lat: float
+    lon: float
+    speed_kmh: float
+    heading: float
+    halte_kode: str | None = None
+    delay_menit: float
+    sumber: str
+
+
+class PosisiBusLive(BaseModel):
+    """Posisi terbaru per armada untuk halaman Peta Live."""
+    armada_kode: str
+    armada_plat: str
+    armada_status: str
+    lat: float
+    lon: float
+    speed_kmh: float
+    heading: float
+    halte_kode: str | None
+    delay_menit: float
+    waktu: datetime
+
+
+# ─── SPM Compliance ────────────────────────────────────────────────────────
+
+class SpmTemuan(BaseModel):
+    id: str  # e.g. "spm.headway.peak"
+    aturan: str  # "Permenhub 27/2015 §5"
+    judul: str
+    severity: Literal["lulus", "peringatan", "pelanggaran"]
+    deskripsi: str
+    metric_aktual: str | None = None
+    metric_ambang: str | None = None
+    rekomendasi: str | None = None
+
+
+class SpmCompliance(BaseModel):
+    skor: int  # 0..100
+    diperiksa: int
+    lulus: int
+    peringatan: int
+    pelanggaran: int
+    temuan: list[SpmTemuan]
+
+
+# ─── Pemeliharaan ──────────────────────────────────────────────────────────
+
+class PemeliharaanBase(BaseModel):
+    armada_id: int
+    tipe: str = "berkala_10k"
+    tanggal_service_terakhir: datetime | None = None
+    odometer_terakhir_km: float = 0.0
+    tanggal_service_berikutnya: datetime | None = None
+    odometer_target_km: float = 0.0
+    kir_berlaku: datetime | None = None
+    biaya_rp: float = 0.0
+    catatan: str | None = None
+    status: str = "terjadwal"
+
+
+class PemeliharaanCreate(PemeliharaanBase):
+    pass
+
+
+class PemeliharaanUpdate(BaseModel):
+    tipe: str | None = None
+    tanggal_service_terakhir: datetime | None = None
+    odometer_terakhir_km: float | None = None
+    tanggal_service_berikutnya: datetime | None = None
+    odometer_target_km: float | None = None
+    kir_berlaku: datetime | None = None
+    biaya_rp: float | None = None
+    catatan: str | None = None
+    status: str | None = None
+
+
+class PemeliharaanOut(PemeliharaanBase, ORMModel):
+    id: int
+    created_at: datetime
+
+
+class PemeliharaanArmadaRow(BaseModel):
+    """Ringkasan per armada — untuk halaman Jadwal Pemeliharaan."""
+    armada_kode: str
+    armada_plat: str
+    odometer_km: float
+    service_terakhir_tgl: datetime | None
+    service_terakhir_km: float | None
+    service_berikutnya_tgl: datetime | None
+    service_berikutnya_km: float | None
+    tipe: str | None
+    kir_berlaku: datetime | None
+    status: str
+    hari_ke_service: int | None  # negative = overdue
+
+
+# ─── Tarif ─────────────────────────────────────────────────────────────────
+
+class TarifBase(BaseModel):
+    kategori: str
+    label: str
+    tarif_rp: float = 0.0
+    verifikasi: str | None = None
+    pax_per_hari: int = 0
+    aktif: bool = True
+    efektif_mulai: datetime | None = None
+    catatan: str | None = None
+
+
+class TarifCreate(TarifBase):
+    pass
+
+
+class TarifUpdate(BaseModel):
+    label: str | None = None
+    tarif_rp: float | None = None
+    verifikasi: str | None = None
+    pax_per_hari: int | None = None
+    aktif: bool | None = None
+    efektif_mulai: datetime | None = None
+    catatan: str | None = None
+
+
+class TarifOut(TarifBase, ORMModel):
+    id: int
+    created_at: datetime
+
+
+class TarifSummary(BaseModel):
+    total_pax: int
+    total_pendapatan: float
+    per_kategori: list[dict]
+
+
+# ─── Skenario ──────────────────────────────────────────────────────────────
+
+class SkenarioBase(BaseModel):
+    nama: str
+    deskripsi: str | None = None
+    adalah_baseline: bool = False
+    status: str = "draft"
+    armada_count: int = 0
+    headway_peak_menit: float = 0.0
+    headway_off_menit: float = 0.0
+    total_trip: int = 0
+    total_km: float = 0.0
+    biaya_rp_hari: float = 0.0
+    pendapatan_rp_hari: float = 0.0
+    skor_mutu: int = 0
+    spm_status: str = "belum_dievaluasi"
+    catatan: str | None = None
+
+
+class SkenarioCreate(SkenarioBase):
+    pass
+
+
+class SkenarioUpdate(BaseModel):
+    nama: str | None = None
+    deskripsi: str | None = None
+    status: str | None = None
+    armada_count: int | None = None
+    headway_peak_menit: float | None = None
+    headway_off_menit: float | None = None
+    total_trip: int | None = None
+    total_km: float | None = None
+    biaya_rp_hari: float | None = None
+    pendapatan_rp_hari: float | None = None
+    skor_mutu: int | None = None
+    spm_status: str | None = None
+    catatan: str | None = None
+
+
+class SkenarioOut(SkenarioBase, ORMModel):
+    id: int
+    kode: str
+    pembuat_id: int | None = None
+    adalah_aktif: bool
+    created_at: datetime
+
+
+class SkenarioKomparasi(BaseModel):
+    """Data untuk halaman Komparasi Skenario — beberapa skenario berdampingan."""
+    baseline: SkenarioOut | None = None
+    kandidat: list[SkenarioOut] = []
+    delta: dict = {}  # {kode: {biaya_delta, trip_delta, ...}} vs baseline
+
+
+# ─── BBM ───────────────────────────────────────────────────────────────────
+
+class BbmBase(BaseModel):
+    armada_id: int
+    jenis: str = "solar_biosolar"
+    liter: float = 0.0
+    harga_per_liter: float = 0.0
+    total_rp: float = 0.0
+    odometer_km: float = 0.0
+    km_sejak_isi_terakhir: float = 0.0
+    lokasi_spbu: str | None = None
+    petugas: str | None = None
+    catatan: str | None = None
+
+
+class BbmCreate(BbmBase):
+    pass
+
+
+class BbmUpdate(BaseModel):
+    liter: float | None = None
+    harga_per_liter: float | None = None
+    total_rp: float | None = None
+    odometer_km: float | None = None
+    km_sejak_isi_terakhir: float | None = None
+    lokasi_spbu: str | None = None
+    petugas: str | None = None
+    catatan: str | None = None
+
+
+class BbmOut(BbmBase, ORMModel):
+    id: int
+    waktu: datetime
+    created_at: datetime
+
+
+class BbmPerArmadaRow(BaseModel):
+    armada_kode: str
+    armada_plat: str
+    total_liter_30d: float
+    total_biaya_rp_30d: float
+    total_km_30d: float
+    km_per_liter: float | None  # efficiency
+    rata_harga_per_liter: float
+    n_isi: int
+
+
+class BbmSummary(BaseModel):
+    total_liter: float
+    total_biaya_rp: float
+    total_km: float
+    km_per_liter_avg: float | None
+    per_armada: list[BbmPerArmadaRow]
+    per_jenis: dict
+
+
 # ─── Generic ───────────────────────────────────────────────────────────────
 
 class Message(BaseModel):

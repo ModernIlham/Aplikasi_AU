@@ -11,10 +11,16 @@ from app.database import Base, SessionLocal, engine
 from app.models import (
     Armada,
     AuditLog,
+    Bbm,
     Halte,
     Insiden,
     Notifikasi,
+    Pemeliharaan,
+    Pengaduan,
+    Periode,
+    Skenario,
     Sopir,
+    Tarif,
     Trip,
     User,
 )
@@ -160,6 +166,41 @@ def main() -> None:
             db.commit()
             print(f"  ✓ {len(trips)} trip dibuat")
 
+        if db.query(Periode).count() == 0:
+            periodes = [
+                Periode(kode="P01", nama="Buka Pagi",        jam_mulai=time(5,  0), jam_selesai=time(5, 30), kategori="off_peak", headway_target_menit=20.0, armada_target=2),
+                Periode(kode="P02", nama="Pra-Peak",          jam_mulai=time(5, 30), jam_selesai=time(6,  0), kategori="transisi", headway_target_menit=18.0, armada_target=3),
+                Periode(kode="P03", nama="Peak Pagi 1",       jam_mulai=time(6,  0), jam_selesai=time(7,  0), kategori="peak",     headway_target_menit=15.0, armada_target=3),
+                Periode(kode="P04", nama="Peak Pagi 2",       jam_mulai=time(7,  0), jam_selesai=time(8,  0), kategori="peak",     headway_target_menit=10.0, armada_target=4),
+                Periode(kode="P05", nama="Peak Pagi 3",       jam_mulai=time(8,  0), jam_selesai=time(8, 30), kategori="peak",     headway_target_menit=12.0, armada_target=4),
+                Periode(kode="P06", nama="Transisi Pagi",     jam_mulai=time(8, 30), jam_selesai=time(9,  0), kategori="transisi", headway_target_menit=15.0, armada_target=3),
+                Periode(kode="P07", nama="Off-Peak Siang",    jam_mulai=time(9,  0), jam_selesai=time(14, 0), kategori="off_peak", headway_target_menit=15.0, armada_target=3),
+                Periode(kode="P08", nama="Pra-Sore",           jam_mulai=time(14, 0), jam_selesai=time(15,30), kategori="transisi", headway_target_menit=15.0, armada_target=3),
+                Periode(kode="P09", nama="Peak Sore 1",       jam_mulai=time(15,30), jam_selesai=time(17, 0), kategori="peak",     headway_target_menit=12.0, armada_target=4),
+                Periode(kode="P10", nama="Peak Sore 2",       jam_mulai=time(17, 0), jam_selesai=time(19,30), kategori="peak",     headway_target_menit=10.0, armada_target=4),
+                Periode(kode="P11", nama="Off-Peak Malam",    jam_mulai=time(19,30), jam_selesai=time(21, 0), kategori="off_peak", headway_target_menit=15.0, armada_target=3),
+                Periode(kode="P12", nama="Late",               jam_mulai=time(21, 0), jam_selesai=time(22, 0), kategori="late",     headway_target_menit=20.0, armada_target=2),
+                Periode(kode="P13", nama="Last Trip",          jam_mulai=time(22, 0), jam_selesai=time(22,30), kategori="late",     headway_target_menit=30.0, armada_target=1),
+                Periode(kode="P14", nama="Tutup",              jam_mulai=time(22,30), jam_selesai=time(23,59), kategori="tutup",    aktif=False),
+            ]
+            db.add_all(periodes)
+            db.commit()
+            print(f"  ✓ {len(periodes)} periode operasi dibuat")
+
+        if db.query(Pengaduan).count() == 0:
+            now = datetime.now(timezone.utc)
+            pengaduans = [
+                Pengaduan(tiket="PGD-0001", waktu=now - timedelta(hours=2),  pelapor_nama="Budi Santoso",     pelapor_kontak="081298765432", kanal="wa",     isi="Bus B-02 melaju terlalu kencang di tikungan dekat halte 4.",                       rute="1E", halte="H4",  armada_kode="B-02", status="ditinjau", pic="Sri Yulianti"),
+                Pengaduan(tiket="PGD-0002", waktu=now - timedelta(hours=8),  pelapor_nama="Ani Lestari",      pelapor_kontak="ani@gmail.com", kanal="email", isi="AC bus tidak dingin, penumpang lain juga mengeluh.",                                rute="1E", halte=None,  armada_kode="B-04", status="tindak_lanjut", pic="Bengkel"),
+                Pengaduan(tiket="PGD-0003", waktu=now - timedelta(days=1),   pelapor_nama="Pak Hadi",          pelapor_kontak="082112345678", kanal="telepon",isi="Bus tidak datang sesuai jadwal, saya tunggu 25 menit di halte BSD.",               rute="1E", halte="BSD", armada_kode=None,    status="selesai", pic="Sri Yulianti", tanggapan="Bus mengalami keterlambatan akibat kemacetan tidak terduga. Mohon maaf atas ketidaknyamanan.", rating=3),
+                Pengaduan(tiket="PGD-0004", waktu=now - timedelta(days=2),   pelapor_nama="Siti Aminah",       pelapor_kontak=None,            kanal="lapor",  isi="Halte SCB kurang penerangan saat malam. Tolong dipasang lampu tambahan.",          rute="1E", halte="SCB", armada_kode=None,    status="tindak_lanjut", pic="Manajemen Halte"),
+                Pengaduan(tiket="PGD-0005", waktu=now - timedelta(days=3),   pelapor_nama="Joko Supardi",      pelapor_kontak="joko@example.com", kanal="web",  isi="Apresiasi: sopir Bus B-01 sangat ramah dan membantu lansia naik. Terima kasih!",   rute="1E", halte=None,  armada_kode="B-01", status="selesai", pic="Manajemen", tanggapan="Terima kasih atas apresiasinya. Akan kami sampaikan kepada sopir.", rating=5),
+                Pengaduan(tiket="PGD-0006", waktu=now - timedelta(days=4),   pelapor_nama="Endang Wahyuni",    pelapor_kontak="081100002222", kanal="sosmed", isi="Tarif Rp 3.500 terlalu mahal untuk pelajar. Bisa diberi diskon?",                  rute="1E", halte=None,  armada_kode=None,    status="ditolak", pic="Manajemen", tanggapan="Tarif sudah mengikuti SK Walikota. Kartu pelajar tidak berlaku diskon di koridor ini."),
+            ]
+            db.add_all(pengaduans)
+            db.commit()
+            print(f"  ✓ {len(pengaduans)} pengaduan publik dibuat")
+
         if db.query(Insiden).count() == 0:
             now = datetime.now(timezone.utc)
             insidens = [
@@ -202,6 +243,100 @@ def main() -> None:
             db.add_all(audits)
             db.commit()
             print(f"  ✓ {len(audits)} entry audit log dibuat")
+
+        if db.query(Tarif).count() == 0:
+            tarifs = [
+                Tarif(kategori="dewasa",       label="Dewasa Umum",       tarif_rp=5000, verifikasi=None,               pax_per_hari=1380, aktif=True),
+                Tarif(kategori="pelajar",      label="Pelajar",           tarif_rp=2000, verifikasi="KIA/KTM",          pax_per_hari=340,  aktif=True),
+                Tarif(kategori="lansia",       label="Lansia >60",        tarif_rp=2500, verifikasi="KTP",              pax_per_hari=85,   aktif=True),
+                Tarif(kategori="difabel",      label="Difabel",           tarif_rp=0,    verifikasi="Kartu Disabilitas",pax_per_hari=15,   aktif=True),
+                Tarif(kategori="asn_subsidi",  label="ASN/PNS Bersubsidi",tarif_rp=3000, verifikasi="NIP",              pax_per_hari=20,   aktif=True),
+            ]
+            db.add_all(tarifs)
+            db.commit()
+            print(f"  ✓ {len(tarifs)} kategori tarif dibuat")
+
+        if db.query(Pemeliharaan).count() == 0:
+            now = datetime.now(timezone.utc)
+            armadas_by_kode = {a.kode: a for a in db.query(Armada).all()}
+            entries = []
+            spec = [
+                # (kode, tipe, sejak_hari_lalu, odo_terakhir, next_hari, odo_target, kir_hari_depan, biaya, catatan, status)
+                ("B-01", "berkala_10k", 18, 80000,  7,  90000, 162, 3_500_000, "Ganti oli mesin & filter",       "terjadwal"),
+                ("B-02", "berkala_10k", 21, 80000,  14, 90000, 162, 3_500_000, "Ganti oli mesin & filter",       "terjadwal"),
+                ("B-03", "berkala_10k", 15, 80000,  4,  90000, 162, 3_500_000, "Ganti oli mesin & filter",       "terjadwal"),
+                ("B-04", "berkala_10k", 23, 40000,  53, 50000, 162,  3_500_000, "Ganti oli mesin & filter",       "terjadwal"),
+                ("B-05", "major",       1,  46000, -1,  50000,  60, 12_000_000, "Servis besar + brake pad set",    "sedang_dikerjakan"),
+            ]
+            for kode, tipe, sejak, odo_last, next_hari, odo_tgt, kir_hari, biaya, cat, stat in spec:
+                a = armadas_by_kode.get(kode)
+                if not a:
+                    continue
+                entries.append(Pemeliharaan(
+                    armada_id=a.id, tipe=tipe,
+                    tanggal_service_terakhir=now - timedelta(days=sejak),
+                    odometer_terakhir_km=odo_last,
+                    tanggal_service_berikutnya=now + timedelta(days=next_hari),
+                    odometer_target_km=odo_tgt,
+                    kir_berlaku=now + timedelta(days=kir_hari),
+                    biaya_rp=biaya, catatan=cat, status=stat,
+                ))
+            db.add_all(entries)
+            db.commit()
+            print(f"  ✓ {len(entries)} jadwal pemeliharaan dibuat")
+
+        if db.query(Skenario).count() == 0:
+            u_admin = db.query(User).filter(User.role == "admin").first()
+            uid = u_admin.id if u_admin else None
+            skens = [
+                Skenario(kode="SK-0001", nama="Baseline — 3 Bus Reguler",         pembuat_id=uid, adalah_baseline=True,  adalah_aktif=True,  status="aktif",
+                         armada_count=3, headway_peak_menit=15.0, headway_off_menit=15.0, total_trip=66, total_km=419.8,
+                         biaya_rp_hari=4_960_000, pendapatan_rp_hari=8_250_000, skor_mutu=92, spm_status="belum_penuh",
+                         deskripsi="Operasi status quo — 3 bus reguler tanpa sisipan."),
+                Skenario(kode="SK-0002", nama="Skenario A — Sisipan Peak Pagi",   pembuat_id=uid, adalah_baseline=False, adalah_aktif=False, status="diterima",
+                         armada_count=4, headway_peak_menit=11.3, headway_off_menit=15.0, total_trip=76, total_km=483.4,
+                         biaya_rp_hari=5_480_000, pendapatan_rp_hari=9_500_000, skor_mutu=95, spm_status="memenuhi",
+                         deskripsi="Tambah 1 bus sisipan (B-04) di jendela peak pagi 07:00–09:00."),
+                Skenario(kode="SK-0003", nama="Skenario B — 4 Bus Tetap",         pembuat_id=uid, adalah_baseline=False, adalah_aktif=False, status="diajukan",
+                         armada_count=4, headway_peak_menit=11.3, headway_off_menit=11.3, total_trip=88, total_km=559.7,
+                         biaya_rp_hari=6_120_000, pendapatan_rp_hari=11_000_000, skor_mutu=97, spm_status="memenuhi",
+                         deskripsi="Investasi 1 bus baru tetap — mutu tertinggi, biaya operasi lebih besar."),
+                Skenario(kode="SK-0004", nama="Skenario C — Short-turn Halte 4",  pembuat_id=uid, adalah_baseline=False, adalah_aktif=False, status="draft",
+                         armada_count=3, headway_peak_menit=12.5, headway_off_menit=15.0, total_trip=72, total_km=380.0,
+                         biaya_rp_hari=4_650_000, pendapatan_rp_hari=8_600_000, skor_mutu=88, spm_status="marjinal",
+                         deskripsi="Sebagian trip peak dipotong di Halte 4 (short-turn) untuk menaikkan frekuensi paruh atas koridor."),
+            ]
+            db.add_all(skens)
+            db.commit()
+            print(f"  ✓ {len(skens)} skenario jadwal dibuat")
+
+        if db.query(Bbm).count() == 0:
+            armadas_aktif = db.query(Armada).filter(Armada.status == "aktif").order_by(Armada.kode).all()
+            entries: list[Bbm] = []
+            # Generate ~30 hari histori pengisian: setiap 3 hari per bus, 180 liter, harga 6.800/L
+            now = datetime.now(timezone.utc)
+            for a in armadas_aktif:
+                odo = a.km_total
+                for d in range(30, 0, -3):
+                    liter = 180.0 + (a.id * 3 % 20)
+                    km_sejak = 460.0 + (a.id * 7 % 60)
+                    harga = 6800.0
+                    entries.append(Bbm(
+                        armada_id=a.id,
+                        waktu=now - timedelta(days=d, hours=8),
+                        jenis="solar_biosolar",
+                        liter=liter,
+                        harga_per_liter=harga,
+                        total_rp=liter * harga,
+                        odometer_km=odo,
+                        km_sejak_isi_terakhir=km_sejak,
+                        lokasi_spbu="SPBU Pertamina IKN",
+                        petugas="Operator Depot",
+                    ))
+                    odo += km_sejak
+            db.add_all(entries)
+            db.commit()
+            print(f"  ✓ {len(entries)} log pengisian BBM dibuat")
 
         print("\n✅ Seed selesai. Login dengan:")
         print("   email:    rizki@dephub.go.id      password: password123")

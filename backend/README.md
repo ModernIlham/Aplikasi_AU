@@ -90,6 +90,24 @@ Semua endpoint kecuali `/api/auth/*` membutuhkan header `Authorization: Bearer <
 | POST    | `/api/notifikasi/read-all`            | Tandai semua dibaca                       |
 | GET     | `/api/audit`                          | Riwayat aktivitas (audit log)             |
 | GET     | `/api/dashboard/summary`              | KPI dashboard                             |
+| GET/POST/PATCH/DELETE | `/api/periode`          | CRUD periode operasi (window 24 jam)      |
+| GET/PATCH | `/api/pengaduan`                    | Pengaduan publik (internal)               |
+| POST    | `/api/pengaduan/public`               | **Public** (no-auth) — submit pengaduan   |
+| GET     | `/api/pengaduan/stats/summary`        | Statistik pengaduan + rating              |
+| POST    | `/api/posisi/ping`                    | Kirim posisi GPS armada                   |
+| GET     | `/api/posisi/live`                    | Posisi terbaru per armada (Peta Live)     |
+| POST    | `/api/posisi/mock-tick`               | Generate mock GPS untuk demo              |
+| GET     | `/api/posisi/{armada_id}`             | Riwayat posisi per armada                 |
+| GET     | `/api/compliance/spm`                 | Validasi SPM otomatis (Permenhub 27/2015) |
+| GET/POST/PATCH/DELETE | `/api/pemeliharaan`     | Jadwal service, KIR, brake per armada     |
+| GET     | `/api/pemeliharaan/per-armada`        | Ringkasan pemeliharaan per armada         |
+| GET/POST/PATCH/DELETE | `/api/tarif`            | Struktur tarif per kategori penumpang     |
+| GET     | `/api/tarif/summary`                  | Total pax & pendapatan per kategori       |
+| GET/POST/PATCH/DELETE | `/api/skenario`         | Skenario jadwal (draft → diajukan → aktif)|
+| POST    | `/api/skenario/{id}/aktifkan`         | Set skenario aktif (single-active)        |
+| GET     | `/api/skenario/komparasi/data`        | Baseline + kandidat + delta (Komparasi)   |
+| GET/POST/PATCH/DELETE | `/api/bbm`              | Log pengisian BBM per armada              |
+| GET     | `/api/bbm/summary`                    | Konsumsi BBM 30 hari (efisiensi km/L)     |
 
 Semua write-operation otomatis mencatat entri ke `audit_logs` (lihat halaman **Riwayat Aktivitas** di frontend).
 
