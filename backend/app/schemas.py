@@ -486,6 +486,116 @@ class TarifSummary(BaseModel):
     per_kategori: list[dict]
 
 
+# ─── Skenario ──────────────────────────────────────────────────────────────
+
+class SkenarioBase(BaseModel):
+    nama: str
+    deskripsi: str | None = None
+    adalah_baseline: bool = False
+    status: str = "draft"
+    armada_count: int = 0
+    headway_peak_menit: float = 0.0
+    headway_off_menit: float = 0.0
+    total_trip: int = 0
+    total_km: float = 0.0
+    biaya_rp_hari: float = 0.0
+    pendapatan_rp_hari: float = 0.0
+    skor_mutu: int = 0
+    spm_status: str = "belum_dievaluasi"
+    catatan: str | None = None
+
+
+class SkenarioCreate(SkenarioBase):
+    pass
+
+
+class SkenarioUpdate(BaseModel):
+    nama: str | None = None
+    deskripsi: str | None = None
+    status: str | None = None
+    armada_count: int | None = None
+    headway_peak_menit: float | None = None
+    headway_off_menit: float | None = None
+    total_trip: int | None = None
+    total_km: float | None = None
+    biaya_rp_hari: float | None = None
+    pendapatan_rp_hari: float | None = None
+    skor_mutu: int | None = None
+    spm_status: str | None = None
+    catatan: str | None = None
+
+
+class SkenarioOut(SkenarioBase, ORMModel):
+    id: int
+    kode: str
+    pembuat_id: int | None = None
+    adalah_aktif: bool
+    created_at: datetime
+
+
+class SkenarioKomparasi(BaseModel):
+    """Data untuk halaman Komparasi Skenario — beberapa skenario berdampingan."""
+    baseline: SkenarioOut | None = None
+    kandidat: list[SkenarioOut] = []
+    delta: dict = {}  # {kode: {biaya_delta, trip_delta, ...}} vs baseline
+
+
+# ─── BBM ───────────────────────────────────────────────────────────────────
+
+class BbmBase(BaseModel):
+    armada_id: int
+    jenis: str = "solar_biosolar"
+    liter: float = 0.0
+    harga_per_liter: float = 0.0
+    total_rp: float = 0.0
+    odometer_km: float = 0.0
+    km_sejak_isi_terakhir: float = 0.0
+    lokasi_spbu: str | None = None
+    petugas: str | None = None
+    catatan: str | None = None
+
+
+class BbmCreate(BbmBase):
+    pass
+
+
+class BbmUpdate(BaseModel):
+    liter: float | None = None
+    harga_per_liter: float | None = None
+    total_rp: float | None = None
+    odometer_km: float | None = None
+    km_sejak_isi_terakhir: float | None = None
+    lokasi_spbu: str | None = None
+    petugas: str | None = None
+    catatan: str | None = None
+
+
+class BbmOut(BbmBase, ORMModel):
+    id: int
+    waktu: datetime
+    created_at: datetime
+
+
+class BbmPerArmadaRow(BaseModel):
+    armada_kode: str
+    armada_plat: str
+    total_liter_30d: float
+    total_biaya_rp_30d: float
+    total_km_30d: float
+    km_per_liter: float | None  # efficiency
+    rata_harga_per_liter: float
+    n_isi: int
+
+
+class BbmSummary(BaseModel):
+    total_liter: float
+    total_biaya_rp: float
+    total_km: float
+    km_per_liter_avg: float | None
+    per_armada: list[BbmPerArmadaRow]
+    per_jenis: dict
+
+
 # ─── Generic ───────────────────────────────────────────────────────────────
 
 class Message(BaseModel):

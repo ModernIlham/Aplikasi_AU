@@ -34,6 +34,8 @@ PENGADUAN_KANAL = ("web", "email", "telepon", "wa", "sosmed", "lapor", "datang_l
 PEMELIHARAAN_TIPE = ("berkala_10k", "berkala_50k", "major", "kir", "spot", "brake", "engine")
 PEMELIHARAAN_STATUS = ("terjadwal", "sedang_dikerjakan", "selesai", "batal")
 TARIF_KATEGORI = ("dewasa", "pelajar", "lansia", "difabel", "asn_subsidi")
+SKENARIO_STATUS = ("draft", "diajukan", "diterima", "aktif", "arsip")
+BBM_JENIS = ("solar_dex", "solar_biodiesel", "solar_biosolar", "cng", "lgv", "listrik")
 
 
 # ─── User ──────────────────────────────────────────────────────────────────
@@ -286,3 +288,63 @@ class Tarif(Base):
     efektif_mulai: Mapped[datetime | None] = mapped_column(DateTime(timezone=True))
     catatan: Mapped[str | None] = mapped_column(Text)
     created_at: Mapped[datetime] = mapped_column(DateTime(timezone=True), server_default=func.now())
+
+
+# ─── Skenario Jadwal (untuk Komparasi & Optimasi) ──────────────────────────
+
+class Skenario(Base):
+    __tablename__ = "skenarios"
+
+    id: Mapped[int] = mapped_column(Integer, primary_key=True)
+    kode: Mapped[str] = mapped_column(String(16), unique=True, index=True, nullable=False)  # SK-0001
+    nama: Mapped[str] = mapped_column(String(160), nullable=False)
+    deskripsi: Mapped[str | None] = mapped_column(Text)
+    pembuat_id: Mapped[int | None] = mapped_column(ForeignKey("users.id"), index=True)
+    adalah_baseline: Mapped[bool] = mapped_column(Boolean, default=False, nullable=False)
+    adalah_aktif: Mapped[bool] = mapped_column(Boolean, default=False, nullable=False)  # hanya satu aktif
+    status: Mapped[str] = mapped_column(String(20), default="draft", nullable=False)
+
+    # Parameter operasi
+    armada_count: Mapped[int] = mapped_column(Integer, default=0, nullable=False)
+    headway_peak_menit: Mapped[float] = mapped_column(Float, default=0.0, nullable=False)
+    headway_off_menit: Mapped[float] = mapped_column(Float, default=0.0, nullable=False)
+    total_trip: Mapped[int] = mapped_column(Integer, default=0, nullable=False)
+    total_km: Mapped[float] = mapped_column(Float, default=0.0, nullable=False)
+
+    # Ekonomi
+    biaya_rp_hari: Mapped[float] = mapped_column(Float, default=0.0, nullable=False)
+    pendapatan_rp_hari: Mapped[float] = mapped_column(Float, default=0.0, nullable=False)
+
+    # Mutu
+    skor_mutu: Mapped[int] = mapped_column(Integer, default=0, nullable=False)
+    spm_status: Mapped[str] = mapped_column(String(20), default="belum_dievaluasi", nullable=False)
+
+    catatan: Mapped[str | None] = mapped_column(Text)
+    created_at: Mapped[datetime] = mapped_column(DateTime(timezone=True), server_default=func.now())
+
+
+# ─── BBM / Konsumsi Bahan Bakar ────────────────────────────────────────────
+
+class Bbm(Base):
+    """Log pengisian BBM per armada.
+
+    Digunakan untuk analisis biaya operasi harian (variable cost terbesar
+    di skema BTS) dan efisiensi km/liter per unit.
+    """
+    __tablename__ = "bbm_logs"
+
+    id: Mapped[int] = mapped_column(Integer, primary_key=True)
+    armada_id: Mapped[int] = mapped_column(ForeignKey("armadas.id"), index=True, nullable=False)
+    waktu: Mapped[datetime] = mapped_column(DateTime(timezone=True), nullable=False, server_default=func.now(), index=True)
+    jenis: Mapped[str] = mapped_column(String(30), default="solar_biosolar", nullable=False)
+    liter: Mapped[float] = mapped_column(Float, default=0.0, nullable=False)
+    harga_per_liter: Mapped[float] = mapped_column(Float, default=0.0, nullable=False)
+    total_rp: Mapped[float] = mapped_column(Float, default=0.0, nullable=False)
+    odometer_km: Mapped[float] = mapped_column(Float, default=0.0, nullable=False)  # snapshot saat isi
+    km_sejak_isi_terakhir: Mapped[float] = mapped_column(Float, default=0.0, nullable=False)
+    lokasi_spbu: Mapped[str | None] = mapped_column(String(160))
+    petugas: Mapped[str | None] = mapped_column(String(160))
+    catatan: Mapped[str | None] = mapped_column(Text)
+    created_at: Mapped[datetime] = mapped_column(DateTime(timezone=True), server_default=func.now())
+
+    armada: Mapped[Armada] = relationship()

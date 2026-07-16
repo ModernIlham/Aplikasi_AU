@@ -11,12 +11,14 @@ from app.database import Base, SessionLocal, engine
 from app.models import (
     Armada,
     AuditLog,
+    Bbm,
     Halte,
     Insiden,
     Notifikasi,
     Pemeliharaan,
     Pengaduan,
     Periode,
+    Skenario,
     Sopir,
     Tarif,
     Trip,
@@ -282,6 +284,59 @@ def main() -> None:
             db.add_all(entries)
             db.commit()
             print(f"  ✓ {len(entries)} jadwal pemeliharaan dibuat")
+
+        if db.query(Skenario).count() == 0:
+            u_admin = db.query(User).filter(User.role == "admin").first()
+            uid = u_admin.id if u_admin else None
+            skens = [
+                Skenario(kode="SK-0001", nama="Baseline — 3 Bus Reguler",         pembuat_id=uid, adalah_baseline=True,  adalah_aktif=True,  status="aktif",
+                         armada_count=3, headway_peak_menit=15.0, headway_off_menit=15.0, total_trip=66, total_km=419.8,
+                         biaya_rp_hari=4_960_000, pendapatan_rp_hari=8_250_000, skor_mutu=92, spm_status="belum_penuh",
+                         deskripsi="Operasi status quo — 3 bus reguler tanpa sisipan."),
+                Skenario(kode="SK-0002", nama="Skenario A — Sisipan Peak Pagi",   pembuat_id=uid, adalah_baseline=False, adalah_aktif=False, status="diterima",
+                         armada_count=4, headway_peak_menit=11.3, headway_off_menit=15.0, total_trip=76, total_km=483.4,
+                         biaya_rp_hari=5_480_000, pendapatan_rp_hari=9_500_000, skor_mutu=95, spm_status="memenuhi",
+                         deskripsi="Tambah 1 bus sisipan (B-04) di jendela peak pagi 07:00–09:00."),
+                Skenario(kode="SK-0003", nama="Skenario B — 4 Bus Tetap",         pembuat_id=uid, adalah_baseline=False, adalah_aktif=False, status="diajukan",
+                         armada_count=4, headway_peak_menit=11.3, headway_off_menit=11.3, total_trip=88, total_km=559.7,
+                         biaya_rp_hari=6_120_000, pendapatan_rp_hari=11_000_000, skor_mutu=97, spm_status="memenuhi",
+                         deskripsi="Investasi 1 bus baru tetap — mutu tertinggi, biaya operasi lebih besar."),
+                Skenario(kode="SK-0004", nama="Skenario C — Short-turn Halte 4",  pembuat_id=uid, adalah_baseline=False, adalah_aktif=False, status="draft",
+                         armada_count=3, headway_peak_menit=12.5, headway_off_menit=15.0, total_trip=72, total_km=380.0,
+                         biaya_rp_hari=4_650_000, pendapatan_rp_hari=8_600_000, skor_mutu=88, spm_status="marjinal",
+                         deskripsi="Sebagian trip peak dipotong di Halte 4 (short-turn) untuk menaikkan frekuensi paruh atas koridor."),
+            ]
+            db.add_all(skens)
+            db.commit()
+            print(f"  ✓ {len(skens)} skenario jadwal dibuat")
+
+        if db.query(Bbm).count() == 0:
+            armadas_aktif = db.query(Armada).filter(Armada.status == "aktif").order_by(Armada.kode).all()
+            entries: list[Bbm] = []
+            # Generate ~30 hari histori pengisian: setiap 3 hari per bus, 180 liter, harga 6.800/L
+            now = datetime.now(timezone.utc)
+            for a in armadas_aktif:
+                odo = a.km_total
+                for d in range(30, 0, -3):
+                    liter = 180.0 + (a.id * 3 % 20)
+                    km_sejak = 460.0 + (a.id * 7 % 60)
+                    harga = 6800.0
+                    entries.append(Bbm(
+                        armada_id=a.id,
+                        waktu=now - timedelta(days=d, hours=8),
+                        jenis="solar_biosolar",
+                        liter=liter,
+                        harga_per_liter=harga,
+                        total_rp=liter * harga,
+                        odometer_km=odo,
+                        km_sejak_isi_terakhir=km_sejak,
+                        lokasi_spbu="SPBU Pertamina IKN",
+                        petugas="Operator Depot",
+                    ))
+                    odo += km_sejak
+            db.add_all(entries)
+            db.commit()
+            print(f"  ✓ {len(entries)} log pengisian BBM dibuat")
 
         print("\n✅ Seed selesai. Login dengan:")
         print("   email:    rizki@dephub.go.id      password: password123")

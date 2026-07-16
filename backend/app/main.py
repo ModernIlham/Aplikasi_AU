@@ -16,6 +16,7 @@ from .routers import (
     armada,
     audit,
     auth,
+    bbm,
     compliance,
     halte,
     insiden,
@@ -24,6 +25,7 @@ from .routers import (
     pengaduan,
     periode,
     posisi,
+    skenario,
     sopir,
     tarif,
     trip,
@@ -72,6 +74,8 @@ app.include_router(posisi.router)
 app.include_router(compliance.router)
 app.include_router(pemeliharaan.router)
 app.include_router(tarif.router)
+app.include_router(skenario.router)
+app.include_router(bbm.router)
 
 
 # ─── Dashboard / Health ─────────────────────────────────────────────────────

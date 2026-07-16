@@ -3416,6 +3416,16 @@
             </div>
           </div>
         </div>
+
+        <!-- BBM live analytics (hydrated from /api/bbm/summary) -->
+        <div class="card" id="bbmLiveCard" style="margin-top:24px">
+          <div class="card-head"><h3><span class="num">★</span> BBM 30 Hari Terakhir (Backend Live)</h3>
+            <div style="margin-left:auto;font-size:11px;color:var(--ink-500)">Sumber: <b class="mono">GET /api/bbm/summary</b></div>
+          </div>
+          <div class="card-body" id="bbmLiveBody">
+            <div class="api-loading">Menghubungkan ke backend…</div>
+          </div>
+        </div>
       </div>
 
       <!-- ═══════ SENSITIVITAS PAGE ═══════ -->
@@ -3518,6 +3528,16 @@
               <div style="font-family:var(--font-serif);font-size:42px;font-weight:700;color:var(--navy-700);margin:8px 0">A+</div>
               <div style="font-size:11px;color:var(--ink-600)">Skor terbaik · Butuh investasi 1 bus</div>
             </div>
+          </div>
+        </div>
+
+        <!-- Live scenario comparison from /api/skenario/komparasi/data -->
+        <div class="card" id="skenarioLiveCard" style="margin-top:24px">
+          <div class="card-head"><h3><span class="num">★</span> Komparasi Skenario (Backend Live)</h3>
+            <div style="margin-left:auto;font-size:11px;color:var(--ink-500)">Sumber: <b class="mono">GET /api/skenario/komparasi/data</b></div>
+          </div>
+          <div class="card-body" id="skenarioLiveBody" style="padding:0">
+            <div class="api-loading" style="padding:14px">Menghubungkan ke backend…</div>
           </div>
         </div>
       </div>
@@ -6413,6 +6433,91 @@
     } catch (e) { console.warn('hydratePengaduan', e); }
   }
 
+  async function hydrateBbm() {
+    const box = document.getElementById('bbmLiveBody');
+    if (!box) return;
+    try {
+      const s = await API.get('/bbm/summary?days=30');
+      const fmtRp = (n) => 'Rp ' + Number(n || 0).toLocaleString('id-ID');
+      const fmtL  = (n) => Number(n || 0).toLocaleString('id-ID', {maximumFractionDigits: 1}) + ' L';
+      const kml   = s.km_per_liter_avg == null ? '—' : Number(s.km_per_liter_avg).toFixed(2).replace('.', ',') + ' km/L';
+      const rows  = s.per_armada || [];
+      box.innerHTML = `
+        <div style="display:grid;grid-template-columns:repeat(4,1fr);gap:10px;margin-bottom:14px">
+          <div style="padding:10px;background:var(--ink-50);border-radius:5px"><div style="font-size:10px;color:var(--ink-600);text-transform:uppercase">Total Liter</div><div class="num" style="font-size:20px;font-weight:700">${fmtL(s.total_liter)}</div></div>
+          <div style="padding:10px;background:var(--bad-50);border-radius:5px"><div style="font-size:10px;color:var(--bad-700);text-transform:uppercase">Total Biaya</div><div class="num" style="font-size:20px;font-weight:700;color:var(--bad-700)">${fmtRp(s.total_biaya_rp)}</div></div>
+          <div style="padding:10px;background:var(--info-50);border-radius:5px"><div style="font-size:10px;color:var(--info-700);text-transform:uppercase">Total KM</div><div class="num" style="font-size:20px;font-weight:700;color:var(--info-700)">${Number(s.total_km || 0).toLocaleString('id-ID')} km</div></div>
+          <div style="padding:10px;background:var(--ok-50);border-radius:5px"><div style="font-size:10px;color:var(--ok-700);text-transform:uppercase">Efisiensi Rata²</div><div class="num" style="font-size:20px;font-weight:700;color:var(--ok-700)">${kml}</div></div>
+        </div>
+        <table class="table" style="margin:0"><thead><tr><th>Armada</th><th>Plat</th><th class="num">Isi</th><th class="num">Total Liter</th><th class="num">Total Biaya</th><th class="num">KM 30d</th><th class="num">km/L</th></tr></thead><tbody>
+          ${rows.map(r => `<tr>
+            <td><b>${escHtml(r.armada_kode)}</b></td>
+            <td class="mono">${escHtml(r.armada_plat)}</td>
+            <td class="num">${r.n_isi}</td>
+            <td class="num mono">${fmtL(r.total_liter_30d)}</td>
+            <td class="num mono">${fmtRp(r.total_biaya_rp_30d)}</td>
+            <td class="num mono">${Number(r.total_km_30d).toLocaleString('id-ID')}</td>
+            <td class="num mono" style="color:${(r.km_per_liter || 0) >= 3.5 ? 'var(--ok-700)' : 'var(--warn-700)'}"><b>${r.km_per_liter == null ? '—' : Number(r.km_per_liter).toFixed(2).replace('.', ',')}</b></td>
+          </tr>`).join('')}
+        </tbody></table>`;
+    } catch (e) {
+      box.innerHTML = `<div class="api-loading" style="color:var(--bad-700)">Gagal memuat: ${escHtml(e.message)}</div>`;
+    }
+  }
+
+  async function hydrateSkenario() {
+    const box = document.getElementById('skenarioLiveBody');
+    if (!box) return;
+    try {
+      const s = await API.get('/skenario/komparasi/data');
+      const rows = [s.baseline, ...(s.kandidat || [])].filter(Boolean);
+      if (!rows.length) {
+        box.innerHTML = '<div class="api-loading" style="padding:14px">Belum ada skenario di database.</div>';
+        return;
+      }
+      const fmtRp = (n) => 'Rp ' + (Number(n || 0)/1_000_000).toFixed(2).replace('.', ',') + ' Jt';
+      const spmStamp = (s) => {
+        if (s === 'memenuhi') return '<span class="stamp">Memenuhi</span>';
+        if (s === 'marjinal') return '<span class="stamp warn">Marjinal</span>';
+        if (s === 'belum_penuh') return '<span class="stamp warn">Belum Penuh</span>';
+        return '<span class="stamp" style="opacity:0.6">'+escHtml(s.replace(/_/g,' '))+'</span>';
+      };
+      const activeMark = (r) => r.adalah_aktif ? ' style="background:var(--gold-50);border-left:3px solid var(--gold-600)"' : '';
+      box.innerHTML = `<table class="table" style="margin:0"><thead><tr>
+        <th>Kode</th><th>Nama</th><th class="num">Bus</th><th class="num">Headway Peak</th>
+        <th class="num">Trip/hari</th><th class="num">Biaya/hari</th><th class="num">Pendapatan</th>
+        <th class="num">Skor</th><th>SPM</th><th>Status</th><th></th>
+      </tr></thead><tbody>
+        ${rows.map(r => `<tr${activeMark(r)}>
+          <td class="mono"><b>${escHtml(r.kode)}</b>${r.adalah_baseline ? ' <span class="stamp info" style="font-size:9px;padding:1px 4px">BASELINE</span>' : ''}${r.adalah_aktif ? ' <span class="stamp" style="font-size:9px;padding:1px 4px;background:var(--gold-100);color:var(--gold-700);border-color:var(--gold-600)">AKTIF</span>' : ''}</td>
+          <td>${escHtml(r.nama)}</td>
+          <td class="num">${r.armada_count}</td>
+          <td class="num mono">${Number(r.headway_peak_menit).toFixed(1).replace('.', ',')} m</td>
+          <td class="num">${r.total_trip}</td>
+          <td class="num mono">${fmtRp(r.biaya_rp_hari)}</td>
+          <td class="num mono">${fmtRp(r.pendapatan_rp_hari)}</td>
+          <td class="num"><b>${r.skor_mutu}</b></td>
+          <td>${spmStamp(r.spm_status)}</td>
+          <td><span class="stamp" style="text-transform:capitalize">${escHtml(r.status)}</span></td>
+          <td>${(!r.adalah_aktif && r.status !== 'draft') ? `<button class="btn" data-aktifkan="${r.id}" style="font-size:10px;padding:3px 8px">Aktifkan</button>` : ''}</td>
+        </tr>`).join('')}
+      </tbody></table>`;
+      // Wire aktifkan buttons
+      box.querySelectorAll('button[data-aktifkan]').forEach(b => {
+        b.addEventListener('click', async () => {
+          const id = b.dataset.aktifkan;
+          try {
+            const r = await API.post(`/skenario/${id}/aktifkan`);
+            toast('Skenario Diaktifkan', `${r.kode} — ${r.nama} kini aktif.`, 'ok');
+            hydrateSkenario();
+          } catch (e) { toast('Gagal', e.message, 'bad'); }
+        });
+      });
+    } catch (e) {
+      box.innerHTML = `<div class="api-loading" style="color:var(--bad-700);padding:14px">Gagal memuat: ${escHtml(e.message)}</div>`;
+    }
+  }
+
   async function hydrateAll() {
     await Promise.all([
       hydrateDashboard(),
@@ -6428,6 +6533,8 @@
       hydrateTarif(),
       hydratePemeliharaan(),
       hydratePengaduan(),
+      hydrateBbm(),
+      hydrateSkenario(),
     ]);
   }
 
@@ -6447,6 +6554,8 @@
       else if (tgt === 'tarif')   hydrateTarif();
       else if (tgt === 'maintenance') hydratePemeliharaan();
       else if (tgt === 'pengaduan') hydratePengaduan();
+      else if (tgt === 'biaya')   hydrateBbm();
+      else if (tgt === 'komparasi') hydrateSkenario();
     });
   });
 

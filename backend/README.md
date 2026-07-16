@@ -103,6 +103,11 @@ Semua endpoint kecuali `/api/auth/*` membutuhkan header `Authorization: Bearer <
 | GET     | `/api/pemeliharaan/per-armada`        | Ringkasan pemeliharaan per armada         |
 | GET/POST/PATCH/DELETE | `/api/tarif`            | Struktur tarif per kategori penumpang     |
 | GET     | `/api/tarif/summary`                  | Total pax & pendapatan per kategori       |
+| GET/POST/PATCH/DELETE | `/api/skenario`         | Skenario jadwal (draft → diajukan → aktif)|
+| POST    | `/api/skenario/{id}/aktifkan`         | Set skenario aktif (single-active)        |
+| GET     | `/api/skenario/komparasi/data`        | Baseline + kandidat + delta (Komparasi)   |
+| GET/POST/PATCH/DELETE | `/api/bbm`              | Log pengisian BBM per armada              |
+| GET     | `/api/bbm/summary`                    | Konsumsi BBM 30 hari (efisiensi km/L)     |
 
 Semua write-operation otomatis mencatat entri ke `audit_logs` (lihat halaman **Riwayat Aktivitas** di frontend).
 
